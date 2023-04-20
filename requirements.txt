@@ -1,2 +1,4 @@
-grpc
+grpcio
 requests
+pytz
+google-api-python-client
