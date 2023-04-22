@@ -33,7 +33,7 @@ class FinamPy:
     Документация интерфейса Finam Trade API: https://finamweb.github.io/trade-api-docs/
     Генерация кода в папках grpc/proto осуществлена из proto контрактов: https://github.com/FinamWeb/trade-api-docs/tree/master/contracts
     """
-    tz_msk = timezone('Europe/Moscow')  # Время UTC в Alor OpenAPI будем приводить к московскому времени
+    tz_msk = timezone('Europe/Moscow')  # Время UTC в Finam Trade API будем приводить к московскому времени
     server = 'trade-api.finam.ru'  # Сервер для исполнения вызовов
     markets = {Market.MARKET_STOCK: 'Фондовый рынок Московской Биржи',
                Market.MARKET_FORTS: 'Срочный рынок Московской Биржи',
