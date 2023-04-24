@@ -213,8 +213,12 @@ class FinamPy:
                 ORDER_VALID_BEFORE_TYPE_EXACT_TIME - Заявка действует до указанного времени. Параметр OrderValidBefore.time должно быть установлен
             time: Время действия заявки в UTC
         """
-        request = NewOrderRequest(client_id=client_id, security_board=security_board, security_code=security_code, buy_sell=buy_sell, quantity=quantity, price=DoubleValue(value=price),
-                                  use_credit=use_credit, property=property, condition=condition, valid_before=valid_before)
+        if price:  # Если указана цена
+            request = NewOrderRequest(client_id=client_id, security_board=security_board, security_code=security_code, buy_sell=buy_sell, quantity=quantity, price=DoubleValue(value=price),
+                                      use_credit=use_credit, property=property, condition=condition, valid_before=valid_before)  # То выставляем лимитную заявку
+        else:  # Если цена не указана
+            request = NewOrderRequest(client_id=client_id, security_board=security_board, security_code=security_code, buy_sell=buy_sell, quantity=quantity,
+                                      use_credit=use_credit, property=property, condition=condition, valid_before=valid_before)  # То выставляем рыночную заявку
         return self.call_function(self.orders_stub.NewOrder, request)
 
     def cancel_order(self, client_id, transaction_id) -> Union[CancelOrderResult, None]:
