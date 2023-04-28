@@ -24,4 +24,4 @@ if __name__ == '__main__':  # Точка входа при запуске это
         except:
             print(f'\nТикер {board}.{symbol} не найден')
 
-    fp_provider.close_subscriptions_thread()  # Закрываем поток подписок перед выходом
+    fp_provider.close_channel()  # Закрываем канал перед выходом

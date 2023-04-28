@@ -6,10 +6,11 @@ from threading import Thread  # Поток обработки подписок
 from queue import SimpleQueue  # Очередь подписок/отписок
 
 from grpc import ssl_channel_credentials, secure_channel, RpcError  # Защищенный канал
-from google.protobuf.timestamp_pb2 import Timestamp  # Представление времени
-from google.protobuf.wrappers_pb2 import DoubleValue  # Представление цены
+import google.protobuf.timestamp_pb2 as timestamp_pb2  # Представление времени
+import google.protobuf.wrappers_pb2 as wrappers_pb2  # Представление цены
 from .proto.tradeapi.v1 import common_pb2 as common  # Покупка/продажа
 from .proto.tradeapi.v1.common_pb2 import Market, OrderValidBefore, ResponseEvent  # Рынки и событие результата выполнения запроса
+from .proto.tradeapi.v1.security_pb2 import Security  # Тикер
 from .proto.tradeapi.v1.events_pb2 import (
     SubscriptionRequest, OrderBookSubscribeRequest, OrderBookUnsubscribeRequest, OrderTradeSubscribeRequest, OrderTradeUnsubscribeRequest,
     Event, OrderEvent, TradeEvent, OrderBookEvent, PortfolioEvent)  # Запросы и события подписок
@@ -33,7 +34,7 @@ class FinamPy:
     Документация интерфейса Finam Trade API: https://finamweb.github.io/trade-api-docs/
     Генерация кода в папках grpc/proto осуществлена из proto контрактов: https://github.com/FinamWeb/trade-api-docs/tree/master/contracts
     """
-    tz_msk = timezone('Europe/Moscow')  # Время UTC в Finam Trade API будем приводить к московскому времени
+    tz_msk = timezone('Europe/Moscow')  # Время UTC будем приводить к московскому времени
     server = 'trade-api.finam.ru'  # Сервер для исполнения вызовов
     markets = {Market.MARKET_STOCK: 'Фондовый рынок Московской Биржи',
                Market.MARKET_FORTS: 'Срочный рынок Московской Биржи',
@@ -43,43 +44,6 @@ class FinamPy:
                Market.MARKET_BONDS: 'Долговой рынок Московской Биржи',
                Market.MARKET_OPTIONS: 'Рынок опционов Московской Биржи'}  # Рынки
 
-    def default_handler(self, event: Union[OrderEvent, TradeEvent, OrderBookEvent, PortfolioEvent, ResponseEvent]):
-        """Пустой обработчик события по умолчанию. Его можно заменить на пользовательский"""
-        pass
-
-    def utc_to_msk_datetime(self, dt: datetime) -> datetime:
-        """Перевод времени из UTC в московское
-
-        :param datetime dt: Время UTC
-        :return: Московское время
-        """
-        dt_msk = utc.localize(dt).astimezone(self.tz_msk)  # Переводим UTC в МСК
-        return dt_msk.replace(tzinfo=None)  # Убираем временнУю зону
-
-    def request_iterator(self):
-        """Генератор запросов на подписку/отписку"""
-        while True:  # Будем пытаться читать из очереди до закрытии канала
-            yield self.subscription_queue.get()  # Возврат из этой функции. При повторном ее вызове исполнение продолжится с этой строки
-
-    def subscribtions_handler(self):
-        """Поток обработки подписок"""
-        events = self.events_stub.GetEvents(request_iterator=self.request_iterator(), metadata=self.metadata)  # Получаем значения подписок
-        try:
-            for event in events:  # Пробегаемся по значениям подписок до закрытия канала
-                e: Event = event  # Приводим пришедшее значение к подпискам
-                if e.order != OrderEvent():  # Если пришло событие с заявкой
-                    self.on_order(e.order)
-                if e.trade != TradeEvent():  # Если пришло событие со сделкой
-                    self.on_trade(e.trade)
-                if e.order_book != OrderBookEvent():  # Если пришло событие стакана
-                    self.on_order_book(e.order_book)
-                if e.portfolio != PortfolioEvent():  # Если пришло событие портфеля
-                    self.on_portfolio(e.portfolio)
-                if e.response != ResponseEvent:  # Если пришло событие результата выполнения запроса
-                    self.on_response(e.response)
-        except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
-            pass  # Все в порядке, ничего делать не нужно
-
     def __init__(self, access_token):
         """Инициализация
 
@@ -87,6 +51,7 @@ class FinamPy:
         """
         self.metadata = [('x-api-key', access_token)]  # Торговый токен доступа
         self.channel = secure_channel(self.server, ssl_channel_credentials())  # Защищенный канал
+        self.symbols = self.get_securities()  # Получаем справочник тикеров (занимает несколько секунд)
 
         # Сервисы
         self.events_stub = EventsStub(self.channel)  # Сервис событий
@@ -95,7 +60,7 @@ class FinamPy:
         self.securities_stub = SecuritiesStub(self.channel)  # Сервис тикеров
         self.stops_stub = StopsStub(self.channel)  # Сервис стоп заявок
 
-        # События Finam Trade API
+        # События
         self.on_order = self.default_handler  # Заявка
         self.on_trade = self.default_handler  # Сделка
         self.on_order_book = self.default_handler  # Стакан
@@ -177,7 +142,7 @@ class FinamPy:
         return self.call_function(self.orders_stub.GetOrders, request)
 
     def new_order(self, client_id, security_board, security_code, buy_sell: common, quantity, use_credit=False, price: float = None,
-                  property: OrderProperty = OrderProperty.ORDER_PROPERTY_PUT_IN_QUEUE, condition: OrderCondition = None, valid_before: OrderValidBefore = None) -> Union[NewOrderResult, None]:
+                  order_property: OrderProperty = OrderProperty.ORDER_PROPERTY_PUT_IN_QUEUE, condition: OrderCondition = None, valid_before: OrderValidBefore = None) -> Union[NewOrderResult, None]:
         """Создать новую заявку
 
         :param str client_id: Идентификатор торгового счёта
@@ -189,7 +154,7 @@ class FinamPy:
         :param int quantity: Количество лотов инструмента для заявки
         :param bool use_credit: Использовать кредит. Недоступно для срочного рынка
         :param float price: Цена заявки. None для рыночной заявки
-        :param OrderProperty property: Поведение заявки при выставлении в стакан
+        :param OrderProperty order_property: Поведение заявки при выставлении в стакан
             ORDER_PROPERTY_PUT_IN_QUEUE - Неисполненная часть заявки помещается в очередь заявок Биржи
             ORDER_PROPERTY_CANCEL_BALANCE - (FOK) Неисполненная часть заявки снимается с торгов
             ORDER_PROPERTY_IMM_OR_CANCEL - (IOC) Сделки совершаются только в том случае, если заявка может быть удовлетворена полностью и сразу при выставлении
@@ -214,11 +179,11 @@ class FinamPy:
             time: Время действия заявки в UTC
         """
         if price:  # Если указана цена
-            request = NewOrderRequest(client_id=client_id, security_board=security_board, security_code=security_code, buy_sell=buy_sell, quantity=quantity, price=DoubleValue(value=price),
-                                      use_credit=use_credit, property=property, condition=condition, valid_before=valid_before)  # То выставляем лимитную заявку
+            request = NewOrderRequest(client_id=client_id, security_board=security_board, security_code=security_code, buy_sell=buy_sell, quantity=quantity, price=wrappers_pb2.DoubleValue(value=price),
+                                      use_credit=use_credit, property=order_property, condition=condition, valid_before=valid_before)  # То выставляем лимитную заявку
         else:  # Если цена не указана
             request = NewOrderRequest(client_id=client_id, security_board=security_board, security_code=security_code, buy_sell=buy_sell, quantity=quantity,
-                                      use_credit=use_credit, property=property, condition=condition, valid_before=valid_before)  # То выставляем рыночную заявку
+                                      use_credit=use_credit, property=order_property, condition=condition, valid_before=valid_before)  # То выставляем рыночную заявку
         return self.call_function(self.orders_stub.NewOrder, request)
 
     def cancel_order(self, client_id, transaction_id) -> Union[CancelOrderResult, None]:
@@ -270,7 +235,7 @@ class FinamPy:
 
     def new_stop(self, client_id, security_board, security_code, buy_sell: common,
                  stop_loss: StopLoss = None, take_profit: TakeProfit = None,
-                 expiration_date: Timestamp = None, link_order=None, valid_before: common.OrderValidBefore = None) -> Union[NewStopResult, None]:
+                 expiration_date: timestamp_pb2.Timestamp = None, link_order=None, valid_before: common.OrderValidBefore = None) -> Union[NewStopResult, None]:
         """Выставляет стоп-заявку
 
         :param str client_id: Идентификатор торгового счёта
@@ -333,14 +298,96 @@ class FinamPy:
         request = CancelStopRequest(client_id=client_id, stop_id=stop_id)
         return self.call_function(self.stops_stub.CancelStop, request)
 
+    # Поток обработки подписок
+
+    def default_handler(self, event: Union[OrderEvent, TradeEvent, OrderBookEvent, PortfolioEvent, ResponseEvent]):
+        """Пустой обработчик события по умолчанию. Его можно заменить на пользовательский"""
+        pass
+
+    def request_iterator(self):
+        """Генератор запросов на подписку/отписку"""
+        while True:  # Будем пытаться читать из очереди до закрытии канала
+            yield self.subscription_queue.get()  # Возврат из этой функции. При повторном ее вызове исполнение продолжится с этой строки
+
+    def subscribtions_handler(self):
+        """Поток обработки подписок"""
+        events = self.events_stub.GetEvents(request_iterator=self.request_iterator(), metadata=self.metadata)  # Получаем значения подписок
+        try:
+            for event in events:  # Пробегаемся по значениям подписок до закрытия канала
+                e: Event = event  # Приводим пришедшее значение к подпискам
+                if e.order != OrderEvent():  # Если пришло событие с заявкой
+                    self.on_order(e.order)
+                if e.trade != TradeEvent():  # Если пришло событие со сделкой
+                    self.on_trade(e.trade)
+                if e.order_book != OrderBookEvent():  # Если пришло событие стакана
+                    self.on_order_book(e.order_book)
+                if e.portfolio != PortfolioEvent():  # Если пришло событие портфеля
+                    self.on_portfolio(e.portfolio)
+                if e.response != ResponseEvent:  # Если пришло событие результата выполнения запроса
+                    self.on_response(e.response)
+        except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
+            pass  # Все в порядке, ничего делать не нужно
+
     # Выход и закрытие
 
-    def close_subscriptions_thread(self):
-        """Закрытие потока подписок"""
-        self.channel.close()  # Принудительно закрываем канал
-
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close_subscriptions_thread()
+        self.close_channel()
 
     def __del__(self):
-        self.close_subscriptions_thread()
+        self.close_channel()
+
+    def close_channel(self):
+        """Закрытие канала"""
+        self.channel.close()
+
+    # Функции конвертации
+
+    def get_symbol_info(self, board, symbol) -> Union[Security, None]:
+        """Получение информации тикера
+
+        :param str board: Код площадки
+        :param str symbol: Тикер
+        :return: Значение из кэша или None, если тикер не найден
+        """
+        try:  # Пробуем
+            return next(item for item in self.symbols.securities if item.board == board and item.code == symbol)  # вернуть значение из справочника
+        except StopIteration:  # Если тикер не найден
+            print(f'Информация о {board}.{symbol} не найдена')
+            return None  # то возвращаем пустое значение
+
+    def data_name_to_board_symbol(self, dataname) -> tuple[str, str]:
+        """код площадки и тикера из названия тикера
+
+        :param str dataname: Название тикера
+        :return: Код площадки и тикер
+        """
+        symbol_parts = dataname.split('.')  # По разделителю пытаемся разбить тикер на части
+        if len(symbol_parts) >= 2:  # Если тикер задан в формате <Код площадки>.<Код тикера>
+            board = symbol_parts[0]  # Код площадки
+            symbol = '.'.join(symbol_parts[1:])  # Код тикера
+        else:  # Если тикер задан без площадки
+            symbol = dataname  # Код тикера
+            try:  # Пробуем по тикеру получить площадку
+                board = next(item.board for item in self.symbols.securities if item.code == symbol)  # Получаем код площадки первого совпадающего тикера
+            except StopIteration:  # Если площадка не найдена
+                board = None  # то возвращаем пустое значение
+        return board, symbol  # Возвращаем код площадки и код тикера
+
+    @staticmethod
+    def board_symbol_to_data_name(board, symbol) -> str:
+        """Название тикера из кода площадки и тикера
+
+        :param str board: Код площадки
+        :param str symbol: Тикер
+        :return: Название тикера
+        """
+        return f'{board}.{symbol}'
+
+    def utc_to_msk_datetime(self, dt) -> datetime:
+        """Перевод времени из UTC в московское
+
+        :param datetime dt: Время UTC
+        :return: Московское время
+        """
+        dt_msk = utc.localize(dt).astimezone(self.tz_msk)  # Переводим UTC в МСК
+        return dt_msk.replace(tzinfo=None)  # Убираем временнУю зону

@@ -25,4 +25,4 @@ if __name__ == '__main__':  # Точка входа при запуске это
     # Выход
     input('Enter - выход\n')
     fp_provider.unsubscribe_order_book('orderbook1', 'SBER', 'TQBR')  # Отписываемся от стакана тикера
-    fp_provider.close_subscriptions_thread()  # Закрываем поток подписок перед выходом
+    fp_provider.close_channel()  # Закрываем канал перед выходом
