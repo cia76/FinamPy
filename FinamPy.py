@@ -51,7 +51,6 @@ class FinamPy:
         """
         self.metadata = [('x-api-key', access_token)]  # Торговый токен доступа
         self.channel = secure_channel(self.server, ssl_channel_credentials())  # Защищенный канал
-        self.symbols = self.get_securities()  # Получаем справочник тикеров (занимает несколько секунд)
 
         # Сервисы
         self.events_stub = EventsStub(self.channel)  # Сервис событий
@@ -70,6 +69,8 @@ class FinamPy:
         self.subscription_queue: SimpleQueue[SubscriptionRequest] = SimpleQueue()  # Буфер команд на подписку/отписку
         self.subscriptions_thread = Thread(target=self.subscriptions_handler, name='SubscriptionsThread')  # Создаем поток обработки подписок
         self.subscriptions_thread.start()  # Запускаем поток
+
+        self.symbols = self.get_securities()  # Получаем справочник тикеров (занимает несколько секунд)
 
     # Запросы
 
