@@ -6,8 +6,8 @@ from threading import Thread  # Поток обработки подписок
 from queue import SimpleQueue  # Очередь подписок/отписок
 
 from grpc import ssl_channel_credentials, secure_channel, RpcError  # Защищенный канал
-import google.protobuf.timestamp_pb2 as timestamp_pb2  # Представление времени
-import google.protobuf.wrappers_pb2 as wrappers_pb2  # Представление цены
+from google.protobuf.timestamp_pb2 import Timestamp  # Представление времени
+from google.protobuf.wrappers_pb2 import DoubleValue  # Представление цены
 from .proto.tradeapi.v1 import common_pb2 as common  # Покупка/продажа
 from .proto.tradeapi.v1.common_pb2 import Market, OrderValidBefore, ResponseEvent  # Рынки и событие результата выполнения запроса
 from .proto.tradeapi.v1.security_pb2 import Security  # Тикер
@@ -179,7 +179,7 @@ class FinamPy:
             time: Время действия заявки в UTC
         """
         if price:  # Если указана цена
-            request = NewOrderRequest(client_id=client_id, security_board=security_board, security_code=security_code, buy_sell=buy_sell, quantity=quantity, price=wrappers_pb2.DoubleValue(value=price),
+            request = NewOrderRequest(client_id=client_id, security_board=security_board, security_code=security_code, buy_sell=buy_sell, quantity=quantity, price=DoubleValue(value=price),
                                       use_credit=use_credit, property=order_property, condition=condition, valid_before=valid_before)  # То выставляем лимитную заявку
         else:  # Если цена не указана
             request = NewOrderRequest(client_id=client_id, security_board=security_board, security_code=security_code, buy_sell=buy_sell, quantity=quantity,
@@ -235,7 +235,7 @@ class FinamPy:
 
     def new_stop(self, client_id, security_board, security_code, buy_sell: common,
                  stop_loss: StopLoss = None, take_profit: TakeProfit = None,
-                 expiration_date: timestamp_pb2.Timestamp = None, link_order=None, valid_before: common.OrderValidBefore = None) -> Union[NewStopResult, None]:
+                 expiration_date: Timestamp = None, link_order=None, valid_before: common.OrderValidBefore = None) -> Union[NewStopResult, None]:
         """Выставляет стоп-заявку
 
         :param str client_id: Идентификатор торгового счёта
@@ -355,7 +355,7 @@ class FinamPy:
             print(f'Информация о {board}.{symbol} не найдена')
             return None  # то возвращаем пустое значение
 
-    def data_name_to_board_symbol(self, dataname) -> tuple[str, str]:
+    def dataname_to_board_symbol(self, dataname) -> tuple[str, str]:
         """код площадки и тикера из названия тикера
 
         :param str dataname: Название тикера
@@ -374,7 +374,7 @@ class FinamPy:
         return board, symbol  # Возвращаем код площадки и код тикера
 
     @staticmethod
-    def board_symbol_to_data_name(board, symbol) -> str:
+    def board_symbol_to_dataname(board, symbol) -> str:
         """Название тикера из кода площадки и тикера
 
         :param str board: Код площадки
