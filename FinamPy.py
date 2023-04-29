@@ -68,7 +68,7 @@ class FinamPy:
         self.on_response = self.default_handler  # Результат выполнения запроса
 
         self.subscription_queue: SimpleQueue[SubscriptionRequest] = SimpleQueue()  # Буфер команд на подписку/отписку
-        self.subscriptions_thread = Thread(target=self.subscribtions_handler, name='SubscriptionsThread')  # Создаем поток обработки подписок
+        self.subscriptions_thread = Thread(target=self.subscriptions_handler, name='SubscriptionsThread')  # Создаем поток обработки подписок
         self.subscriptions_thread.start()  # Запускаем поток
 
     # Запросы
@@ -309,7 +309,7 @@ class FinamPy:
         while True:  # Будем пытаться читать из очереди до закрытии канала
             yield self.subscription_queue.get()  # Возврат из этой функции. При повторном ее вызове исполнение продолжится с этой строки
 
-    def subscribtions_handler(self):
+    def subscriptions_handler(self):
         """Поток обработки подписок"""
         events = self.events_stub.GetEvents(request_iterator=self.request_iterator(), metadata=self.metadata)  # Получаем значения подписок
         try:
