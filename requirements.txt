@@ -2,3 +2,4 @@ requests
 pytz
 grpcio
 protobuf
+types-protobuf
