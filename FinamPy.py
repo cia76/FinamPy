@@ -53,7 +53,6 @@ class FinamPy:
         self.channel = secure_channel(self.server, ssl_channel_credentials())  # Защищенный канал
 
         # Сервисы
-        self.events_stub = EventsStub(self.channel)  # Сервис событий
         self.orders_stub = OrdersStub(self.channel)  # Сервис заявок
         self.portfolios_stub = PortfoliosStub(self.channel)  # Сервис портфелей
         self.securities_stub = SecuritiesStub(self.channel)  # Сервис тикеров
@@ -67,8 +66,7 @@ class FinamPy:
         self.on_response = self.default_handler  # Результат выполнения запроса
 
         self.subscription_queue: SimpleQueue[SubscriptionRequest] = SimpleQueue()  # Буфер команд на подписку/отписку
-        self.subscriptions_thread = Thread(target=self.subscriptions_handler, name='SubscriptionsThread')  # Создаем поток обработки подписок
-        self.subscriptions_thread.start()  # Запускаем поток
+        self.subscriptions_thread = None  # Поток обработки подписок создадим позже
 
         self.symbols = self.get_securities()  # Получаем справочник тикеров (занимает несколько секунд)
 
@@ -93,8 +91,12 @@ class FinamPy:
         """
         if not request_id:  # Если идентификатор запроса не указан
             request_id = str(uuid4())  # то создаем его из уникального идентификатора
-        self.subscription_queue.put(SubscriptionRequest(order_book_subscribe_request=OrderBookSubscribeRequest(
-            request_id=request_id, security_code=security_code, security_board=security_board)))
+        if not self.subscriptions_thread:  # Если еще нет потока обработки подписок
+            self.subscriptions_thread = Thread(target=self.subscriptions_handler, name='SubscriptionsThread')  # Создаем поток обработки подписок
+            self.subscriptions_thread.start()  # Запускаем поток
+        request = SubscriptionRequest(order_book_subscribe_request=OrderBookSubscribeRequest(
+            request_id=request_id, security_code=security_code, security_board=security_board))
+        self.subscription_queue.put(request)  # Отправляем в очередь на отправку
         return request_id
 
     def unsubscribe_order_book(self, request_id, security_code, security_board):
@@ -104,8 +106,9 @@ class FinamPy:
         :param str security_code: Тикер инструмента
         :param str security_board: Режим торгов
         """
-        self.subscription_queue.put(SubscriptionRequest(order_book_unsubscribe_request=OrderBookUnsubscribeRequest(
-            request_id=request_id, security_code=security_code, security_board=security_board)))
+        request = SubscriptionRequest(order_book_unsubscribe_request=OrderBookUnsubscribeRequest(
+            request_id=request_id, security_code=security_code, security_board=security_board))
+        self.subscription_queue.put(request)  # Отправляем в очередь на отправку
 
     def subscribe_order_trade(self, client_ids, include_trades=True, include_orders=True, request_id=None) -> str:
         """Запрос подписки на ордера и сделки
@@ -117,8 +120,12 @@ class FinamPy:
         """
         if not request_id:  # Если идентификатор запроса не указан
             request_id = str(uuid4())  # то создаем его из уникального идентификатора
-        self.subscription_queue.put(SubscriptionRequest(order_trade_subscribe_request=OrderTradeSubscribeRequest(
-            request_id=request_id, client_ids=client_ids, include_trades=include_trades, include_orders=include_orders)))
+        if not self.subscriptions_thread:  # Если еще нет потока обработки подписок
+            self.subscriptions_thread = Thread(target=self.subscriptions_handler, name='SubscriptionsThread')  # Создаем поток обработки подписок
+            self.subscriptions_thread.start()  # Запускаем поток
+        request = SubscriptionRequest(order_trade_subscribe_request=OrderTradeSubscribeRequest(
+            request_id=request_id, client_ids=client_ids, include_trades=include_trades, include_orders=include_orders))
+        self.subscription_queue.put(request)  # Отправляем в очередь на отправку
         return request_id
 
     def unsubscribe_order_trade(self, request_id):
@@ -126,8 +133,9 @@ class FinamPy:
 
         :param str request_id: Идентификатор запроса
         """
-        self.subscription_queue.put(SubscriptionRequest(order_trade_unsubscribe_request=OrderTradeUnsubscribeRequest(
-            request_id=request_id)))
+        request = SubscriptionRequest(order_trade_unsubscribe_request=OrderTradeUnsubscribeRequest(
+            request_id=request_id))
+        self.subscription_queue.put(request)  # Отправляем в очередь на отправку
 
     # Orders
 
@@ -312,7 +320,8 @@ class FinamPy:
 
     def subscriptions_handler(self):
         """Поток обработки подписок"""
-        events = self.events_stub.GetEvents(request_iterator=self.request_iterator(), metadata=self.metadata)  # Получаем значения подписок
+        events_stub = EventsStub(self.channel)  # Сервис событий (подписок)
+        events = events_stub.GetEvents(request_iterator=self.request_iterator(), metadata=self.metadata)  # Получаем значения подписок
         try:
             for event in events:  # Пробегаемся по значениям подписок до закрытия канала
                 e: Event = event  # Приводим пришедшее значение к подпискам
@@ -327,7 +336,7 @@ class FinamPy:
                 if e.response != ResponseEvent:  # Если пришло событие результата выполнения запроса
                     self.on_response(e.response)
         except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
-            pass  # Все в порядке, ничего делать не нужно
+            self.subscriptions_thread = None  # Сбрасываем поток обработки подписок. Запустим его снова на новой подписке
 
     # Выход и закрытие
 
