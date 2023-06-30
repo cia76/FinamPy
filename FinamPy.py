@@ -1,16 +1,21 @@
 from datetime import datetime
 from typing import Union  # Объединение типов
 from uuid import uuid4  # Номера подписок должны быть уникальными во времени и пространстве
+
+import pytz
 from pytz import timezone, utc  # Работаем с временнОй зоной и UTC
 from threading import Thread  # Поток обработки подписок
 from queue import SimpleQueue  # Очередь подписок/отписок
-
 from grpc import ssl_channel_credentials, secure_channel, RpcError  # Защищенный канал
+
 from google.protobuf.timestamp_pb2 import Timestamp  # Представление времени
 from google.protobuf.wrappers_pb2 import DoubleValue  # Представление цены
 from .proto.tradeapi.v1 import common_pb2 as common  # Покупка/продажа
 from .proto.tradeapi.v1.common_pb2 import Market, OrderValidBefore, ResponseEvent  # Рынки и событие результата выполнения запроса
 from .proto.tradeapi.v1.security_pb2 import Security  # Тикер
+from .proto.tradeapi.v1.candles_pb2 import (
+    DayCandleTimeFrame, DayCandleInterval, GetDayCandlesRequest, GetDayCandlesResult,
+    IntradayCandleTimeFrame, IntradayCandleInterval, GetIntradayCandlesRequest, GetIntradayCandlesResult)  # Свечи
 from .proto.tradeapi.v1.events_pb2 import (
     SubscriptionRequest, OrderBookSubscribeRequest, OrderBookUnsubscribeRequest, OrderTradeSubscribeRequest, OrderTradeUnsubscribeRequest,
     Event, OrderEvent, TradeEvent, OrderBookEvent, PortfolioEvent)  # Запросы и события подписок
@@ -19,6 +24,7 @@ from .proto.tradeapi.v1.orders_pb2 import (
     GetOrdersRequest, GetOrdersResult,
     OrderProperty, OrderCondition, NewOrderRequest, NewOrderResult,
     CancelOrderRequest, CancelOrderResult)  # Заявки
+from .grpc.tradeapi.v1.candles_pb2_grpc import CandlesStub  # Сервис свечей
 from .grpc.tradeapi.v1.orders_pb2_grpc import OrdersStub  # Сервис заявок
 from .proto.tradeapi.v1.portfolios_pb2 import PortfolioContent, GetPortfolioRequest, GetPortfolioResult  # Портфель
 from .grpc.tradeapi.v1.portfolios_pb2_grpc import PortfoliosStub  # Сервис портфелей
@@ -53,6 +59,7 @@ class FinamPy:
         self.channel = secure_channel(self.server, ssl_channel_credentials())  # Защищенный канал
 
         # Сервисы
+        self.candles_stub = CandlesStub(self.channel)  # Сервис свечей
         self.orders_stub = OrdersStub(self.channel)  # Сервис заявок
         self.portfolios_stub = PortfoliosStub(self.channel)  # Сервис портфелей
         self.securities_stub = SecuritiesStub(self.channel)  # Сервис тикеров
@@ -79,6 +86,42 @@ class FinamPy:
             return response  # и вернуть ответ
         except RpcError:  # Если получили ошибку канала
             return None  # то возвращаем пустое значение
+
+    # Candles
+
+    def get_day_candles(self, security_board, security_code, time_frame, interval) -> GetDayCandlesResult:
+        """Запрос дневных/недельных свечей
+        :param str security_board: Режим торгов
+        :param str security_code: Тикер инструмента
+        :param DayCandleTimeFrame time_frame: Временной интервал дневной свечи
+            DAYCANDLE_TIMEFRAME_D1 - 1 день
+            DAYCANDLE_TIMEFRAME_W1 - 1 неделя
+        :param DayCandleInterval interval: Интервал запроса дневных свечей. Максимум 365 дней
+            setattr(DayCandleInterval, 'from', <Дата начала в формате yyyy-MM-dd в часовом поясе UTC>)
+            to - Дата окончания в формате yyyy-MM-dd в часовом поясе UTC
+            count - Кол-во свечей. Максимум 500
+        """
+        request = GetDayCandlesRequest(security_board=security_board, security_code=security_code,
+                                       time_frame=time_frame, interval=interval)
+        return self.call_function(self.candles_stub.GetDayCandles, request)
+
+    def get_intraday_candles(self, security_board, security_code, time_frame, interval) -> GetIntradayCandlesResult:
+        """Запрос внутридневных свечей
+        :param str security_board: Режим торгов
+        :param str security_code: Тикер инструмента
+        :param IntradayCandleTimeFrame time_frame: Временной интервал внутридневной свечи
+            INTRADAYCANDLE_TIMEFRAME_M1 - 1 минута
+            INTRADAYCANDLE_TIMEFRAME_M5 - 5 минут
+            INTRADAYCANDLE_TIMEFRAME_M15 - 15 минут
+            INTRADAYCANDLE_TIMEFRAME_H1 - 1 час
+        :param IntradayCandleInterval interval: Интервал запроса внутридневных свечей. Максимум 30 дней
+            setattr(DayCandleInterval, 'from', <Дата начала в формате yyyy-MM-ddTHH:mm:ssZ в часовом поясе UTC>)
+            to - Дата окончания в формате yyyy-MM-ddTHH:mm:ssZ в часовом поясе UTC
+            count - Кол-во свечей. Максимум 500
+        """
+        request = GetIntradayCandlesRequest(security_board=security_board, security_code=security_code,
+                                            time_frame=time_frame, interval=interval)
+        return self.call_function(self.candles_stub.GetIntradayCandles, request)
 
     # Events
 
@@ -205,6 +248,8 @@ class FinamPy:
         return self.call_function(self.orders_stub.CancelOrder, request)
 
         # Portfolios
+
+    # Portfolios
 
     def get_portfolio(self, client_id, include_currencies=True, include_money=True, include_positions=True, include_max_buy_sell=True) -> Union[GetPortfolioResult, None]:
         """Возвращает портфель
@@ -393,11 +438,24 @@ class FinamPy:
         """
         return f'{board}.{symbol}'
 
-    def utc_to_msk_datetime(self, dt) -> datetime:
+    def utc_to_msk_datetime(self, dt, tzinfo=False) -> datetime:
         """Перевод времени из UTC в московское
 
         :param datetime dt: Время UTC
+        :param bool tzinfo: Отображать временнУю зону
         :return: Московское время
         """
-        dt_msk = utc.localize(dt).astimezone(self.tz_msk)  # Переводим UTC в МСК
-        return dt_msk.replace(tzinfo=None)  # Убираем временнУю зону
+        dt_utc = utc.localize(dt)  # Задаем временнУю зону UTC
+        dt_msk = dt_utc.astimezone(self.tz_msk)  # Переводим в МСК
+        return dt_msk if tzinfo else dt_msk.replace(tzinfo=None)
+
+    def msk_to_utc_datetime(self, dt, tzinfo=False) -> datetime:
+        """Перевод времени из московского в UTC
+
+        :param datetime dt: Московское время
+        :param bool tzinfo: Отображать временнУю зону
+        :return: Время UTC
+        """
+        dt_msk = self.tz_msk.localize(dt)  # Задаем временнУю зону МСК
+        dt_utc = dt_msk.astimezone(pytz.utc)  # Переводим в UTC
+        return dt_utc if tzinfo else dt_utc.replace(tzinfo=None)

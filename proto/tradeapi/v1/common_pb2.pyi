@@ -273,3 +273,34 @@ class OrderValidBefore(google.protobuf.message.Message):
     def ClearField(self, field_name: typing_extensions.Literal["time", b"time", "type", b"type"]) -> None: ...
 
 global___OrderValidBefore = OrderValidBefore
+
+@typing_extensions.final
+class Decimal(google.protobuf.message.Message):
+    """Real number with fixed precision (including integers).
+    The total value is calculated as follows: num * 10^-scale.
+    https://en.wikipedia.org/wiki/Scientific_notation
+    Example:
+    The number "250.655" is Decimal type with num = 250655 and scale = 3, 250.655 = 250655 * 10^-3
+    """
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    NUM_FIELD_NUMBER: builtins.int
+    SCALE_FIELD_NUMBER: builtins.int
+    num: builtins.int
+    """Mantissa.
+    Мантисса.
+    """
+    scale: builtins.int
+    """exponent for base 10.
+    Экспонента.
+    """
+    def __init__(
+        self,
+        *,
+        num: builtins.int = ...,
+        scale: builtins.int = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["num", b"num", "scale", b"scale"]) -> None: ...
+
+global___Decimal = Decimal

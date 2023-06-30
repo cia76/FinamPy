@@ -1,8 +1,9 @@
 from FinamPy.FinamPy import FinamPy
 from FinamPy.Config import Config
 
+
 if __name__ == '__main__':  # Точка входа при запуске этого скрипта
-    fp_provider = FinamPy(Config.AccessToken)  # Подключаемся к торговому счету
+    fp_provider = FinamPy(Config.AccessToken)  # Подключаемся
     for client_id in Config.ClientIds:  # Пробегаемся по всем счетам
         print(f'Учетная запись: {client_id}')
         portfolio = fp_provider.get_portfolio(client_id)  # Получаем портфель
@@ -20,5 +21,4 @@ if __name__ == '__main__':  # Точка входа при запуске это
         stop_orders = fp_provider.get_stops(client_id).stops  # Получаем стоп заявки
         for stop_order in stop_orders:  # Пробегаемся по всем стоп заявкам
             print(f'  - Стоп заявка номер {stop_order.stop_id} {"Покупка" if stop_order.buy_sell == "Buy" else "Продажа"} {stop_order.security_board}.{stop_order.security_code} {stop_order.stop_loss.quantity} @ {stop_order.stop_loss.price}')
-
     fp_provider.close_channel()  # Закрываем канал перед выходом
