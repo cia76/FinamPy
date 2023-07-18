@@ -96,9 +96,6 @@ def save_candles_to_file(security_board='TQBR', security_codes=('SBER',), time_f
         pd_bars = pd.DataFrame(new_bars_list)  # Список новых бар -> DtatFrame
         pd_bars.index = pd_bars['datetime']  # В индекс ставим дату
         pd_bars = pd_bars[['open', 'high', 'low', 'close', 'volume']]  # Отбираем нужные колонки
-        print(f'- Первая запись в Finam: {pd_bars.index[0]}')
-        print(f'- Последняя запись в Finam: {pd_bars.index[-1]}')
-        print(f'- Кол-во записей в Finam: {len(pd_bars)}')
         if not file_exists and skip_first_date:  # Если файла нет, и убираем бары на первую дату
             len_with_first_date = len(pd_bars)  # Кол-во баров до удаления на первую дату
             first_date = pd_bars.index[0].date()  # Первая дата
@@ -113,6 +110,12 @@ def save_candles_to_file(security_board='TQBR', security_codes=('SBER',), time_f
             len_with_doji = len(pd_bars)  # Кол-во баров до удаления дожи
             pd_bars.drop(pd_bars[(pd_bars.high == pd_bars.low)].index, inplace=True)  # Удаляем их по условия High == Low
             print('- Удалено дожи 4-х цен:', len_with_doji - len(pd_bars))
+        if len(pd_bars) == 0:  # Если нечего объединять
+            print('Новых записей нет')
+            continue  # то переходим к следующему тикеру, дальше не продолжаем
+        print(f'- Первая запись в Finam: {pd_bars.index[0]}')
+        print(f'- Последняя запись в Finam: {pd_bars.index[-1]}')
+        print(f'- Кол-во записей в Finam: {len(pd_bars)}')
         if file_exists:  # Если файл существует
             pd_bars = pd.concat([file_bars, pd_bars]).drop_duplicates(keep='last').sort_index()  # Объединяем файл с данными из Finam, убираем дубликаты, сортируем заново
         pd_bars.to_csv(file_name, sep='\t', date_format='%d.%m.%Y %H:%M')
@@ -129,8 +132,8 @@ if __name__ == '__main__':  # Точка входа при запуске это
                       'MOEX', 'SMLT', 'MAGN', 'CHMF', 'CBOM', 'MTLRP', 'SNGS', 'BANEP', 'MTSS', 'IRAO',
                       'SNGSP', 'SELG', 'UPRO', 'RUAL', 'TRNFP', 'FEES', 'SGZH', 'BANE', 'PHOR', 'PIKK')  # TOP 40 акций ММВБ
     # security_codes = ('SBER',)  # Для тестов
-    datapath = '../../DataFinam/'  # Путь к файлам (Linux)
-    # datapath = '..\\..\\DataFinam\\'  # Путь к файлам (Windows)
+    # datapath = '../../DataFinam/'  # Путь к файлам (Linux)
+    datapath = '..\\..\\DataFinam\\'  # Путь к файлам (Windows)
 
     skip_last_date = True  # Если получаем данные внутри сессии, то не берем бары за дату незавершенной сессии
     # skip_last_date = False  # Если получаем данные, когда рынок не работает, то берем все бары
