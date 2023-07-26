@@ -132,8 +132,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
                       'MOEX', 'SMLT', 'MAGN', 'CHMF', 'CBOM', 'MTLRP', 'SNGS', 'BANEP', 'MTSS', 'IRAO',
                       'SNGSP', 'SELG', 'UPRO', 'RUAL', 'TRNFP', 'FEES', 'SGZH', 'BANE', 'PHOR', 'PIKK')  # TOP 40 акций ММВБ
     # security_codes = ('SBER',)  # Для тестов
-    # datapath = '../../DataFinam/'  # Путь к файлам (Linux)
-    datapath = '..\\..\\DataFinam\\'  # Путь к файлам (Windows)
+    datapath = os.path.join('..', '..', 'DataFinam', '')  # Путь сохранения файлов для Windows/Linux
 
     skip_last_date = True  # Если получаем данные внутри сессии, то не берем бары за дату незавершенной сессии
     # skip_last_date = False  # Если получаем данные, когда рынок не работает, то берем все бары
