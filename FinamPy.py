@@ -438,6 +438,32 @@ class FinamPy:
         """
         return f'{board}.{symbol}'
 
+    def price_to_finam_price(self, board, symbol, price) -> float:
+        """Перевод цены в цену Финам
+
+        :param str board: Код площадки
+        :param str symbol: Тикер
+        :param float price: Цена
+        :return: Цена в Финам
+        """
+        si = self.get_symbol_info(board, symbol)  # Информация о тикере
+        if board == 'TQOB':  # Для рынка облигаций
+            price /= 10  # цену делим на 10
+        return round(price, si.decimals)  # Округляем цену
+
+    def finam_price_to_price(self, board, symbol, price) -> float:
+        """Перевод цены Финам в цену
+
+        :param str board: Код площадки
+        :param str symbol: Тикер
+        :param float price: Цена в Финам
+        :return: Цена
+        """
+        si = self.get_symbol_info(board, symbol)  # Информация о тикере
+        if board == 'TQOB':  # Для рынка облигаций
+            price *= 10  # цену умножаем на 10
+        return price
+
     def utc_to_msk_datetime(self, dt, tzinfo=False) -> datetime:
         """Перевод времени из UTC в московское
 
