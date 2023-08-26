@@ -133,7 +133,7 @@ class FinamPy:
         :param str request_id: Идентификатор запроса
         """
         if not request_id:  # Если идентификатор запроса не указан
-            request_id = str(uuid4())  # то создаем его из уникального идентификатора
+            request_id = uuid4().hex[:16].upper()  # то создаем его из первых 16-и символов уникального идентификатора
         if not self.subscriptions_thread:  # Если еще нет потока обработки подписок
             self.subscriptions_thread = Thread(target=self.subscriptions_handler, name='SubscriptionsThread')  # Создаем поток обработки подписок
             self.subscriptions_thread.start()  # Запускаем поток
@@ -162,7 +162,7 @@ class FinamPy:
         :param str request_id: Идентификатор запроса
         """
         if not request_id:  # Если идентификатор запроса не указан
-            request_id = str(uuid4())  # то создаем его из уникального идентификатора
+            request_id = uuid4().hex[:16].upper()  # то создаем его из первых 16-и символов уникального идентификатора
         if not self.subscriptions_thread:  # Если еще нет потока обработки подписок
             self.subscriptions_thread = Thread(target=self.subscriptions_handler, name='SubscriptionsThread')  # Создаем поток обработки подписок
             self.subscriptions_thread.start()  # Запускаем поток
