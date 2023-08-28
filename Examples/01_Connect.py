@@ -11,7 +11,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
     # Проверяем работу запрос/ответ
     # TODO Ждем от Финама функцию получения времени на сервере. Пока выдаем информацию о тикере
     print(f'\nДанные тикера: {board}.{code}')
-    securities = fp_provider.symbols  # Получаем информацию обо всех тикерах
+    securities = fp_provider.symbols  # Получаем справочник всех тикеров из провайдера
     # print('Ответ от сервера:', securities)
     try:  # Пытаемся найти тикер
         si = next(item for item in securities.securities if item.board == board and item.code == code)
