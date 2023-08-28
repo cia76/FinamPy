@@ -8,7 +8,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
     symbols = (('TQBR', 'SBER'), ('TQBR', 'VTBR'), ('FUT', 'SiU3'), ('FUT', 'RIU3'))  # Кортеж тикеров в виде (код площадки, код тикера)
 
     print('Получаем информацию обо всех тикерах (займет несколько секунд)...')
-    securities = fp_provider.get_securities()  # Получаем информацию обо всех тикерах
+    securities = fp_provider.symbols  # Получаем информацию обо всех тикерах
     # print('Ответ от сервера:', securities)
     if securities:  # Если получили тикеры
         for board, code in symbols:  # Пробегаемся по всем тикерам
