@@ -50,7 +50,7 @@ def save_candles_to_file(security_board='TQBR', security_codes=('SBER',), time_f
             file_bars = pd.read_csv(file_name, sep='\t')  # Считываем файл в DataFrame
             file_bars['datetime'] = pd.to_datetime(file_bars['datetime'], format='%d.%m.%Y %H:%M')  # Переводим дату/время в формат datetime
             file_bars.index = file_bars['datetime']  # Она и будет индексом
-            last_date: datetime = file_bars.index[-1]  # Дата/время последнего бара
+            last_date: datetime = file_bars.index[-1]  # Дата и время последнего бара
             print(f'- Первая запись файла: {file_bars.index[0]}')
             print(f'- Последняя запись файла: {last_date}')
             print(f'- Кол-во записей в файле: {len(file_bars)}')
@@ -88,7 +88,7 @@ def save_candles_to_file(security_board='TQBR', security_codes=('SBER',), time_f
                 close = round(int(new_bar['close']['num']) * 10 ** -int(new_bar['close']['scale']), int(new_bar['close']['scale']))
                 volume = new_bar['volume']
                 new_bars_list.append({'datetime': dt, 'open': open_, 'high': high, 'low': low, 'close': close, 'volume': volume})
-            print(new_bars_list[-1]['datetime'])  # Последняя дата/время полученных баров
+            print(new_bars_list[-1]['datetime'])  # Последняя дата и время полученных баров
             next_utc_bar_date = fp_provider.msk_to_utc_datetime(new_bars_list[-1]['datetime'] + timedelta(minutes=1), True) if intraday else\
                 new_bars_list[-1]['datetime'] + timedelta(days=1)  # Смещаем время на возможный следующий бар по UTC
         if len(new_bars_list) == 0:  # Если новых записей нет
@@ -96,7 +96,7 @@ def save_candles_to_file(security_board='TQBR', security_codes=('SBER',), time_f
             continue  # то переходим к следующему тикеру, дальше не продолжаем
         pd_bars = pd.DataFrame(new_bars_list)  # Список новых бар -> DataFrame
         pd_bars.index = pd_bars['datetime']  # В индекс ставим дату/время
-        pd_bars = pd_bars[['datetime', 'open', 'high', 'low', 'close', 'volume']]  # Отбираем нужные колонки. Дата/время нужна, чтобы не удалять одинаковые OHLCV на разное время
+        pd_bars = pd_bars[['datetime', 'open', 'high', 'low', 'close', 'volume']]  # Отбираем нужные колонки. Дата и время нужна, чтобы не удалять одинаковые OHLCV на разное время
         if not file_exists and skip_first_date:  # Если файла нет, и убираем бары на первую дату
             len_with_first_date = len(pd_bars)  # Кол-во баров до удаления на первую дату
             first_date = pd_bars.index[0].date()  # Первая дата
@@ -119,7 +119,7 @@ def save_candles_to_file(security_board='TQBR', security_codes=('SBER',), time_f
         print(f'- Кол-во записей в Finam: {len(pd_bars)}')
         if file_exists:  # Если файл существует
             pd_bars = pd.concat([file_bars, pd_bars]).drop_duplicates(keep='last').sort_index()  # Объединяем файл с данными из Finam, убираем дубликаты, сортируем заново
-        pd_bars = pd_bars[['open', 'high', 'low', 'close', 'volume']]  # Отбираем нужные колонки. Дата/время будет экспортирована как индекс
+        pd_bars = pd_bars[['open', 'high', 'low', 'close', 'volume']]  # Отбираем нужные колонки. Дата и время будет экспортирована как индекс
         pd_bars.to_csv(file_name, sep='\t', date_format='%d.%m.%Y %H:%M')
         print(f'- В файл {file_name} сохранено записей: {len(pd_bars)}')
 

@@ -459,7 +459,7 @@ class FinamPy:
         :param float price: Цена в Финам
         :return: Цена
         """
-        si = self.get_symbol_info(board, symbol)  # Информация о тикере
+        # si = self.get_symbol_info(board, symbol)  # Информация о тикере (возможно, потребуется в будущем)
         if board == 'TQOB':  # Для рынка облигаций
             price *= 10  # цену умножаем на 10
         return price
