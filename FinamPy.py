@@ -91,6 +91,7 @@ class FinamPy:
 
     def get_day_candles(self, security_board, security_code, time_frame, interval) -> GetDayCandlesResult:
         """Запрос дневных/недельных свечей
+
         :param str security_board: Режим торгов
         :param str security_code: Тикер инструмента
         :param DayCandleTimeFrame time_frame: Временной интервал дневной свечи
@@ -107,6 +108,7 @@ class FinamPy:
 
     def get_intraday_candles(self, security_board, security_code, time_frame, interval) -> GetIntradayCandlesResult:
         """Запрос внутридневных свечей
+
         :param str security_board: Режим торгов
         :param str security_code: Тикер инструмента
         :param IntradayCandleTimeFrame time_frame: Временной интервал внутридневной свечи
