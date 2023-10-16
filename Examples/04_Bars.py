@@ -42,9 +42,8 @@ def save_candles_to_file(security_board='TQBR', security_codes=('SBER',), intrad
     if not tf:  # Если временной интервал задан неверно
         print('Временной интервал задан неверно')
         return  # то выходим, дальше не продолжаем
-    interval = IntradayCandleInterval(count=500) if intraday else DayCandleInterval(count=500)  # Нужно поставить максимальное кол-во баров. Максимум, можно поставить 500
     max_requests = 120  # Максимальное кол-во запросов в минуту
-    requests = 0  # Кол-во запросов
+    requests = 0  # Выполненное кол-во запросов в минуту
     next_run = datetime.now()  # Время следующего запуска запросов
     for security_code in security_codes:  # Пробегаемся по всем тикерам
         file_bars = None  # Дальше будем пытаться получить бары из файла
@@ -68,28 +67,34 @@ def save_candles_to_file(security_board='TQBR', security_codes=('SBER',), intrad
         new_bars_list = []  # Список новых бар
         todate_utc = datetime.utcnow().replace(tzinfo=timezone.utc)  # Будем получать бары до текущей даты и времени UTC
         td = timedelta(days=30) if intraday else timedelta(days=365)  # Внутри дня максимальный запрос за 30 дней. Для дней и выше - 365 дней
+        interval = IntradayCandleInterval(count=500) if intraday else DayCandleInterval(count=500)  # Нужно поставить максимальное кол-во баров. Максимум, можно поставить 500
         from_ = getattr(interval, 'from')  # Т.к. from - ключевое слово в Python, то получаем атрибут from из атрибута интервала
         to_ = getattr(interval, 'to')  # Аналогично будем работать с атрибутом to для единообразия
+        first_request = not file_exists  # Если файл не существует, то первый запрос будем формировать без даты окончания. Так мы в первом запросе получим первые бары истории
         while True:  # Будем получать бары пока не получим все
             todate_min_utc = min(todate_utc, next_bar_open_utc + td)  # До какой даты можем делать запрос
             if intraday:  # Для интрадея datetime -> Timestamp
                 from_.seconds = Timestamp(seconds=int(next_bar_open_utc.timestamp())).seconds  # Дата и время начала интервала UTC
-                to_.seconds = Timestamp(seconds=int(todate_min_utc.timestamp())).seconds  # Дата и время окончания интервала UTC
+                if not first_request:  # Для всех запросов, кроме первого
+                    to_.seconds = Timestamp(seconds=int(todate_min_utc.timestamp())).seconds  # Дата и время окончания интервала UTC
             else:  # Для дневных интервалов и выше datetime -> Date
                 date_from = Date(year=next_bar_open_utc.year, month=next_bar_open_utc.month, day=next_bar_open_utc.day)  # Дата начала интервала UTC
                 from_.year = date_from.year
                 from_.month = date_from.month
                 from_.day = date_from.day
-                date_to = Date(year=todate_min_utc.year, month=todate_min_utc.month, day=todate_min_utc.day)  # Дата окончания интервала UTC
-                to_.year = date_to.year
-                to_.month = date_to.month
-                to_.day = date_to.day
-            if requests == max_requests:  # Если превысили кол-во запросов в минуту
+                if not first_request:  # Для всех запросов, кроме первого
+                    date_to = Date(year=todate_min_utc.year, month=todate_min_utc.month, day=todate_min_utc.day)  # Дата окончания интервала UTC
+                    to_.year = date_to.year
+                    to_.month = date_to.month
+                    to_.day = date_to.day
+            if first_request:  # Для первого запроса
+                first_request = False  # далее будем ставить в запросы дату окончания интервала
+            if requests == max_requests:  # Если достигли допустимого кол-ва запросов в минуту
                 sleep_seconds = (next_run - datetime.now()).total_seconds()  # Время ожидания 1 минута с первого запроса
-                print('Ждем', sleep_seconds, 'с...')
+                print('Достигнут предел', max_requests, 'запросов в минуту. Ждем', sleep_seconds, 'с до следующей группы запросов...')
                 sleep(sleep_seconds)  # Ждем минуту с первого запроса
-                requests = 0  # Сбрасываем кол-во запросов
-            if requests == 0:  # Если первый запрос
+                requests = 0  # Сбрасываем выполненное кол-во запросов в минуту
+            if requests == 0:  # Если первый запрос в минуту
                 next_run = datetime.now() + timedelta(minutes=1, seconds=3)  # Следующую группу запросов сможем запустить не ранее, чем через 1 минуту
             requests += 1  # Следующий запрос
             print('Запрос', requests, 'с', next_bar_open_utc, 'по', todate_min_utc)
@@ -99,19 +104,22 @@ def save_candles_to_file(security_board='TQBR', security_codes=('SBER',), intrad
             if len(new_bars_dict) == 0:  # Если новых бар нет
                 next_bar_open_utc = todate_min_utc + timedelta(minutes=1) if intraday else todate_min_utc + timedelta(days=1)  # то смещаем время на возможный следующий бар UTC
             else:  # Если пришли новые бары
+                first_bar_open_dt = fp_provider.utc_to_msk_datetime(datetime.fromisoformat(new_bars_dict[0]['timestamp'][:-1])) if intraday else\
+                    datetime(new_bars_dict[0]['date']['year'], new_bars_dict[0]['date']['month'], new_bars_dict[0]['date']['day'])  # Дату и время первого полученного бара переводим из UTC в МСК
+                last_bar_open_dt = fp_provider.utc_to_msk_datetime(datetime.fromisoformat(new_bars_dict[-1]['timestamp'][:-1])) if intraday else \
+                    datetime(new_bars_dict[-1]['date']['year'], new_bars_dict[-1]['date']['month'], new_bars_dict[-1]['date']['day'])  # Дату и время последнего полученного бара переводим из UTC в МСК
+                print('- Получены бары с', first_bar_open_dt, 'по', last_bar_open_dt)
                 for new_bar in new_bars_dict:  # Пробегаемся по всем полученным барам
                     # Дату/время UTC получаем в формате ISO 8601. Пример: 2023-06-16T20:01:00Z
                     # В статье https://stackoverflow.com/questions/127803/how-do-i-parse-an-iso-8601-formatted-date описывается проблема, что Z на конце нужно убирать
                     dt = fp_provider.utc_to_msk_datetime(datetime.fromisoformat(new_bar['timestamp'][:-1])) if intraday else \
-                        datetime(new_bar['date']['year'], new_bar['date']['month'], new_bar['date']['day'])  # Дату/время переводим из UTC в МСК
+                        datetime(new_bar['date']['year'], new_bar['date']['month'], new_bar['date']['day'])  # Дату и время переводим из UTC в МСК
                     open_ = round(int(new_bar['open']['num']) * 10 ** -int(new_bar['open']['scale']), int(new_bar['open']['scale']))
                     high = round(int(new_bar['high']['num']) * 10 ** -int(new_bar['high']['scale']), int(new_bar['high']['scale']))
                     low = round(int(new_bar['low']['num']) * 10 ** -int(new_bar['low']['scale']), int(new_bar['low']['scale']))
                     close = round(int(new_bar['close']['num']) * 10 ** -int(new_bar['close']['scale']), int(new_bar['close']['scale']))
                     volume = new_bar['volume']
                     new_bars_list.append({'datetime': dt, 'open': open_, 'high': high, 'low': low, 'close': close, 'volume': volume})
-                print('- Дата/время последнего бара', new_bars_list[-1]['datetime'])  # Последняя дата и время полученных баров
-                last_bar_open_dt = new_bars_list[-1]['datetime']  # Дата и время открытия последнего бара
                 last_bar_open_utc = fp_provider.msk_to_utc_datetime(last_bar_open_dt, True) if intraday else last_bar_open_dt.replace(tzinfo=timezone.utc)  # Дата и время открытия последнего бара UTC
                 next_bar_open_utc = last_bar_open_utc + timedelta(minutes=1) if intraday else last_bar_open_utc + timedelta(days=1)  # Смещаем время на возможный следующий бар UTC
             if next_bar_open_utc > todate_utc:  # Если пройден весь интервал
@@ -161,8 +169,8 @@ if __name__ == '__main__':  # Точка входа при запуске это
     # security_codes = ('SBER',)  # Для тестов
     datapath = os.path.join('..', '..', 'DataFinam', '')  # Путь сохранения файлов для Windows/Linux
 
-    # skip_last_date = True  # Если получаем данные внутри сессии, то не берем бары за дату незавершенной сессии
-    skip_last_date = False  # Если получаем данные, когда рынок не работает, то берем все бары
+    skip_last_date = True  # Если получаем данные внутри сессии, то не берем бары за дату незавершенной сессии
+    # skip_last_date = False  # Если получаем данные, когда рынок не работает, то берем все бары
     save_candles_to_file(security_board, security_codes, four_price_doji=True)  # Дневные бары получаем всегда все, т.к. выдаются только завершенные бары
     # save_candles_to_file(security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_H1, skip_last_date=skip_last_date)  # часовые бары
     # save_candles_to_file(security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M15, skip_last_date=skip_last_date)  # 15-и минутные бары
