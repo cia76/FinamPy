@@ -51,9 +51,7 @@ def save_candles_to_file(security_board='TQBR', security_codes=('SBER',), intrad
         file_exists = os.path.isfile(file_name)  # Существует ли файл
         if file_exists:  # Если файл существует
             print(f'Получение файла {file_name}')
-            file_bars = pd.read_csv(file_name, sep='\t')  # Считываем файл в DataFrame
-            file_bars['datetime'] = pd.to_datetime(file_bars['datetime'], format='%d.%m.%Y %H:%M')  # Переводим дату/время в формат datetime
-            file_bars.index = file_bars['datetime']  # Она и будет индексом
+            file_bars = pd.read_csv(file_name, sep='\t', parse_dates=['datetime'], date_format='%d.%m.%Y %H:%M', index_col='datetime')  # Считываем файл в DataFrame
             last_date: datetime = file_bars.index[-1]  # Дата и время последнего бара
             print(f'- Первая запись файла: {file_bars.index[0]}')
             print(f'- Последняя запись файла: {last_date}')
