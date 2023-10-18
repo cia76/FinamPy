@@ -75,6 +75,8 @@ def save_candles_to_file(security_board='TQBR', security_codes=('SBER',), intrad
                 from_.seconds = Timestamp(seconds=int(next_bar_open_utc.timestamp())).seconds  # Дата и время начала интервала UTC
                 if not first_request:  # Для всех запросов, кроме первого
                     to_.seconds = Timestamp(seconds=int(todate_min_utc.timestamp())).seconds  # Дата и время окончания интервала UTC
+                    if from_.seconds == to_.seconds:  # Если дата и время окончания интервала совпадает с датой и временем начала
+                        break  # то выходим из цикла получения баров
             else:  # Для дневных интервалов и выше datetime -> Date
                 date_from = Date(year=next_bar_open_utc.year, month=next_bar_open_utc.month, day=next_bar_open_utc.day)  # Дата начала интервала UTC
                 from_.year = date_from.year
@@ -82,6 +84,8 @@ def save_candles_to_file(security_board='TQBR', security_codes=('SBER',), intrad
                 from_.day = date_from.day
                 if not first_request:  # Для всех запросов, кроме первого
                     date_to = Date(year=todate_min_utc.year, month=todate_min_utc.month, day=todate_min_utc.day)  # Дата окончания интервала UTC
+                    if date_to == date_from:  # Если дата окончания интервала совпадает с датой начала
+                        break  # то выходим из цикла получения баров
                     to_.year = date_to.year
                     to_.month = date_to.month
                     to_.day = date_to.day
