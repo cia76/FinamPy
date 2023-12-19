@@ -4,7 +4,7 @@ from json import loads  # Ответы принимаются в виде JSON �
 
 class FinamRestPy:
     """Работа с Comon Trade Api из Python https://finamweb.github.io/trade-api-docs/"""
-    server = 'https://trade-api.comon.ru'  # Сервер для исполнения вызовов
+    server = 'https://trade-api.finam.ru'  # Сервер для исполнения вызовов
 
     def default_handler(self, response=None):
         """Пустой обработчик события по умолчанию. Его можно заменить на пользовательский"""
