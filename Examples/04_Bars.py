@@ -100,13 +100,13 @@ def save_candles_to_file(security_board='TQBR', security_codes=('SBER',), intrad
                 next_run = datetime.now() + timedelta(minutes=1, seconds=3)  # Следующую группу запросов сможем запустить не ранее, чем через 1 минуту
             requests += 1  # Следующий запрос
             print('Запрос', requests, 'с', next_bar_open_utc, 'по', todate_min_utc)
-            new_bars_dict = []
-            try:
+            new_bars_dict = []  # Будем получать историю
+            try:  # При запросе истории Финам может выдать ошибку
                 new_bars_dict = MessageToDict(fp_provider.get_intraday_candles(security_board, security_code, time_frame, interval) if intraday else
                                               fp_provider.get_day_candles(security_board, security_code, time_frame, interval),
                                               including_default_value_fields=True)['candles']  # Получаем бары, переводим в словарь/список
-            except Exception as e:
-                print(f"Ошибка: {e}")
+            except Exception as e:  # Если получили ошибку
+                print(f'Ошибка при получении истории (history): {e}')  # то выводим ее в консоль
             if len(new_bars_dict) == 0:  # Если новых бар нет
                 next_bar_open_utc = todate_min_utc + timedelta(minutes=1) if intraday else todate_min_utc + timedelta(days=1)  # то смещаем время на возможный следующий бар UTC
             else:  # Если пришли новые бары
