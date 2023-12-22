@@ -3,7 +3,7 @@ from json import loads  # Ответы принимаются в виде JSON �
 
 
 class FinamRestPy:
-    """Работа с Comon Trade Api из Python https://finamweb.github.io/trade-api-docs/"""
+    """Работа с Comon Trade REST Api из Python https://finamweb.github.io/trade-api-docs/category/rest-api"""
     server = 'https://trade-api.finam.ru'  # Сервер для исполнения вызовов
 
     def default_handler(self, response=None):
@@ -54,7 +54,7 @@ class FinamRestPy:
         """Проверка токена"""
         return self.check_result(get(url=f'{self.server}/api/v1/access-tokens/check', headers=self.get_headers()))
 
-    # Orders
+    # Заявки / Orders (https://finamweb.github.io/trade-api-docs/rest-api/orders)
 
     def create_order(self, security_board, security_code, buy_sell, quantity, use_credit, price, property,
                      condition_type, condition_price, condition_time, valid_type, valid_time):
@@ -128,7 +128,13 @@ class FinamRestPy:
                   'IncludeActive': include_active}
         return self.check_result(get(url=f'{self.server}/api/v1/orders', params=params, headers=self.get_headers()))
 
-    # Portfolio
+    # Инструменты / Securities (https://finamweb.github.io/trade-api-docs/rest-api/securities)
+
+    def get_securities(self):
+        """Справочник инструментов"""
+        return self.check_result(get(url=f'{self.server}/api/v1/securities', headers=self.get_headers()))
+
+    # Портфели / Portfolio (https://finamweb.github.io/trade-api-docs/rest-api/portfolios)
 
     def get_portfolio(self, include_currencies=True, include_money=True, include_positions=True, include_max_buy_sell=True):
         """Возвращает портфель
@@ -145,13 +151,7 @@ class FinamRestPy:
                   'Content.IncludeMaxBuySell': include_max_buy_sell}
         return self.check_result(get(url=f'{self.server}/api/v1/portfolio', params=params, headers=self.get_headers()))
 
-    # Securities
-
-    def get_securities(self):
-        """Справочник инструментов"""
-        return self.check_result(get(url=f'{self.server}/api/v1/securities', headers=self.get_headers()))
-
-    # Stops
+    # Стоп-заявки / Stops (https://finamweb.github.io/trade-api-docs/rest-api/stops)
 
     def create_stop_order(self, security_board, security_code, buy_sell,
                           sl_activation_price, sl_price, sl_market_price, sl_value, sl_units, sl_time, sl_use_credit,
@@ -252,3 +252,54 @@ class FinamRestPy:
                   'IncludeCanceled': include_canceled,
                   'IncludeActive': include_active}
         return self.check_result(get(url=f'{self.server}/api/v1/orders', params=params, headers=self.get_headers()))
+
+    # Свечи / Candles (https://finamweb.github.io/trade-api-docs/rest-api/candles)
+
+    def get_day_candles(self, security_board, security_code, time_frame, date_from=None, date_to=None, count=None):
+        """Запрос дневных/недельных свечей
+
+        - Максимальный интервал: 365 дней
+        - Максимальное кол-во запросов в минуту: 120
+
+        :param str security_board: Режим торгов
+        :param str security_code: Тикер инструмента
+        :param str time_frame: Временной интервал дневной свечи. 'D1' - 1 день, 'W1' - 1 неделя
+        :param datetime date_from: Дата начала в формате yyyy-MM-dd в часовом поясе UTC
+        :param datetime date_to: Дата окончания в формате yyyy-MM-dd в часовом поясе UTC
+        :param int count: Кол-во свечей. Максимум 500
+        """
+        params = {'securityBoard': security_board,
+                  'securityCode': security_code,
+                  'timeFrame': time_frame}
+        if date_from:  # Если указана дата начала
+            params['from'] = date_from  # то выставляем ее
+        if date_to:  # Если указана дата окончания
+            params['to'] = date_from  # то выставляем ее
+        if count:  # Если указано кол-во свечей
+            params['count'] = count  # то выставляем их
+        return self.check_result(get(url=f'{self.server}/api/v1/day-candles', params=params, headers=self.get_headers()))
+
+    def get_intraday_candles(self, security_board, security_code, time_frame, date_from=None, date_to=None, count=None):
+        """Запрос внутридневных свечей
+
+        - Максимальный интервал: 30 дней
+        - Максимальное кол-во запросов в минуту: 120
+
+        :param str security_board: Режим торгов
+        :param str security_code: Тикер инструмента
+        :param str time_frame: Временной интервал внутридневной свечи 'M1' - 1 минута, 'M5' - 5 минут, 'M15' - 15 минут, 'H1' - 1 час
+        :param datetime date_from: Дата начала в формате yyyy-MM-ddTHH:mm:ssZ в часовом поясе UTC
+        :param datetime date_to: Дата окончания в формате yyyy-MM-ddTHH:mm:ssZ в часовом поясе UTC
+        :param int count: Кол-во свечей. Максимум 500
+        """
+        params = {'securityBoard': security_board,
+                  'securityCode': security_code,
+                  'timeFrame': time_frame}
+        if date_from:  # Если указана дата начала
+            params['from'] = date_from  # то выставляем ее
+        if date_to:  # Если указана дата окончания
+            params['to'] = date_from  # то выставляем ее
+        if count:  # Если указано кол-во свечей
+            params['count'] = count  # то выставляем их
+        return self.check_result(
+            get(url=f'{self.server}/api/v1/intraday-candles', params=params, headers=self.get_headers()))
