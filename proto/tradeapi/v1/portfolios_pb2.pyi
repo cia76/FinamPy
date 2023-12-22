@@ -7,7 +7,7 @@ import collections.abc
 import google.protobuf.descriptor
 import google.protobuf.internal.containers
 import google.protobuf.message
-import FinamPy.proto.tradeapi.v1.common_pb2 as common
+import proto.tradeapi.v1.common_pb2
 import sys
 
 if sys.version_info >= (3, 8):
@@ -85,7 +85,7 @@ class PositionRow(google.protobuf.message.Message):
     """Security Code.
     Тикер инструмента.
     """
-    market: common.Market.ValueType
+    market: proto.tradeapi.v1.common_pb2.Market.ValueType
     """Security market.
     Рынок инструмента.
     """
@@ -149,7 +149,7 @@ class PositionRow(google.protobuf.message.Message):
         self,
         *,
         security_code: builtins.str = ...,
-        market: common.Market.ValueType = ...,
+        market: proto.tradeapi.v1.common_pb2.Market.ValueType = ...,
         balance: builtins.int = ...,
         current_price: builtins.float = ...,
         equity: builtins.float = ...,
@@ -226,7 +226,7 @@ class MoneyRow(google.protobuf.message.Message):
     MARKET_FIELD_NUMBER: builtins.int
     CURRENCY_FIELD_NUMBER: builtins.int
     BALANCE_FIELD_NUMBER: builtins.int
-    market: common.Market.ValueType
+    market: proto.tradeapi.v1.common_pb2.Market.ValueType
     """Position market.
     Рынок позиции.
     """
@@ -241,7 +241,7 @@ class MoneyRow(google.protobuf.message.Message):
     def __init__(
         self,
         *,
-        market: common.Market.ValueType = ...,
+        market: proto.tradeapi.v1.common_pb2.Market.ValueType = ...,
         currency: builtins.str = ...,
         balance: builtins.float = ...,
     ) -> None: ...

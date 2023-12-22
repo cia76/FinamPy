@@ -10,6 +10,7 @@ from grpc import ssl_channel_credentials, secure_channel, RpcError  # Защищ
 
 from google.protobuf.timestamp_pb2 import Timestamp  # Представление времени
 from google.protobuf.wrappers_pb2 import DoubleValue  # Представление цены
+from .proto.tradeapi.v1.events_pb2 import KeepAliveRequest  # Запрос поддержания активности
 from .proto.tradeapi.v1 import common_pb2 as common  # Покупка/продажа
 from .proto.tradeapi.v1.common_pb2 import Market, OrderValidBefore, ResponseEvent  # Рынки и событие результата выполнения запроса
 from .proto.tradeapi.v1.security_pb2 import Security  # Тикер
@@ -36,8 +37,7 @@ from .grpc.tradeapi.v1.stops_pb2_grpc import StopsStub  # Сервис стоп 
 
 
 class FinamPy:
-    """Работа с сервером TRANSAQ из Python через REST/gRPC
-    Документация интерфейса Finam Trade API: https://finamweb.github.io/trade-api-docs/
+    """Работа с Finam Trade gRPC Api из Python https://finamweb.github.io/trade-api-docs/category/grpc
     Генерация кода в папках grpc/proto осуществлена из proto контрактов: https://github.com/FinamWeb/trade-api-docs/tree/master/contracts
     """
     tz_msk = timezone('Europe/Moscow')  # Время UTC будем приводить к московскому времени
@@ -70,7 +70,7 @@ class FinamPy:
         self.on_trade = self.default_handler  # Сделка
         self.on_order_book = self.default_handler  # Стакан
         self.on_portfolio = self.default_handler  # Портфель
-        self.on_response = self.default_handler  # Результат выполнения запроса
+        self.on_response = self.default_handler  # Подтверждающее сообщение для поддержания активности
 
         self.subscription_queue: SimpleQueue[SubscriptionRequest] = SimpleQueue()  # Буфер команд на подписку/отписку
         self.subscriptions_thread = None  # Поток обработки подписок создадим позже
@@ -87,102 +87,7 @@ class FinamPy:
         except RpcError:  # Если получили ошибку канала
             return None  # то возвращаем пустое значение
 
-    # Candles
-
-    def get_day_candles(self, security_board, security_code, time_frame, interval) -> GetDayCandlesResult:
-        """Запрос дневных/недельных свечей
-
-        :param str security_board: Режим торгов
-        :param str security_code: Тикер инструмента
-        :param DayCandleTimeFrame time_frame: Временной интервал дневной свечи
-            DAYCANDLE_TIMEFRAME_D1 - 1 день
-            DAYCANDLE_TIMEFRAME_W1 - 1 неделя
-        :param DayCandleInterval interval: Интервал запроса дневных свечей. Максимум 365 дней
-            setattr(DayCandleInterval, 'from', <Дата начала в формате yyyy-MM-dd в часовом поясе UTC>)
-            to - Дата окончания в формате yyyy-MM-dd в часовом поясе UTC
-            count - Кол-во свечей. Максимум 500
-        """
-        request = GetDayCandlesRequest(security_board=security_board, security_code=security_code,
-                                       time_frame=time_frame, interval=interval)
-        return self.call_function(self.candles_stub.GetDayCandles, request)
-
-    def get_intraday_candles(self, security_board, security_code, time_frame, interval) -> GetIntradayCandlesResult:
-        """Запрос внутридневных свечей
-
-        :param str security_board: Режим торгов
-        :param str security_code: Тикер инструмента
-        :param IntradayCandleTimeFrame time_frame: Временной интервал внутридневной свечи
-            INTRADAYCANDLE_TIMEFRAME_M1 - 1 минута
-            INTRADAYCANDLE_TIMEFRAME_M5 - 5 минут
-            INTRADAYCANDLE_TIMEFRAME_M15 - 15 минут
-            INTRADAYCANDLE_TIMEFRAME_H1 - 1 час
-        :param IntradayCandleInterval interval: Интервал запроса внутридневных свечей. Максимум 30 дней
-            setattr(DayCandleInterval, 'from', <Дата начала в формате yyyy-MM-ddTHH:mm:ssZ в часовом поясе UTC>)
-            to - Дата окончания в формате yyyy-MM-ddTHH:mm:ssZ в часовом поясе UTC
-            count - Кол-во свечей. Максимум 500
-        """
-        request = GetIntradayCandlesRequest(security_board=security_board, security_code=security_code,
-                                            time_frame=time_frame, interval=interval)
-        return self.call_function(self.candles_stub.GetIntradayCandles, request)
-
-    # Events
-
-    def subscribe_order_book(self, security_code, security_board, request_id=None) -> str:
-        """Запрос подписки на стакан
-
-        :param str security_code: Тикер инструмента
-        :param str security_board: Режим торгов
-        :param str request_id: Идентификатор запроса
-        """
-        if not request_id:  # Если идентификатор запроса не указан
-            request_id = uuid4().hex[:16].upper()  # то создаем его из первых 16-и символов уникального идентификатора
-        if not self.subscriptions_thread:  # Если еще нет потока обработки подписок
-            self.subscriptions_thread = Thread(target=self.subscriptions_handler, name='SubscriptionsThread')  # Создаем поток обработки подписок
-            self.subscriptions_thread.start()  # Запускаем поток
-        request = SubscriptionRequest(order_book_subscribe_request=OrderBookSubscribeRequest(
-            request_id=request_id, security_code=security_code, security_board=security_board))
-        self.subscription_queue.put(request)  # Отправляем в очередь на отправку
-        return request_id
-
-    def unsubscribe_order_book(self, request_id, security_code, security_board):
-        """Запрос на отписку от стакана
-
-        :param str request_id: Идентификатор запроса
-        :param str security_code: Тикер инструмента
-        :param str security_board: Режим торгов
-        """
-        request = SubscriptionRequest(order_book_unsubscribe_request=OrderBookUnsubscribeRequest(
-            request_id=request_id, security_code=security_code, security_board=security_board))
-        self.subscription_queue.put(request)  # Отправляем в очередь на отправку
-
-    def subscribe_order_trade(self, client_ids, include_trades=True, include_orders=True, request_id=None) -> str:
-        """Запрос подписки на ордера и сделки
-
-        :param list client_ids: Торговые коды счетов
-        :param bool include_trades: Включить сделки в подписку
-        :param bool include_orders: Включить заявки в подписку
-        :param str request_id: Идентификатор запроса
-        """
-        if not request_id:  # Если идентификатор запроса не указан
-            request_id = uuid4().hex[:16].upper()  # то создаем его из первых 16-и символов уникального идентификатора
-        if not self.subscriptions_thread:  # Если еще нет потока обработки подписок
-            self.subscriptions_thread = Thread(target=self.subscriptions_handler, name='SubscriptionsThread')  # Создаем поток обработки подписок
-            self.subscriptions_thread.start()  # Запускаем поток
-        request = SubscriptionRequest(order_trade_subscribe_request=OrderTradeSubscribeRequest(
-            request_id=request_id, client_ids=client_ids, include_trades=include_trades, include_orders=include_orders))
-        self.subscription_queue.put(request)  # Отправляем в очередь на отправку
-        return request_id
-
-    def unsubscribe_order_trade(self, request_id):
-        """Отменить все предыдущие запросы на подписки на ордера и сделки
-
-        :param str request_id: Идентификатор запроса
-        """
-        request = SubscriptionRequest(order_trade_unsubscribe_request=OrderTradeUnsubscribeRequest(
-            request_id=request_id))
-        self.subscription_queue.put(request)  # Отправляем в очередь на отправку
-
-    # Orders
+    # Заявки / Orders (https://finamweb.github.io/trade-api-docs/grpc/orders)
 
     def get_orders(self, client_id, include_matched=True, include_canceled=True, include_active=True) -> Union[GetOrdersResult, None]:
         """Возвращает список заявок
@@ -251,32 +156,7 @@ class FinamPy:
 
         # Portfolios
 
-    # Portfolios
-
-    def get_portfolio(self, client_id, include_currencies=True, include_money=True, include_positions=True, include_max_buy_sell=True) -> Union[GetPortfolioResult, None]:
-        """Возвращает портфель
-
-        :param str client_id: Идентификатор торгового счёта
-        :param bool include_currencies: Валютные позиции
-        :param bool include_money: Денежные позиции
-        :param bool include_positions: Позиции DEPO
-        :param bool include_max_buy_sell: Лимиты покупки и продажи
-        """
-        request = GetPortfolioRequest(client_id=client_id, content=PortfolioContent(
-            include_currencies=include_currencies,
-            include_money=include_money,
-            include_positions=include_positions,
-            include_max_buy_sell=include_max_buy_sell))
-        return self.call_function(self.portfolios_stub.GetPortfolio, request)
-
-    # Securities
-
-    def get_securities(self) -> Union[GetSecuritiesResult, None]:
-        """Справочник инструментов"""
-        request = GetSecuritiesRequest()
-        return self.call_function(self.securities_stub.GetSecurities, request)
-
-    # Stops
+    # Стоп-заявки / Stops (https://finamweb.github.io/trade-api-docs/grpc/stops)
 
     def get_stops(self, client_id, include_executed=True, include_canceled=True, include_active=True) -> Union[GetStopsResult, None]:
         """Возвращает список стоп-заявок
@@ -353,6 +233,140 @@ class FinamPy:
         """
         request = CancelStopRequest(client_id=client_id, stop_id=stop_id)
         return self.call_function(self.stops_stub.CancelStop, request)
+
+    # Портфели / Portfolios (https://finamweb.github.io/trade-api-docs/grpc/portfolios)
+
+    def get_portfolio(self, client_id, include_currencies=True, include_money=True, include_positions=True, include_max_buy_sell=True) -> Union[GetPortfolioResult, None]:
+        """Возвращает портфель
+
+        :param str client_id: Идентификатор торгового счёта
+        :param bool include_currencies: Валютные позиции
+        :param bool include_money: Денежные позиции
+        :param bool include_positions: Позиции DEPO
+        :param bool include_max_buy_sell: Лимиты покупки и продажи
+        """
+        request = GetPortfolioRequest(client_id=client_id, content=PortfolioContent(
+            include_currencies=include_currencies,
+            include_money=include_money,
+            include_positions=include_positions,
+            include_max_buy_sell=include_max_buy_sell))
+        return self.call_function(self.portfolios_stub.GetPortfolio, request)
+
+    # Подписки / Events (https://finamweb.github.io/trade-api-docs/grpc/events)
+
+    def subscribe_order_trade(self, client_ids, include_trades=True, include_orders=True, request_id=None) -> str:
+        """Запрос подписки на ордера и сделки
+
+        :param list client_ids: Торговые коды счетов
+        :param bool include_trades: Включить сделки в подписку
+        :param bool include_orders: Включить заявки в подписку
+        :param str request_id: Идентификатор запроса
+        """
+        if not request_id:  # Если идентификатор запроса не указан
+            request_id = uuid4().hex[:16].upper()  # то создаем его из первых 16-и символов уникального идентификатора
+        if not self.subscriptions_thread:  # Если еще нет потока обработки подписок
+            self.subscriptions_thread = Thread(target=self.subscriptions_handler, name='SubscriptionsThread')  # Создаем поток обработки подписок
+            self.subscriptions_thread.start()  # Запускаем поток
+        request = SubscriptionRequest(order_trade_subscribe_request=OrderTradeSubscribeRequest(
+            request_id=request_id, client_ids=client_ids, include_trades=include_trades, include_orders=include_orders))
+        self.subscription_queue.put(request)  # Отправляем в очередь на отправку
+        return request_id
+
+    def unsubscribe_order_trade(self, request_id):
+        """Отменить все предыдущие запросы на подписки на ордера и сделки
+
+        :param str request_id: Идентификатор запроса
+        """
+        request = SubscriptionRequest(order_trade_unsubscribe_request=OrderTradeUnsubscribeRequest(
+            request_id=request_id))
+        self.subscription_queue.put(request)  # Отправляем в очередь на отправку
+
+    def subscribe_order_book(self, security_code, security_board, request_id=None) -> str:
+        """Запрос подписки на стакан
+
+        :param str security_code: Тикер инструмента
+        :param str security_board: Режим торгов
+        :param str request_id: Идентификатор запроса
+        """
+        if not request_id:  # Если идентификатор запроса не указан
+            request_id = uuid4().hex[:16].upper()  # то создаем его из первых 16-и символов уникального идентификатора
+        if not self.subscriptions_thread:  # Если еще нет потока обработки подписок
+            self.subscriptions_thread = Thread(target=self.subscriptions_handler, name='SubscriptionsThread')  # Создаем поток обработки подписок
+            self.subscriptions_thread.start()  # Запускаем поток
+        request = SubscriptionRequest(order_book_subscribe_request=OrderBookSubscribeRequest(
+            request_id=request_id, security_code=security_code, security_board=security_board))
+        self.subscription_queue.put(request)  # Отправляем в очередь на отправку
+        return request_id
+
+    def unsubscribe_order_book(self, request_id, security_code, security_board):
+        """Запрос на отписку от стакана
+
+        :param str request_id: Идентификатор запроса
+        :param str security_code: Тикер инструмента
+        :param str security_board: Режим торгов
+        """
+        request = SubscriptionRequest(order_book_unsubscribe_request=OrderBookUnsubscribeRequest(
+            request_id=request_id, security_code=security_code, security_board=security_board))
+        self.subscription_queue.put(request)  # Отправляем в очередь на отправку
+
+    def keep_alive(self, request_id=None) -> str:
+        """Сообщение для поддержания активности
+
+        :param str request_id: Идентификатор запроса
+        """
+        if not request_id:  # Если идентификатор запроса не указан
+            request_id = uuid4().hex[:16].upper()  # то создаем его из первых 16-и символов уникального идентификатора
+        if not self.subscriptions_thread:  # Если еще нет потока обработки подписок
+            self.subscriptions_thread = Thread(target=self.subscriptions_handler, name='SubscriptionsThread')  # Создаем поток обработки подписок
+            self.subscriptions_thread.start()  # Запускаем поток
+        request = SubscriptionRequest(order_book_unsubscribe_request=KeepAliveRequest(request_id=request_id))
+        self.subscription_queue.put(request)  # Отправляем в очередь на отправку
+        return request_id
+
+    # Инструменты / Securities
+
+    def get_securities(self) -> Union[GetSecuritiesResult, None]:
+        """Справочник инструментов"""
+        request = GetSecuritiesRequest()
+        return self.call_function(self.securities_stub.GetSecurities, request)
+
+    # Свечи / Candles
+
+    def get_day_candles(self, security_board, security_code, time_frame, interval) -> GetDayCandlesResult:
+        """Запрос дневных/недельных свечей
+
+        :param str security_board: Режим торгов
+        :param str security_code: Тикер инструмента
+        :param DayCandleTimeFrame time_frame: Временной интервал дневной свечи
+            DAYCANDLE_TIMEFRAME_D1 - 1 день
+            DAYCANDLE_TIMEFRAME_W1 - 1 неделя
+        :param DayCandleInterval interval: Интервал запроса дневных свечей. Максимум 365 дней
+            setattr(DayCandleInterval, 'from', <Дата начала в формате yyyy-MM-dd в часовом поясе UTC>)
+            to - Дата окончания в формате yyyy-MM-dd в часовом поясе UTC
+            count - Кол-во свечей. Максимум 500
+        """
+        request = GetDayCandlesRequest(security_board=security_board, security_code=security_code,
+                                       time_frame=time_frame, interval=interval)
+        return self.call_function(self.candles_stub.GetDayCandles, request)
+
+    def get_intraday_candles(self, security_board, security_code, time_frame, interval) -> GetIntradayCandlesResult:
+        """Запрос внутридневных свечей
+
+        :param str security_board: Режим торгов
+        :param str security_code: Тикер инструмента
+        :param IntradayCandleTimeFrame time_frame: Временной интервал внутридневной свечи
+            INTRADAYCANDLE_TIMEFRAME_M1 - 1 минута
+            INTRADAYCANDLE_TIMEFRAME_M5 - 5 минут
+            INTRADAYCANDLE_TIMEFRAME_M15 - 15 минут
+            INTRADAYCANDLE_TIMEFRAME_H1 - 1 час
+        :param IntradayCandleInterval interval: Интервал запроса внутридневных свечей. Максимум 30 дней
+            setattr(DayCandleInterval, 'from', <Дата начала в формате yyyy-MM-ddTHH:mm:ssZ в часовом поясе UTC>)
+            to - Дата окончания в формате yyyy-MM-ddTHH:mm:ssZ в часовом поясе UTC
+            count - Кол-во свечей. Максимум 500
+        """
+        request = GetIntradayCandlesRequest(security_board=security_board, security_code=security_code,
+                                            time_frame=time_frame, interval=interval)
+        return self.call_function(self.candles_stub.GetIntradayCandles, request)
 
     # Поток обработки подписок
 

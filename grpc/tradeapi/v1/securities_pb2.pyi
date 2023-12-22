@@ -7,7 +7,7 @@ import collections.abc
 import google.protobuf.descriptor
 import google.protobuf.internal.containers
 import google.protobuf.message
-import FinamPy.proto.tradeapi.v1.security_pb2 as security
+import proto.tradeapi.v1.security_pb2
 import sys
 
 if sys.version_info >= (3, 8):
@@ -41,14 +41,14 @@ class GetSecuritiesResult(google.protobuf.message.Message):
 
     SECURITIES_FIELD_NUMBER: builtins.int
     @property
-    def securities(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[security.Security]:
+    def securities(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[proto.tradeapi.v1.security_pb2.Security]:
         """Securities list.
         Список инструментов.
         """
     def __init__(
         self,
         *,
-        securities: collections.abc.Iterable[security.Security] | None = ...,
+        securities: collections.abc.Iterable[proto.tradeapi.v1.security_pb2.Security] | None = ...,
     ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal["securities", b"securities"]) -> None: ...
 

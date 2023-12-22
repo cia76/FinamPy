@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from FinamPy.proto.tradeapi.v1 import stops_pb2 as proto_dot_tradeapi_dot_v1_dot_stops__pb2
+from proto.tradeapi.v1 import stops_pb2 as proto_dot_tradeapi_dot_v1_dot_stops__pb2
 
 
 class StopsStub(object):

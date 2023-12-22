@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from FinamPy.proto.tradeapi.v1 import candles_pb2 as proto_dot_tradeapi_dot_v1_dot_candles__pb2
+from proto.tradeapi.v1 import candles_pb2 as proto_dot_tradeapi_dot_v1_dot_candles__pb2
 
 
 class CandlesStub(object):

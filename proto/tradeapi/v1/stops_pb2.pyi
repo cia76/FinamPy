@@ -9,7 +9,7 @@ import google.protobuf.internal.containers
 import google.protobuf.internal.enum_type_wrapper
 import google.protobuf.message
 import google.protobuf.timestamp_pb2
-import FinamPy.proto.tradeapi.v1.common_pb2 as common
+import proto.tradeapi.v1.common_pb2
 import sys
 import typing
 
@@ -128,7 +128,7 @@ class _StopPriceUnitsEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper.
     """
     STOP_PRICE_UNITS_PIPS: _StopPriceUnits.ValueType  # 2
     """Lots.
-    Значение в лотах.
+    Значение в единицах цены.
     """
 
 class StopPriceUnits(_StopPriceUnits, metaclass=_StopPriceUnitsEnumTypeWrapper):
@@ -146,7 +146,7 @@ STOP_PRICE_UNITS_PERCENT: StopPriceUnits.ValueType  # 1
 """
 STOP_PRICE_UNITS_PIPS: StopPriceUnits.ValueType  # 2
 """Lots.
-Значение в лотах.
+Значение в единицах цены.
 """
 global___StopPriceUnits = StopPriceUnits
 
@@ -190,7 +190,7 @@ class Stop(google.protobuf.message.Message):
     """Security Board.
     Основной режим торгов инструмента.
     """
-    market: common.Market.ValueType
+    market: proto.tradeapi.v1.common_pb2.Market.ValueType
     """Market.
     Рынок.
     """
@@ -198,7 +198,7 @@ class Stop(google.protobuf.message.Message):
     """Trade Account ID.
     Идентификатор торгового счёта.
     """
-    buy_sell: common.BuySell.ValueType
+    buy_sell: proto.tradeapi.v1.common_pb2.BuySell.ValueType
     """Transaction direction.
     Направление сделки.
     """
@@ -212,7 +212,7 @@ class Stop(google.protobuf.message.Message):
     Биржевой номер связанной (активной) заявки.
     """
     @property
-    def valid_before(self) -> common.OrderValidBefore:
+    def valid_before(self) -> proto.tradeapi.v1.common_pb2.OrderValidBefore:
         """Order lifetime.
         Время действия заявки.
         """
@@ -270,12 +270,12 @@ class Stop(google.protobuf.message.Message):
         stop_id: builtins.int = ...,
         security_code: builtins.str = ...,
         security_board: builtins.str = ...,
-        market: common.Market.ValueType = ...,
+        market: proto.tradeapi.v1.common_pb2.Market.ValueType = ...,
         client_id: builtins.str = ...,
-        buy_sell: common.BuySell.ValueType = ...,
+        buy_sell: proto.tradeapi.v1.common_pb2.BuySell.ValueType = ...,
         expiration_date: google.protobuf.timestamp_pb2.Timestamp | None = ...,
         link_order: builtins.int = ...,
-        valid_before: common.OrderValidBefore | None = ...,
+        valid_before: proto.tradeapi.v1.common_pb2.OrderValidBefore | None = ...,
         status: global___StopStatus.ValueType = ...,
         message: builtins.str = ...,
         order_no: builtins.int = ...,
@@ -619,7 +619,7 @@ class NewStopRequest(google.protobuf.message.Message):
     """Security Code.
     Тикер инструмента.
     """
-    buy_sell: common.BuySell.ValueType
+    buy_sell: proto.tradeapi.v1.common_pb2.BuySell.ValueType
     """Transaction direction.
     Направление сделки.
     """
@@ -643,7 +643,7 @@ class NewStopRequest(google.protobuf.message.Message):
     Биржевой номер связанной (активной) заявки.
     """
     @property
-    def valid_before(self) -> common.OrderValidBefore:
+    def valid_before(self) -> proto.tradeapi.v1.common_pb2.OrderValidBefore:
         """Order lifetime.
         Время действия заявки.
         """
@@ -653,12 +653,12 @@ class NewStopRequest(google.protobuf.message.Message):
         client_id: builtins.str = ...,
         security_board: builtins.str = ...,
         security_code: builtins.str = ...,
-        buy_sell: common.BuySell.ValueType = ...,
+        buy_sell: proto.tradeapi.v1.common_pb2.BuySell.ValueType = ...,
         stop_loss: global___StopLoss | None = ...,
         take_profit: global___TakeProfit | None = ...,
         expiration_date: google.protobuf.timestamp_pb2.Timestamp | None = ...,
         link_order: builtins.int = ...,
-        valid_before: common.OrderValidBefore | None = ...,
+        valid_before: proto.tradeapi.v1.common_pb2.OrderValidBefore | None = ...,
     ) -> None: ...
     def HasField(self, field_name: typing_extensions.Literal["expiration_date", b"expiration_date", "stop_loss", b"stop_loss", "take_profit", b"take_profit", "valid_before", b"valid_before"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing_extensions.Literal["buy_sell", b"buy_sell", "client_id", b"client_id", "expiration_date", b"expiration_date", "link_order", b"link_order", "security_board", b"security_board", "security_code", b"security_code", "stop_loss", b"stop_loss", "take_profit", b"take_profit", "valid_before", b"valid_before"]) -> None: ...

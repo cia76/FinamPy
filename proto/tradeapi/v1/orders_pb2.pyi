@@ -10,7 +10,7 @@ import google.protobuf.internal.enum_type_wrapper
 import google.protobuf.message
 import google.protobuf.timestamp_pb2
 import google.protobuf.wrappers_pb2
-import FinamPy.proto.tradeapi.v1.common_pb2 as common
+import proto.tradeapi.v1.common_pb2
 import sys
 import typing
 
@@ -281,7 +281,7 @@ class NewOrderRequest(google.protobuf.message.Message):
     """Security Code.
     Тикер инструмента.
     """
-    buy_sell: common.BuySell.ValueType
+    buy_sell: proto.tradeapi.v1.common_pb2.BuySell.ValueType
     """Transaction direction.
     Направление сделки.
     """
@@ -308,7 +308,7 @@ class NewOrderRequest(google.protobuf.message.Message):
         Свойства выставления заявок.
         """
     @property
-    def valid_before(self) -> common.OrderValidBefore:
+    def valid_before(self) -> proto.tradeapi.v1.common_pb2.OrderValidBefore:
         """Order lifetime condition.
         Условие по времени действия заявки.
         """
@@ -318,13 +318,13 @@ class NewOrderRequest(google.protobuf.message.Message):
         client_id: builtins.str = ...,
         security_board: builtins.str = ...,
         security_code: builtins.str = ...,
-        buy_sell: common.ValueType = ...,
+        buy_sell: proto.tradeapi.v1.common_pb2.BuySell.ValueType = ...,
         quantity: builtins.int = ...,
         use_credit: builtins.bool = ...,
         price: google.protobuf.wrappers_pb2.DoubleValue | None = ...,
         property: global___OrderProperty.ValueType = ...,
         condition: global___OrderCondition | None = ...,
-        valid_before: common.OrderValidBefore | None = ...,
+        valid_before: proto.tradeapi.v1.common_pb2.OrderValidBefore | None = ...,
     ) -> None: ...
     def HasField(self, field_name: typing_extensions.Literal["condition", b"condition", "price", b"price", "valid_before", b"valid_before"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing_extensions.Literal["buy_sell", b"buy_sell", "client_id", b"client_id", "condition", b"condition", "price", b"price", "property", b"property", "quantity", b"quantity", "security_board", b"security_board", "security_code", b"security_code", "use_credit", b"use_credit", "valid_before", b"valid_before"]) -> None: ...
@@ -506,7 +506,7 @@ class Order(google.protobuf.message.Message):
     """Order status.
     Состояние заявки.
     """
-    buy_sell: common.ValueType
+    buy_sell: proto.tradeapi.v1.common_pb2.BuySell.ValueType
     """Transaction direction.
     Направление сделки.
     """
@@ -541,7 +541,7 @@ class Order(google.protobuf.message.Message):
         Параметры условной заявки.
         """
     @property
-    def valid_before(self) -> common.OrderValidBefore:
+    def valid_before(self) -> proto.tradeapi.v1.common_pb2.OrderValidBefore:
         """Order lifetime.
         Время действия заявки.
         """
@@ -554,7 +554,7 @@ class Order(google.protobuf.message.Message):
     """Security Board.
     Основной режим торгов инструмента.
     """
-    market: common.ValueType
+    market: proto.tradeapi.v1.common_pb2.Market.ValueType
     """Market.
     Рынок.
     """
@@ -566,7 +566,7 @@ class Order(google.protobuf.message.Message):
         security_code: builtins.str = ...,
         client_id: builtins.str = ...,
         status: global___OrderStatus.ValueType = ...,
-        buy_sell: common.ValueType = ...,
+        buy_sell: proto.tradeapi.v1.common_pb2.BuySell.ValueType = ...,
         created_at: google.protobuf.timestamp_pb2.Timestamp | None = ...,
         price: builtins.float = ...,
         quantity: builtins.int = ...,
@@ -574,10 +574,10 @@ class Order(google.protobuf.message.Message):
         message: builtins.str = ...,
         currency: builtins.str = ...,
         condition: global___OrderCondition | None = ...,
-        valid_before: common.OrderValidBefore | None = ...,
+        valid_before: proto.tradeapi.v1.common_pb2.OrderValidBefore | None = ...,
         accepted_at: google.protobuf.timestamp_pb2.Timestamp | None = ...,
         security_board: builtins.str = ...,
-        market: common.ValueType = ...,
+        market: proto.tradeapi.v1.common_pb2.Market.ValueType = ...,
     ) -> None: ...
     def HasField(self, field_name: typing_extensions.Literal["accepted_at", b"accepted_at", "condition", b"condition", "created_at", b"created_at", "valid_before", b"valid_before"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing_extensions.Literal["accepted_at", b"accepted_at", "balance", b"balance", "buy_sell", b"buy_sell", "client_id", b"client_id", "condition", b"condition", "created_at", b"created_at", "currency", b"currency", "market", b"market", "message", b"message", "order_no", b"order_no", "price", b"price", "quantity", b"quantity", "security_board", b"security_board", "security_code", b"security_code", "status", b"status", "transaction_id", b"transaction_id", "valid_before", b"valid_before"]) -> None: ...

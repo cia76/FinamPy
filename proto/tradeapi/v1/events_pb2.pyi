@@ -9,9 +9,9 @@ import google.protobuf.internal.containers
 import google.protobuf.internal.enum_type_wrapper
 import google.protobuf.message
 import google.protobuf.timestamp_pb2
-import FinamPy.proto.tradeapi.v1.common_pb2 as common
-import FinamPy.proto.tradeapi.v1.orders_pb2 as orders
-import FinamPy.proto.tradeapi.v1.portfolios_pb2 as portfolios
+import proto.tradeapi.v1.common_pb2
+import proto.tradeapi.v1.orders_pb2
+import proto.tradeapi.v1.portfolios_pb2
 import sys
 import typing
 
@@ -34,7 +34,7 @@ class TimeFrame(google.protobuf.message.Message):
         ValueType = typing.NewType("ValueType", builtins.int)
         V: typing_extensions.TypeAlias = ValueType
 
-    class _UnitEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[TimeFrame._Unit.ValueType], builtins.type):  # noqa: F821
+    class _UnitEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[TimeFrame._Unit.ValueType], builtins.type):
         DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
         UNIT_UNSPECIFIED: TimeFrame._Unit.ValueType  # 0
         """Value is not specified. Do not use.
@@ -129,6 +129,7 @@ class SubscriptionRequest(google.protobuf.message.Message):
     ORDER_BOOK_UNSUBSCRIBE_REQUEST_FIELD_NUMBER: builtins.int
     ORDER_TRADE_SUBSCRIBE_REQUEST_FIELD_NUMBER: builtins.int
     ORDER_TRADE_UNSUBSCRIBE_REQUEST_FIELD_NUMBER: builtins.int
+    KEEP_ALIVE_REQUEST_FIELD_NUMBER: builtins.int
     @property
     def order_book_subscribe_request(self) -> global___OrderBookSubscribeRequest:
         """OrderBook subscription request.
@@ -149,6 +150,11 @@ class SubscriptionRequest(google.protobuf.message.Message):
         """Cancel all previous subscription for trades and orders.
         Отменить все предыдущие запросы на подписки на ордера и сделки.
         """
+    @property
+    def keep_alive_request(self) -> global___KeepAliveRequest:
+        """Keep-alive request.
+        Keep-alive запрос.
+        """
     def __init__(
         self,
         *,
@@ -156,10 +162,11 @@ class SubscriptionRequest(google.protobuf.message.Message):
         order_book_unsubscribe_request: global___OrderBookUnsubscribeRequest | None = ...,
         order_trade_subscribe_request: global___OrderTradeSubscribeRequest | None = ...,
         order_trade_unsubscribe_request: global___OrderTradeUnsubscribeRequest | None = ...,
+        keep_alive_request: global___KeepAliveRequest | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing_extensions.Literal["order_book_subscribe_request", b"order_book_subscribe_request", "order_book_unsubscribe_request", b"order_book_unsubscribe_request", "order_trade_subscribe_request", b"order_trade_subscribe_request", "order_trade_unsubscribe_request", b"order_trade_unsubscribe_request", "payload", b"payload"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing_extensions.Literal["order_book_subscribe_request", b"order_book_subscribe_request", "order_book_unsubscribe_request", b"order_book_unsubscribe_request", "order_trade_subscribe_request", b"order_trade_subscribe_request", "order_trade_unsubscribe_request", b"order_trade_unsubscribe_request", "payload", b"payload"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing_extensions.Literal["payload", b"payload"]) -> typing_extensions.Literal["order_book_subscribe_request", "order_book_unsubscribe_request", "order_trade_subscribe_request", "order_trade_unsubscribe_request"] | None: ...
+    def HasField(self, field_name: typing_extensions.Literal["keep_alive_request", b"keep_alive_request", "order_book_subscribe_request", b"order_book_subscribe_request", "order_book_unsubscribe_request", b"order_book_unsubscribe_request", "order_trade_subscribe_request", b"order_trade_subscribe_request", "order_trade_unsubscribe_request", b"order_trade_unsubscribe_request", "payload", b"payload"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing_extensions.Literal["keep_alive_request", b"keep_alive_request", "order_book_subscribe_request", b"order_book_subscribe_request", "order_book_unsubscribe_request", b"order_book_unsubscribe_request", "order_trade_subscribe_request", b"order_trade_subscribe_request", "order_trade_unsubscribe_request", b"order_trade_unsubscribe_request", "payload", b"payload"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing_extensions.Literal["payload", b"payload"]) -> typing_extensions.Literal["order_book_subscribe_request", "order_book_unsubscribe_request", "order_trade_subscribe_request", "order_trade_unsubscribe_request", "keep_alive_request"] | None: ...
 
 global___SubscriptionRequest = SubscriptionRequest
 
@@ -197,7 +204,7 @@ class Event(google.protobuf.message.Message):
         Событие портфеля.
         """
     @property
-    def response(self) -> common.ResponseEvent:
+    def response(self) -> proto.tradeapi.v1.common_pb2.ResponseEvent:
         """Request execution result.
         Результат выполнения запроса.
         """
@@ -208,7 +215,7 @@ class Event(google.protobuf.message.Message):
         trade: global___TradeEvent | None = ...,
         order_book: global___OrderBookEvent | None = ...,
         portfolio: global___PortfolioEvent | None = ...,
-        response: common.ResponseEvent | None = ...,
+        response: proto.tradeapi.v1.common_pb2.ResponseEvent | None = ...,
     ) -> None: ...
     def HasField(self, field_name: typing_extensions.Literal["order", b"order", "order_book", b"order_book", "payload", b"payload", "portfolio", b"portfolio", "response", b"response", "trade", b"trade"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing_extensions.Literal["order", b"order", "order_book", b"order_book", "payload", b"payload", "portfolio", b"portfolio", "response", b"response", "trade", b"trade"]) -> None: ...
@@ -358,7 +365,7 @@ class PortfolioSubscription(google.protobuf.message.Message):
     Идентификатор торгового счёта.
     """
     @property
-    def content(self) -> portfolios.PortfolioContent:
+    def content(self) -> proto.tradeapi.v1.portfolios_pb2.PortfolioContent:
         """What kind of data the response contains.
         Какие данные будут в ответе.
         """
@@ -366,7 +373,7 @@ class PortfolioSubscription(google.protobuf.message.Message):
         self,
         *,
         client_id: builtins.str = ...,
-        content: portfolios.PortfolioContent | None = ...,
+        content: proto.tradeapi.v1.portfolios_pb2.PortfolioContent | None = ...,
     ) -> None: ...
     def HasField(self, field_name: typing_extensions.Literal["content", b"content"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing_extensions.Literal["client_id", b"client_id", "content", b"content"]) -> None: ...
@@ -412,11 +419,11 @@ class OrderEvent(google.protobuf.message.Message):
     """Trade Account ID.
     Идентификатор торгового счёта.
     """
-    status: orders.OrderStatus.ValueType
+    status: proto.tradeapi.v1.orders_pb2.OrderStatus.ValueType
     """Order status.
     Состояние заявки.
     """
-    buy_sell: common.BuySell.ValueType
+    buy_sell: proto.tradeapi.v1.common_pb2.BuySell.ValueType
     """Transaction direction.
     Направление сделки.
     """
@@ -446,12 +453,12 @@ class OrderEvent(google.protobuf.message.Message):
     Валюта цены инструмента.
     """
     @property
-    def condition(self) -> orders.OrderCondition:
+    def condition(self) -> proto.tradeapi.v1.orders_pb2.OrderCondition:
         """Conditional order properties.
         Параметры условной заявки.
         """
     @property
-    def valid_before(self) -> common.OrderValidBefore:
+    def valid_before(self) -> proto.tradeapi.v1.common_pb2.OrderValidBefore:
         """Order lifetime.
         Время действия заявки.
         """
@@ -467,16 +474,16 @@ class OrderEvent(google.protobuf.message.Message):
         transaction_id: builtins.int = ...,
         security_code: builtins.str = ...,
         client_id: builtins.str = ...,
-        status: orders.OrderStatus.ValueType = ...,
-        buy_sell: common.BuySell.ValueType = ...,
+        status: proto.tradeapi.v1.orders_pb2.OrderStatus.ValueType = ...,
+        buy_sell: proto.tradeapi.v1.common_pb2.BuySell.ValueType = ...,
         created_at: google.protobuf.timestamp_pb2.Timestamp | None = ...,
         price: builtins.float = ...,
         quantity: builtins.int = ...,
         balance: builtins.int = ...,
         message: builtins.str = ...,
         currency: builtins.str = ...,
-        condition: orders.OrderCondition | None = ...,
-        valid_before: common.OrderValidBefore | None = ...,
+        condition: proto.tradeapi.v1.orders_pb2.OrderCondition | None = ...,
+        valid_before: proto.tradeapi.v1.common_pb2.OrderValidBefore | None = ...,
         accepted_at: google.protobuf.timestamp_pb2.Timestamp | None = ...,
     ) -> None: ...
     def HasField(self, field_name: typing_extensions.Literal["accepted_at", b"accepted_at", "condition", b"condition", "created_at", b"created_at", "valid_before", b"valid_before"]) -> builtins.bool: ...
@@ -537,7 +544,7 @@ class TradeEvent(google.protobuf.message.Message):
     """Trade currency value.
     Объём сделки в валюте инструмента.
     """
-    buy_sell: common.BuySell.ValueType
+    buy_sell: proto.tradeapi.v1.common_pb2.BuySell.ValueType
     """Transaction direction.
     Направление сделки.
     """
@@ -564,7 +571,7 @@ class TradeEvent(google.protobuf.message.Message):
         quantity: builtins.int = ...,
         price: builtins.float = ...,
         value: builtins.float = ...,
-        buy_sell: common.BuySell.ValueType = ...,
+        buy_sell: proto.tradeapi.v1.common_pb2.BuySell.ValueType = ...,
         commission: builtins.float = ...,
         currency: builtins.str = ...,
         accrued_interest: builtins.float = ...,
@@ -664,7 +671,7 @@ class PortfolioEvent(google.protobuf.message.Message):
     Идентификатор торгового счёта.
     """
     @property
-    def content(self) -> portfolios.PortfolioContent:
+    def content(self) -> proto.tradeapi.v1.portfolios_pb2.PortfolioContent:
         """What kind of data portfolio event contains.
         Какие данные находятся в событии портфеля.
         """
@@ -677,17 +684,17 @@ class PortfolioEvent(google.protobuf.message.Message):
     Входящая оценка портфеля в рублях.
     """
     @property
-    def positions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[portfolios.PositionRow]:
+    def positions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[proto.tradeapi.v1.portfolios_pb2.PositionRow]:
         """DEPO positions.
         Позиции DEPO.
         """
     @property
-    def currencies(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[portfolios.CurrencyRow]:
+    def currencies(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[proto.tradeapi.v1.portfolios_pb2.CurrencyRow]:
         """Currency positions.
         Валютные позиции.
         """
     @property
-    def money(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[portfolios.MoneyRow]:
+    def money(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[proto.tradeapi.v1.portfolios_pb2.MoneyRow]:
         """Money positions.
         Денежные позиции.
         """
@@ -695,14 +702,36 @@ class PortfolioEvent(google.protobuf.message.Message):
         self,
         *,
         client_id: builtins.str = ...,
-        content: portfolios.PortfolioContent | None = ...,
+        content: proto.tradeapi.v1.portfolios_pb2.PortfolioContent | None = ...,
         equity: builtins.float = ...,
         balance: builtins.float = ...,
-        positions: collections.abc.Iterable[portfolios.PositionRow] | None = ...,
-        currencies: collections.abc.Iterable[portfolios.CurrencyRow] | None = ...,
-        money: collections.abc.Iterable[portfolios.MoneyRow] | None = ...,
+        positions: collections.abc.Iterable[proto.tradeapi.v1.portfolios_pb2.PositionRow] | None = ...,
+        currencies: collections.abc.Iterable[proto.tradeapi.v1.portfolios_pb2.CurrencyRow] | None = ...,
+        money: collections.abc.Iterable[proto.tradeapi.v1.portfolios_pb2.MoneyRow] | None = ...,
     ) -> None: ...
     def HasField(self, field_name: typing_extensions.Literal["content", b"content"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing_extensions.Literal["balance", b"balance", "client_id", b"client_id", "content", b"content", "currencies", b"currencies", "equity", b"equity", "money", b"money", "positions", b"positions"]) -> None: ...
 
 global___PortfolioEvent = PortfolioEvent
+
+@typing_extensions.final
+class KeepAliveRequest(google.protobuf.message.Message):
+    """Keep-alive request.
+    Keep-alive запрос.
+    """
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    REQUEST_ID_FIELD_NUMBER: builtins.int
+    request_id: builtins.str
+    """Request ID.
+    Идентификатор запроса.
+    """
+    def __init__(
+        self,
+        *,
+        request_id: builtins.str = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["request_id", b"request_id"]) -> None: ...
+
+global___KeepAliveRequest = KeepAliveRequest

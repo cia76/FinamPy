@@ -10,7 +10,7 @@ import google.protobuf.internal.enum_type_wrapper
 import google.protobuf.message
 import google.protobuf.timestamp_pb2
 import google.type.date_pb2
-import FinamPy.proto.tradeapi.v1.common_pb2 as common_pb2
+import proto.tradeapi.v1.common_pb2
 import sys
 import typing
 
@@ -133,22 +133,22 @@ class DayCandle(google.protobuf.message.Message):
         Дата (по времени биржи).
         """
     @property
-    def open(self) -> common_pb2.Decimal:
+    def open(self) -> proto.tradeapi.v1.common_pb2.Decimal:
         """Open price.
         Цена открытия.
         """
     @property
-    def close(self) -> common_pb2.Decimal:
+    def close(self) -> proto.tradeapi.v1.common_pb2.Decimal:
         """Close price.
         Цена закрытия.
         """
     @property
-    def high(self) -> common_pb2.Decimal:
+    def high(self) -> proto.tradeapi.v1.common_pb2.Decimal:
         """High price.
         Максимальная цена.
         """
     @property
-    def low(self) -> common_pb2.Decimal:
+    def low(self) -> proto.tradeapi.v1.common_pb2.Decimal:
         """Low price.
         Минимальная цена.
         """
@@ -160,10 +160,10 @@ class DayCandle(google.protobuf.message.Message):
         self,
         *,
         date: google.type.date_pb2.Date | None = ...,
-        open: common_pb2.Decimal | None = ...,
-        close: common_pb2.Decimal | None = ...,
-        high: common_pb2.Decimal | None = ...,
-        low: common_pb2.Decimal | None = ...,
+        open: proto.tradeapi.v1.common_pb2.Decimal | None = ...,
+        close: proto.tradeapi.v1.common_pb2.Decimal | None = ...,
+        high: proto.tradeapi.v1.common_pb2.Decimal | None = ...,
+        low: proto.tradeapi.v1.common_pb2.Decimal | None = ...,
         volume: builtins.int = ...,
     ) -> None: ...
     def HasField(self, field_name: typing_extensions.Literal["close", b"close", "date", b"date", "high", b"high", "low", b"low", "open", b"open"]) -> builtins.bool: ...
@@ -191,22 +191,22 @@ class IntradayCandle(google.protobuf.message.Message):
         Время (по UTC).
         """
     @property
-    def open(self) -> common_pb2.Decimal:
+    def open(self) -> proto.tradeapi.v1.common_pb2.Decimal:
         """Open price.
         Цена открытия.
         """
     @property
-    def close(self) -> common_pb2.Decimal:
+    def close(self) -> proto.tradeapi.v1.common_pb2.Decimal:
         """Close price.
         Цена закрытия.
         """
     @property
-    def high(self) -> common_pb2.Decimal:
+    def high(self) -> proto.tradeapi.v1.common_pb2.Decimal:
         """High price.
         Максимальная цена.
         """
     @property
-    def low(self) -> common_pb2.Decimal:
+    def low(self) -> proto.tradeapi.v1.common_pb2.Decimal:
         """Low price.
         Минимальная цена.
         """
@@ -218,10 +218,10 @@ class IntradayCandle(google.protobuf.message.Message):
         self,
         *,
         timestamp: google.protobuf.timestamp_pb2.Timestamp | None = ...,
-        open: common_pb2.Decimal | None = ...,
-        close: common_pb2.Decimal | None = ...,
-        high: common_pb2.Decimal | None = ...,
-        low: common_pb2.Decimal | None = ...,
+        open: proto.tradeapi.v1.common_pb2.Decimal | None = ...,
+        close: proto.tradeapi.v1.common_pb2.Decimal | None = ...,
+        high: proto.tradeapi.v1.common_pb2.Decimal | None = ...,
+        low: proto.tradeapi.v1.common_pb2.Decimal | None = ...,
         volume: builtins.int = ...,
     ) -> None: ...
     def HasField(self, field_name: typing_extensions.Literal["close", b"close", "high", b"high", "low", b"low", "open", b"open", "timestamp", b"timestamp"]) -> builtins.bool: ...

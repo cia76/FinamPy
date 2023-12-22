@@ -6,7 +6,7 @@ import builtins
 import google.protobuf.descriptor
 import google.protobuf.internal.enum_type_wrapper
 import google.protobuf.message
-import FinamPy.proto.tradeapi.v1.common_pb2 as common
+import proto.tradeapi.v1.common_pb2
 import sys
 import typing
 
@@ -95,7 +95,7 @@ class Security(google.protobuf.message.Message):
     """Security board.
     Основной режим торгов инструмента.
     """
-    market: common.Market.ValueType
+    market: proto.tradeapi.v1.common_pb2.Market.ValueType
     """Market.
     Рынок инструмента.
     """
@@ -125,16 +125,16 @@ class Security(google.protobuf.message.Message):
     """
     properties: builtins.int
     """Параметры инструмента. Значение представлено в виде битовой маски.
-    0x00 Нет параметров.
-    0x01 Инструмент торгуется на Бирже.
-    0x02 Инструмент допущен к торгам у Брокера - существенно для НЕ ГЛАВНЫХ трейдеров, главным доступны все инструменты, торгуемые на биржах.
-    0x04 Рыночные заявки (без ограничения по цене) разрешены.
-    0x08 Признак маржинальности бумаги.
-    0x10 Опцион Call.
-    0x20 Опцион Put.
-    0x30 Фьючерс: Call | Put.
-    0x40 Разрешен для резидентов.
-    0x80 Разрешен для нерезидентов.
+    0 Нет параметров.
+    1 Инструмент торгуется на Бирже.
+    2 Инструмент допущен к торгам у Брокера - существенно для НЕ ГЛАВНЫХ трейдеров, главным доступны все инструменты, торгуемые на биржах.
+    4 Рыночные заявки (без ограничения по цене) разрешены.
+    8 Признак маржинальности бумаги.
+    16 Опцион Call.
+    32 Опцион Put.
+    48 Фьючерс: Call | Put.
+    64 Разрешен для резидентов.
+    128 Разрешен для нерезидентов.
     """
     time_zone_name: builtins.str
     """Timezone name.
@@ -165,7 +165,7 @@ class Security(google.protobuf.message.Message):
         *,
         code: builtins.str = ...,
         board: builtins.str = ...,
-        market: common.Market.ValueType = ...,
+        market: proto.tradeapi.v1.common_pb2.Market.ValueType = ...,
         decimals: builtins.int = ...,
         lot_size: builtins.int = ...,
         min_step: builtins.int = ...,
