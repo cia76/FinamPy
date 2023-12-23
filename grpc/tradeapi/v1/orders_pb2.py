@@ -12,7 +12,7 @@ from google.protobuf.internal import builder as _builder
 _sym_db = _symbol_database.Default()
 
 
-from proto.tradeapi.v1 import orders_pb2 as proto_dot_tradeapi_dot_v1_dot_orders__pb2
+from FinamPy.proto.tradeapi.v1 import orders_pb2 as proto_dot_tradeapi_dot_v1_dot_orders__pb2
 
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1dgrpc/tradeapi/v1/orders.proto\x12\x10grpc.tradeapi.v1\x1a\x1eproto/tradeapi/v1/orders.proto2\x8d\x02\n\x06Orders\x12Q\n\x08NewOrder\x12\".proto.tradeapi.v1.NewOrderRequest\x1a!.proto.tradeapi.v1.NewOrderResult\x12Z\n\x0b\x43\x61ncelOrder\x12%.proto.tradeapi.v1.CancelOrderRequest\x1a$.proto.tradeapi.v1.CancelOrderResult\x12T\n\tGetOrders\x12#.proto.tradeapi.v1.GetOrdersRequest\x1a\".proto.tradeapi.v1.GetOrdersResultB\x19\xaa\x02\x16\x46inam.TradeApi.Grpc.V1b\x06proto3')

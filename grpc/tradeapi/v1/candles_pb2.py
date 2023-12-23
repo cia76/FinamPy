@@ -12,7 +12,7 @@ from google.protobuf.internal import builder as _builder
 _sym_db = _symbol_database.Default()
 
 
-from proto.tradeapi.v1 import candles_pb2 as proto_dot_tradeapi_dot_v1_dot_candles__pb2
+from FinamPy.proto.tradeapi.v1 import candles_pb2 as proto_dot_tradeapi_dot_v1_dot_candles__pb2
 
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1egrpc/tradeapi/v1/candles.proto\x12\x10grpc.tradeapi.v1\x1a\x1fproto/tradeapi/v1/candles.proto2\xdc\x01\n\x07\x43\x61ndles\x12`\n\rGetDayCandles\x12\'.proto.tradeapi.v1.GetDayCandlesRequest\x1a&.proto.tradeapi.v1.GetDayCandlesResult\x12o\n\x12GetIntradayCandles\x12,.proto.tradeapi.v1.GetIntradayCandlesRequest\x1a+.proto.tradeapi.v1.GetIntradayCandlesResultB\x19\xaa\x02\x16\x46inam.TradeApi.Grpc.V1b\x06proto3')

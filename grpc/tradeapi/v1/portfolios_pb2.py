@@ -12,7 +12,7 @@ from google.protobuf.internal import builder as _builder
 _sym_db = _symbol_database.Default()
 
 
-from proto.tradeapi.v1 import portfolios_pb2 as proto_dot_tradeapi_dot_v1_dot_portfolios__pb2
+from FinamPy.proto.tradeapi.v1 import portfolios_pb2 as proto_dot_tradeapi_dot_v1_dot_portfolios__pb2
 
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n!grpc/tradeapi/v1/portfolios.proto\x12\x10grpc.tradeapi.v1\x1a\"proto/tradeapi/v1/portfolios.proto2k\n\nPortfolios\x12]\n\x0cGetPortfolio\x12&.proto.tradeapi.v1.GetPortfolioRequest\x1a%.proto.tradeapi.v1.GetPortfolioResultB\x19\xaa\x02\x16\x46inam.TradeApi.Grpc.V1b\x06proto3')

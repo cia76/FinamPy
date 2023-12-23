@@ -12,9 +12,9 @@ from google.protobuf.internal import builder as _builder
 _sym_db = _symbol_database.Default()
 
 
-from proto.tradeapi.v1 import common_pb2 as proto_dot_tradeapi_dot_v1_dot_common__pb2
-from proto.tradeapi.v1 import orders_pb2 as proto_dot_tradeapi_dot_v1_dot_orders__pb2
-from proto.tradeapi.v1 import portfolios_pb2 as proto_dot_tradeapi_dot_v1_dot_portfolios__pb2
+from FinamPy.proto.tradeapi.v1 import common_pb2 as proto_dot_tradeapi_dot_v1_dot_common__pb2
+from FinamPy.proto.tradeapi.v1 import orders_pb2 as proto_dot_tradeapi_dot_v1_dot_orders__pb2
+from FinamPy.proto.tradeapi.v1 import portfolios_pb2 as proto_dot_tradeapi_dot_v1_dot_portfolios__pb2
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 

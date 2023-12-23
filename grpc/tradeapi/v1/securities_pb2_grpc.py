@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from grpc.tradeapi.v1 import securities_pb2 as grpc_dot_tradeapi_dot_v1_dot_securities__pb2
+from FinamPy.grpc.tradeapi.v1 import securities_pb2 as grpc_dot_tradeapi_dot_v1_dot_securities__pb2
 
 
 class SecuritiesStub(object):

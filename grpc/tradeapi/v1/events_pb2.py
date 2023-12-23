@@ -12,7 +12,7 @@ from google.protobuf.internal import builder as _builder
 _sym_db = _symbol_database.Default()
 
 
-from proto.tradeapi.v1 import events_pb2 as proto_dot_tradeapi_dot_v1_dot_events__pb2
+from FinamPy.proto.tradeapi.v1 import events_pb2 as proto_dot_tradeapi_dot_v1_dot_events__pb2
 
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1dgrpc/tradeapi/v1/events.proto\x12\x10grpc.tradeapi.v1\x1a\x1eproto/tradeapi/v1/events.proto2[\n\x06\x45vents\x12Q\n\tGetEvents\x12&.proto.tradeapi.v1.SubscriptionRequest\x1a\x18.proto.tradeapi.v1.Event(\x01\x30\x01\x42\x19\xaa\x02\x16\x46inam.TradeApi.Grpc.V1b\x06proto3')
