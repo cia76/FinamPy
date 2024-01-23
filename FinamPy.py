@@ -1,4 +1,5 @@
 from datetime import datetime
+from os.path import isfile  # Справочник тикеров будем хранить в файле
 from typing import Union  # Объединение типов
 from uuid import uuid4  # Номера подписок должны быть уникальными во времени и пространстве
 
@@ -8,6 +9,7 @@ from threading import Thread  # Поток обработки подписок
 from queue import SimpleQueue  # Очередь подписок/отписок
 from grpc import ssl_channel_credentials, secure_channel, RpcError  # Защищенный канал
 
+from google.protobuf.json_format import MessageToJson, Parse  # Будем хранить справочник в файле в формате JSON
 from google.protobuf.timestamp_pb2 import Timestamp  # Представление времени
 from google.protobuf.wrappers_pb2 import DoubleValue  # Представление цены
 from .proto.tradeapi.v1.events_pb2 import KeepAliveRequest  # Запрос поддержания активности
@@ -49,6 +51,7 @@ class FinamPy:
                Market.MARKET_ETS: 'Валютный рынок Московской Биржи',
                Market.MARKET_BONDS: 'Долговой рынок Московской Биржи',
                Market.MARKET_OPTIONS: 'Рынок опционов Московской Биржи'}  # Рынки
+    securities_filename = 'FinamSecurities.json'  # Имя файла справочника тикеров
 
     def __init__(self, access_token):
         """Инициализация
@@ -75,7 +78,7 @@ class FinamPy:
         self.subscription_queue: SimpleQueue[SubscriptionRequest] = SimpleQueue()  # Буфер команд на подписку/отписку
         self.subscriptions_thread = None  # Поток обработки подписок создадим позже
 
-        self.symbols = self.get_securities()  # Получаем справочник тикеров (занимает несколько секунд)
+        self.symbols = self.get_securities()  # Получаем справочник тикеров из файла или сервиса (занимает несколько секунд)
 
     # Запросы
 
@@ -327,8 +330,16 @@ class FinamPy:
 
     def get_securities(self) -> Union[GetSecuritiesResult, None]:
         """Справочник инструментов"""
-        request = GetSecuritiesRequest()
-        return self.call_function(self.securities_stub.GetSecurities, request)
+        symbols = GetSecuritiesResult()  # Тип списка инструментов
+        if isfile(self.securities_filename):  # Если справочник уже был сохранен в файл
+            with open(self.securities_filename, 'r', encoding='UTF-8') as f:  # Открываем файл на чтение
+                Parse(f.read(), symbols)  # Получаем список инструментов из файла, приводим к типу
+        else:  # Если файла справочника нет
+            request = GetSecuritiesRequest()  # Запрос справочника
+            symbols = self.call_function(self.securities_stub.GetSecurities, request)  # Выполняем запрос
+            with open(self.securities_filename, 'w', encoding='UTF-8') as f:  # Открываем файл на запись
+                f.write(MessageToJson(symbols))  # Сохраняем список инструментов в файл
+        return symbols
 
     # Свечи / Candles
 
