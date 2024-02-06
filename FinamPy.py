@@ -271,7 +271,7 @@ class FinamPy:
             self.subscriptions_thread = Thread(target=self.subscriptions_handler, name='SubscriptionsThread')  # Создаем поток обработки подписок
             self.subscriptions_thread.start()  # Запускаем поток
         request = SubscriptionRequest(order_trade_subscribe_request=OrderTradeSubscribeRequest(
-            request_id=request_id, client_ids=client_ids, include_trades=include_trades, include_orders=include_orders))
+            request_id=request_id, client_ids=[client_ids], include_trades=include_trades, include_orders=include_orders))
         self.subscription_queue.put(request)  # Отправляем в очередь на отправку
         return request_id
 
