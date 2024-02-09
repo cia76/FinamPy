@@ -1,9 +1,8 @@
+from typing import Union, Tuple  # Объединение типов, кортеж
 from datetime import datetime
 from os.path import isfile  # Справочник тикеров будем хранить в файле
-from typing import Union  # Объединение типов
 from uuid import uuid4  # Номера подписок должны быть уникальными во времени и пространстве
 
-import pytz
 from pytz import timezone, utc  # Работаем с временнОй зоной и UTC
 from threading import Thread  # Поток обработки подписок
 from queue import SimpleQueue  # Очередь подписок/отписок
@@ -424,19 +423,6 @@ class FinamPy:
 
     # Функции конвертации
 
-    def get_symbol_info(self, board, symbol) -> Union[Security, None]:
-        """Получение информации тикера
-
-        :param str board: Код площадки
-        :param str symbol: Тикер
-        :return: Значение из кэша или None, если тикер не найден
-        """
-        try:  # Пробуем
-            return next(item for item in self.symbols.securities if item.board == board and item.code == symbol)  # вернуть значение из справочника
-        except StopIteration:  # Если тикер не найден
-            print(f'Информация о {board}.{symbol} не найдена')
-            return None  # то возвращаем пустое значение
-
     def dataname_to_board_symbol(self, dataname) -> tuple[str, str]:
         """код площадки и тикера из названия тикера
 
@@ -465,8 +451,46 @@ class FinamPy:
         """
         return f'{board}.{symbol}'
 
+    def get_symbol_info(self, board, symbol) -> Union[Security, None]:
+        """Спецификация тикера
+
+        :param str board: Код площадки
+        :param str symbol: Тикер
+        :return: Значение из кэша или None, если тикер не найден
+        """
+        try:  # Пробуем
+            return next(item for item in self.symbols.securities if item.board == board and item.code == symbol)  # вернуть значение из справочника
+        except StopIteration:  # Если тикер не найден
+            print(f'Информация о {board}.{symbol} не найдена')
+            return None  # то возвращаем пустое значение
+
+    @staticmethod
+    def timeframe_to_finam_timeframe(tf) -> Tuple[Union[DayCandleTimeFrame, IntradayCandleTimeFrame], bool]:
+        """Перевод временнОго интервала во временной интервал Финам
+
+        :param str tf: Временной интервал https://ru.wikipedia.org/wiki/Таймфрейм
+        :return: Временной интервал Финам, внутридневной интервал
+        """
+        if tf[0:1] == 'D':  # 1 день
+            return DayCandleTimeFrame.DAYCANDLE_TIMEFRAME_D1, False
+        if tf[0:1] == 'W':  # 1 неделя
+            return DayCandleTimeFrame.DAYCANDLE_TIMEFRAME_W1, False
+        if tf[0:1] == 'M':  # Минуты
+            if not tf[1:].isdigit():  # Если после минут не стоит число (Месяц MN?)
+                raise NotImplementedError  # то с такими временнЫми интервалами не работаем
+            interval = int(tf[1:])  # Временной интервал
+            if interval == 1:  # 1 минута
+                return IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M1, True
+            if interval == 5:  # 5 минут
+                return IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M5, True
+            if interval == 15:  # 15 минут
+                return IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M15, True
+            if interval == 60:  # 1 час
+                return IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_H1, True
+        raise NotImplementedError  # С остальными временнЫми интервалами не работаем
+
     def price_to_finam_price(self, board, symbol, price) -> float:
-        """Перевод цены в цену Финам
+        """Перевод цены в цену Финама
 
         :param str board: Код площадки
         :param str symbol: Тикер
@@ -479,7 +503,7 @@ class FinamPy:
         return round(price, si.decimals)  # Округляем цену
 
     def finam_price_to_price(self, board, symbol, price) -> float:
-        """Перевод цены Финам в цену
+        """Перевод цены Финама в цену
 
         :param str board: Код площадки
         :param str symbol: Тикер
@@ -491,6 +515,17 @@ class FinamPy:
             price *= 10  # цену умножаем на 10
         return price
 
+    def msk_to_utc_datetime(self, dt, tzinfo=False) -> datetime:
+        """Перевод времени из московского в UTC
+
+        :param datetime dt: Московское время
+        :param bool tzinfo: Отображать временнУю зону
+        :return: Время UTC
+        """
+        dt_msk = self.tz_msk.localize(dt)  # Задаем временнУю зону МСК
+        dt_utc = dt_msk.astimezone(utc)  # Переводим в UTC
+        return dt_utc if tzinfo else dt_utc.replace(tzinfo=None)
+
     def utc_to_msk_datetime(self, dt, tzinfo=False) -> datetime:
         """Перевод времени из UTC в московское
 
@@ -501,14 +536,3 @@ class FinamPy:
         dt_utc = utc.localize(dt)  # Задаем временнУю зону UTC
         dt_msk = dt_utc.astimezone(self.tz_msk)  # Переводим в МСК
         return dt_msk if tzinfo else dt_msk.replace(tzinfo=None)
-
-    def msk_to_utc_datetime(self, dt, tzinfo=False) -> datetime:
-        """Перевод времени из московского в UTC
-
-        :param datetime dt: Московское время
-        :param bool tzinfo: Отображать временнУю зону
-        :return: Время UTC
-        """
-        dt_msk = self.tz_msk.localize(dt)  # Задаем временнУю зону МСК
-        dt_utc = dt_msk.astimezone(pytz.utc)  # Переводим в UTC
-        return dt_utc if tzinfo else dt_utc.replace(tzinfo=None)
