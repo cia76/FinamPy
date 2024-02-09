@@ -1,4 +1,4 @@
-from typing import Union, Tuple  # Объединение типов, кортеж
+from typing import Union  # Объединение типов
 from datetime import datetime
 from os.path import isfile  # Справочник тикеров будем хранить в файле
 from uuid import uuid4  # Номера подписок должны быть уникальными во времени и пространстве
@@ -465,7 +465,7 @@ class FinamPy:
             return None  # то возвращаем пустое значение
 
     @staticmethod
-    def timeframe_to_finam_timeframe(tf) -> Tuple[Union[DayCandleTimeFrame, IntradayCandleTimeFrame], bool]:
+    def timeframe_to_finam_timeframe(tf):
         """Перевод временнОго интервала во временной интервал Финам
 
         :param str tf: Временной интервал https://ru.wikipedia.org/wiki/Таймфрейм
