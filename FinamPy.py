@@ -321,7 +321,7 @@ class FinamPy:
         if not self.subscriptions_thread:  # Если еще нет потока обработки подписок
             self.subscriptions_thread = Thread(target=self.subscriptions_handler, name='SubscriptionsThread')  # Создаем поток обработки подписок
             self.subscriptions_thread.start()  # Запускаем поток
-        request = SubscriptionRequest(order_book_unsubscribe_request=KeepAliveRequest(request_id=request_id))
+        request = SubscriptionRequest(keep_alive_request=KeepAliveRequest(request_id=request_id))
         self.subscription_queue.put(request)  # Отправляем в очередь на отправку
         return request_id
 
