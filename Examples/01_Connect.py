@@ -30,7 +30,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
     logger.info(f'Ответ от сервера: {si}' if si else f'Тикер {security_board}.{security_code} не найден')
 
     # Проверяем работу подписок
-    # TODO Ждем от Финама функцию подписку на бары. Пока выдаем подписку на стакан
+    # TODO Ждем от Финама подписку на бары. Пока выдаем подписку на стакан
     logger.info(f'Подписка на стакан тикера: {security_board}.{security_code}')
     logger.debug('ask - минимальная цена покупки, bid - максимальная цена продажи')
     fp_provider.on_order_book = lambda order_book: logger.info(f'ask = {order_book.asks[0].price} bid = {order_book.bids[0].price}')  # Обработчик события прихода подписки на стакан
