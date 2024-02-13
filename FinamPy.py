@@ -489,6 +489,30 @@ class FinamPy:
                 return IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_H1, True
         raise NotImplementedError  # С остальными временнЫми интервалами не работаем
 
+    @staticmethod
+    def finam_timeframe_to_timeframe(tf, intraday) -> str:
+        """Перевод временнОго интервала Финама во временной интервал
+
+        :param IntradayCandleTimeFrame|DayCandleTimeFrame tf: Временной интервал Финама
+        :param bool intraday: Внутридневной интервал
+        :return: Временной интервал https://ru.wikipedia.org/wiki/Таймфрейм
+        """
+        if intraday:  # Для внутридневных интервалов
+            if tf == IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M1:  # 1 минута
+                return 'M1'
+            elif tf == IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M5:  # 5 минут
+                return 'M5'
+            elif tf == IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M15:  # 15 минут
+                return 'M15'
+            elif tf == IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_H1:  # 1 час
+                return 'M60'
+        else:  # Для дневных и недельных интервалов
+            if tf == DayCandleTimeFrame.DAYCANDLE_TIMEFRAME_D1:  # 1 день
+                return 'D1'
+            elif tf == DayCandleTimeFrame.DAYCANDLE_TIMEFRAME_W1:  # 1 неделя
+                return 'W1'
+        raise NotImplementedError  # С остальными временнЫми интервалами не работаем
+
     def price_to_finam_price(self, board, symbol, price) -> float:
         """Перевод цены в цену Финама
 
