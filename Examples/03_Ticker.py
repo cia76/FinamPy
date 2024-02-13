@@ -5,7 +5,7 @@ from FinamPy.FinamPy import FinamPy  # Работа с сервером TRANSAQ
 from FinamPy.Config import Config  # Файл конфигурации
 
 
-logger = logging.getLogger('AlorPy.Ticker')  # Будем вести лог
+logger = logging.getLogger('FinamPy.Ticker')  # Будем вести лог
 
 
 if __name__ == '__main__':  # Точка входа при запуске этого скрипта
