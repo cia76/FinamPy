@@ -98,7 +98,7 @@ def save_candles_to_file(fp_provider=FinamPy(Config.AccessToken),
             response = (fp_provider.get_intraday_candles(security_board, security_code, time_frame, interval) if intraday else
                         fp_provider.get_day_candles(security_board, security_code, time_frame, interval))  # Получаем ответ на запрос бар
             if not response:  # Если в ответ ничего не получили
-                logger.error('Ошибка при получении истории: История не получена')
+                logger.error(f'Ошибка при получении истории: Запрос {requests}. История не получена')
                 return  # то выходим, дальше не продолжаем
             response_dict = MessageToDict(response, including_default_value_fields=True)  # Переводим в словарь из JSON
             if 'candles' not in response_dict:  # Если бар нет в словаре
