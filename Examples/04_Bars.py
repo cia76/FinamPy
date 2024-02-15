@@ -37,11 +37,9 @@ def save_candles_to_file(fp_provider=FinamPy(Config.AccessToken),
     :param bool four_price_doji: Оставить бары с дожи 4-х цен
     """
     tf = fp_provider.finam_timeframe_to_timeframe(time_frame, intraday)  # Временной интервал для имени файла
-    td = timedelta(days=30 if intraday else 365)  # Максимальный запрос за 30 дней для внутридневных интервалов и 1 год (365 дней) для дневных и выше
-    max_requests = 120  # Максимальное кол-во запросов в минуту https://finamweb.github.io/trade-api-docs/faq#есть-ли-какие-то-ограничения-на-количество-запросов
-    requests = 0  # Выполненное кол-во запросов в минуту
-    next_run = datetime.now()  # Время следующего запуска запросов
+    td = timedelta(days=(30 if intraday else 365))  # Максимальный запрос за 30 дней для внутридневных интервалов и 1 год (365 дней) для дневных и выше
     for security_code in security_codes:  # Пробегаемся по всем тикерам
+        interval = IntradayCandleInterval(count=500) if intraday else DayCandleInterval(count=500)  # Нужно поставить максимальное кол-во бар. Максимум, можно поставить 500
         file_bars = None  # Дальше будем пытаться получить бары из файла
         file_name = f'{datapath}{security_board}.{security_code}_{tf}.txt'
         file_exists = os.path.isfile(file_name)  # Существует ли файл
@@ -60,10 +58,10 @@ def save_candles_to_file(fp_provider=FinamPy(Config.AccessToken),
         logger.info(f'Получение истории {security_board}.{security_code} {tf} из Finam')
         new_bars_list = []  # Список новых бар
         todate_utc = datetime.utcnow().replace(tzinfo=timezone.utc)  # Будем получать бары до текущей даты и времени UTC
-        interval = IntradayCandleInterval(count=500) if intraday else DayCandleInterval(count=500)  # Нужно поставить максимальное кол-во бар. Максимум, можно поставить 500
         from_ = getattr(interval, 'from')  # Т.к. from - ключевое слово в Python, то получаем атрибут from из атрибута интервала
         to_ = getattr(interval, 'to')  # Аналогично будем работать с атрибутом to для единообразия
         first_request = not file_exists  # Если файл не существует, то первый запрос будем формировать без даты окончания. Так мы в первом запросе получим первые бары истории
+        next_run = datetime.now() + timedelta(minutes=1, seconds=3)  # Время следующего запуска запросов 1 минута с небольшим запасом с первого запроса
         while True:  # Будем получать бары пока не получим все
             todate_min_utc = min(todate_utc, next_bar_open_utc + td)  # До какой даты можем делать запрос
             if intraday:  # Для интрадея datetime -> Timestamp
@@ -86,24 +84,23 @@ def save_candles_to_file(fp_provider=FinamPy(Config.AccessToken),
                     to_.day = date_to.day
             if first_request:  # Для первого запроса
                 first_request = False  # далее будем ставить в запросы дату окончания интервала
-            if requests == max_requests:  # Если достигли допустимого кол-ва запросов в минуту
-                sleep_seconds = (next_run - datetime.now()).total_seconds()  # Время ожидания 1 минута с первого запроса
-                logger.warning(f'Достигнут предел {max_requests} запросов в минуту. Ждем {sleep_seconds} с до следующей группы запросов...')
-                sleep(sleep_seconds)  # Ждем минуту с первого запроса
-                requests = 0  # Сбрасываем выполненное кол-во запросов в минуту
-            if requests == 0:  # Если первый запрос в минуту
-                next_run = datetime.now() + timedelta(minutes=1, seconds=3)  # Следующую группу запросов сможем запустить не ранее, чем через 1 минуту
-            requests += 1  # Следующий запрос
-            logger.debug(f'Запрос {requests}/{max_requests} с {next_bar_open_utc} по {todate_min_utc}')
-            response = (fp_provider.get_intraday_candles(security_board, security_code, time_frame, interval) if intraday else
-                        fp_provider.get_day_candles(security_board, security_code, time_frame, interval))  # Получаем ответ на запрос бар
-            if not response:  # Если в ответ ничего не получили
-                logger.error(f'Ошибка при получении истории: Запрос {requests}. История не получена')
-                return  # то выходим, дальше не продолжаем
-            response_dict = MessageToDict(response, including_default_value_fields=True)  # Переводим в словарь из JSON
-            if 'candles' not in response_dict:  # Если бар нет в словаре
-                logger.error(f'Ошибка при получении истории: {response_dict}')
-                return  # то выходим, дальше не продолжаем
+            logger.debug(f'Запрос с {next_bar_open_utc} по {todate_min_utc}')
+            while True:  # Будем выполнять запрос пока не выполним успешно
+                response = (fp_provider.get_intraday_candles(security_board, security_code, time_frame, interval) if intraday else
+                            fp_provider.get_day_candles(security_board, security_code, time_frame, interval))  # Получаем ответ на запрос бар
+                if not response:  # Если в ответ ничего не получили
+                    sleep_seconds = (next_run - datetime.now()).total_seconds()  # Время ожидания 1 минута с первого запроса
+                    if sleep_seconds <= 0:  # Если вышло время ожидания с первого запроса
+                        sleep_seconds = timedelta(minutes=1, seconds=3).total_seconds()  # то будем ждать 1 минуту с небольшим запасом с этого запроса
+                    logger.warning(f'Достигнут предел кол-ва запросов в минуту. Ждем {sleep_seconds} с до следующей группы запросов...')
+                    sleep(sleep_seconds)  # Ждем минуту с первого запроса
+                    next_run = datetime.now() + timedelta(minutes=1, seconds=3)  # Время следующего запуска запросов 1 минута с небольшим запасом с первого запроса
+                else:  # Если в ответ пришли бары
+                    response_dict = MessageToDict(response, including_default_value_fields=True)  # Переводим в словарь из JSON
+                    if 'candles' not in response_dict:  # Если бар нет в словаре
+                        logger.error(f'Ошибка при получении истории: {response_dict}')
+                        return  # то выходим, дальше не продолжаем
+                    break  # Выходим
             new_bars_dict = response_dict['candles']  # Получаем все бары из Finam
             if len(new_bars_dict) > 0:  # Если пришли новые бары
                 # Дату/время UTC получаем в формате ISO 8601. Пример: 2023-06-16T20:01:00Z
@@ -171,26 +168,26 @@ if __name__ == '__main__':  # Точка входа при запуске это
     fp_provider = FinamPy(Config.AccessToken)  # Подключаемся к торговому счету
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',  # Формат сообщения
                         datefmt='%d.%m.%Y %H:%M:%S',  # Формат даты
-                        level=logging.INFO,  # Уровень логируемых событий NOTSET/DEBUG/INFO/WARNING/ERROR/CRITICAL
+                        level=logging.DEBUG,  # Уровень логируемых событий NOTSET/DEBUG/INFO/WARNING/ERROR/CRITICAL
                         handlers=[logging.FileHandler('Bars.log'), logging.StreamHandler()])  # Лог записываем в файл и выводим на консоль
     logging.Formatter.converter = lambda *args: datetime.now(tz=fp_provider.tz_msk).timetuple()  # В логе время указываем по МСК
 
-    security_board = 'TQBR'  # Акции ММВБ
-    # security_board = 'FUT'  # Фьючерсы
+    # security_board = 'TQBR'  # Акции ММВБ
     # security_codes = ('SBER', 'VTBR', 'GAZP', 'NMTP', 'LKOH', 'BSPB', 'FESH', 'ALRS', 'YNDX', 'BELU',
     #                   'GMKN', 'MTLR', 'HYDR', 'MAGN', 'SNGSP', 'NVTK', 'ROSN', 'TATN', 'SBERP', 'CHMF',
     #                   'MGNT', 'RTKM', 'TRNFP', 'MTSS', 'FEES', 'SNGS', 'NLMK', 'PLZL', 'RNFT', 'MOEX',
     #                   'DVEC', 'TGKA', 'MTLRP', 'RUAL', 'TRMK', 'IRAO', 'SMLT', 'AFKS', 'AFLT', 'PIKK')  # TOP 40 акций ММВБ
-    security_codes = ('SBER',)  # Для тестов
-    # security_codes = ('SiH4', 'RIH4')  # Формат фьючерса: <Тикер><Месяц экспирации><Последняя цифра года> Месяц экспирации: 3-H, 6-M, 9-U, 12-Z
+    # security_codes = ('SBER',)  # Для тестов
+    security_board = 'FUT'  # Фьючерсы
+    security_codes = ('SiH4', 'RIH4')  # Формат фьючерса: <Тикер><Месяц экспирации><Последняя цифра года> Месяц экспирации: 3-H, 6-M, 9-U, 12-Z
 
     skip_last_date = True  # Если получаем данные внутри сессии, то не берем бары за дату незавершенной сессии
     # skip_last_date = False  # Если получаем данные, когда рынок не работает, то берем все бары
     save_candles_to_file(fp_provider, security_board, security_codes, four_price_doji=True, skip_last_date=skip_last_date)  # Дневные бары
-    # save_candles_to_file(fp_provider, security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_H1, skip_last_date=skip_last_date)  # Часовые бары
-    # save_candles_to_file(fp_provider, security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M15, skip_last_date=skip_last_date)  # 15-и минутные бары
-    # save_candles_to_file(fp_provider, security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M5, skip_last_date=skip_last_date)  # 5-и минутные бары
-    # save_candles_to_file(fp_provider, security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M1, skip_last_date=skip_last_date, four_price_doji=True)  # Минутные бары
+    save_candles_to_file(fp_provider, security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_H1, skip_last_date=skip_last_date)  # Часовые бары
+    save_candles_to_file(fp_provider, security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M15, skip_last_date=skip_last_date)  # 15-и минутные бары
+    save_candles_to_file(fp_provider, security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M5, skip_last_date=skip_last_date)  # 5-и минутные бары
+    save_candles_to_file(fp_provider, security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M1, skip_last_date=skip_last_date, four_price_doji=True)  # Минутные бары
 
     fp_provider.close_channel()  # Закрываем канал перед выходом
 

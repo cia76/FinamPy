@@ -2,10 +2,11 @@ from typing import Union  # Объединение типов
 from datetime import datetime
 from os.path import isfile  # Справочник тикеров будем хранить в файле
 from uuid import uuid4  # Номера подписок должны быть уникальными во времени и пространстве
+from queue import SimpleQueue  # Очередь подписок/отписок
+from threading import Thread  # Поток обработки подписок
+import logging  # Будем вести лог
 
 from pytz import timezone, utc  # Работаем с временнОй зоной и UTC
-from threading import Thread  # Поток обработки подписок
-from queue import SimpleQueue  # Очередь подписок/отписок
 from grpc import ssl_channel_credentials, secure_channel, RpcError  # Защищенный канал
 
 from google.protobuf.json_format import MessageToJson, Parse  # Будем хранить справочник в файле в формате JSON
@@ -35,6 +36,9 @@ from .grpc.tradeapi.v1.securities_pb2_grpc import SecuritiesStub  # Сервис
 from .proto.tradeapi.v1.stops_pb2 import (
     GetStopsRequest, GetStopsResult, StopLoss, TakeProfit, NewStopRequest, NewStopResult, CancelStopRequest, CancelStopResult)   # Стоп заявки
 from .grpc.tradeapi.v1.stops_pb2_grpc import StopsStub  # Сервис стоп заявок
+
+
+logger = logging.getLogger('FinamPy')  # Будем вести лог
 
 
 class FinamPy:
@@ -86,7 +90,8 @@ class FinamPy:
         try:  # Пытаемся
             response, call = func.with_call(request=request, metadata=self.metadata)  # вызвать функцию
             return response  # и вернуть ответ
-        except RpcError:  # Если получили ошибку канала
+        except RpcError as ex:  # Если получили ошибку канала
+            logger.debug(f'Ошибка {ex.args[0].details} вызова функции {request}')
             return None  # то возвращаем пустое значение
 
     # Заявки / Orders (https://finamweb.github.io/trade-api-docs/grpc/orders)
@@ -397,14 +402,19 @@ class FinamPy:
             for event in events:  # Пробегаемся по значениям подписок до закрытия канала
                 e: Event = event  # Приводим пришедшее значение к подпискам
                 if e.order != OrderEvent():  # Если пришло событие с заявкой
+                    logger.debug(f'subscriptions_handler: Пришли данные подписки OrderEvent {e.order}')
                     self.on_order(e.order)
                 if e.trade != TradeEvent():  # Если пришло событие со сделкой
+                    logger.debug(f'subscriptions_handler: Пришли данные подписки TradeEvent {e.trade}')
                     self.on_trade(e.trade)
                 if e.order_book != OrderBookEvent():  # Если пришло событие стакана
+                    logger.debug(f'subscriptions_handler: Пришли данные подписки OrderBookEvent {e.order_book}')
                     self.on_order_book(e.order_book)
                 if e.portfolio != PortfolioEvent():  # Если пришло событие портфеля
+                    logger.debug(f'subscriptions_handler: Пришли данные подписки PortfolioEvent {e.portfolio}')
                     self.on_portfolio(e.portfolio)
-                if e.response != ResponseEvent:  # Если пришло событие результата выполнения запроса
+                if e.response != ResponseEvent():  # Если пришло событие результата выполнения запроса
+                    logger.debug(f'subscriptions_handler: Пришли данные подписки ResponseEvent {e.response}')
                     self.on_response(e.response)
         except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
             self.subscriptions_thread = None  # Сбрасываем поток обработки подписок. Запустим его снова на новой подписке
@@ -424,28 +434,28 @@ class FinamPy:
     # Функции конвертации
 
     def dataname_to_board_symbol(self, dataname) -> tuple[str, str]:
-        """код площадки и тикера из названия тикера
+        """Код режима торгов и тикера из названия тикера
 
         :param str dataname: Название тикера
-        :return: Код площадки и тикер
+        :return: Код режима торгов и тикер
         """
         symbol_parts = dataname.split('.')  # По разделителю пытаемся разбить тикер на части
-        if len(symbol_parts) >= 2:  # Если тикер задан в формате <Код площадки>.<Код тикера>
-            board = symbol_parts[0]  # Код площадки
+        if len(symbol_parts) >= 2:  # Если тикер задан в формате <Код режима торгов>.<Код тикера>
+            board = symbol_parts[0]  # Код режима торгов
             symbol = '.'.join(symbol_parts[1:])  # Код тикера
-        else:  # Если тикер задан без площадки
+        else:  # Если тикер задан без режима торгов
             symbol = dataname  # Код тикера
-            try:  # Пробуем по тикеру получить площадку
-                board = next(item.board for item in self.symbols.securities if item.code == symbol)  # Получаем код площадки первого совпадающего тикера
-            except StopIteration:  # Если площадка не найдена
+            try:  # Пробуем по тикеру получить режим торгов
+                board = next(item.board for item in self.symbols.securities if item.code == symbol)  # Получаем код режима торгов первого совпадающего тикера
+            except StopIteration:  # Если режим торгов не найден
                 board = None  # то возвращаем пустое значение
-        return board, symbol  # Возвращаем код площадки и код тикера
+        return board, symbol  # Возвращаем код режима торгов и тикера
 
     @staticmethod
     def board_symbol_to_dataname(board, symbol) -> str:
-        """Название тикера из кода площадки и тикера
+        """Название тикера из кода режима торгов и тикера
 
-        :param str board: Код площадки
+        :param str board: Код режима торгов
         :param str symbol: Тикер
         :return: Название тикера
         """
@@ -454,7 +464,7 @@ class FinamPy:
     def get_symbol_info(self, board, symbol) -> Union[Security, None]:
         """Спецификация тикера
 
-        :param str board: Код площадки
+        :param str board: Код режима торгов
         :param str symbol: Тикер
         :return: Значение из кэша или None, если тикер не найден
         """
@@ -516,7 +526,7 @@ class FinamPy:
     def price_to_finam_price(self, board, symbol, price) -> float:
         """Перевод цены в цену Финама
 
-        :param str board: Код площадки
+        :param str board: Код режима торгов
         :param str symbol: Тикер
         :param float price: Цена
         :return: Цена в Финам
@@ -529,7 +539,7 @@ class FinamPy:
     def finam_price_to_price(self, board, symbol, price) -> float:
         """Перевод цены Финама в цену
 
-        :param str board: Код площадки
+        :param str board: Код режима торгов
         :param str symbol: Тикер
         :param float price: Цена в Финам
         :return: Цена
