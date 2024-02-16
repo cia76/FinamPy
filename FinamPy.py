@@ -42,6 +42,7 @@ from .grpc.tradeapi.v1.stops_pb2_grpc import StopsStub  # Сервис стоп 
 logger = logging.getLogger('FinamPy')  # Будем вести лог
 
 
+# noinspection PyProtectedMember
 class FinamPy:
     """Работа с Finam Trade gRPC Api из Python https://finamweb.github.io/trade-api-docs/category/grpc
     Генерация кода в папках grpc/proto осуществлена из proto контрактов: https://github.com/FinamWeb/trade-api-docs/tree/master/contracts
@@ -93,12 +94,13 @@ class FinamPy:
                 response, call = func.with_call(request=request, metadata=self.metadata)  # вызвать функцию
                 return response  # и вернуть ответ
             except RpcError as ex:  # Если получили ошибку канала
+                func_name = func._method.decode("utf-8")  # Название функции
                 details = ex.args[0].details  # Сообщение об ошибке
                 if 'Too many requests' in details:  # Если превышено допустимое кол-во запросов в минуту
-                    logger.warning(f'Превышение кол-ва запросов в минуту при вызове функции {request}Запрос повторится через минуту')
+                    logger.warning(f'Превышение кол-ва запросов в минуту при вызове функции {func_name} с параметрами {request}Запрос повторится через минуту')
                     time.sleep(60)  # Ждем минуту, т.к. не знаем, за какое время возникло превышение
                 else:  # В остальных случаях
-                    logger.error(f'Ошибка {details} при вызове функции {request}')
+                    logger.error(f'Ошибка {details} при вызове функции {func_name} с параметрами {request}')
                     return None  # Возвращаем пустое значение
 
     # Заявки / Orders (https://finamweb.github.io/trade-api-docs/grpc/orders)
