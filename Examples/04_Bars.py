@@ -61,7 +61,6 @@ def save_candles_to_file(fp_provider=FinamPy(Config.AccessToken),
         from_ = getattr(interval, 'from')  # Т.к. from - ключевое слово в Python, то получаем атрибут from из атрибута интервала
         to_ = getattr(interval, 'to')  # Аналогично будем работать с атрибутом to для единообразия
         first_request = not file_exists  # Если файл не существует, то первый запрос будем формировать без даты окончания. Так мы в первом запросе получим первые бары истории
-        next_run = datetime.now() + timedelta(minutes=1, seconds=3)  # Время следующего запуска запросов 1 минута с небольшим запасом с первого запроса
         while True:  # Будем получать бары пока не получим все
             todate_min_utc = min(todate_utc, next_bar_open_utc + td)  # До какой даты можем делать запрос
             if intraday:  # Для интрадея datetime -> Timestamp
@@ -85,22 +84,14 @@ def save_candles_to_file(fp_provider=FinamPy(Config.AccessToken),
             if first_request:  # Для первого запроса
                 first_request = False  # далее будем ставить в запросы дату окончания интервала
             logger.debug(f'Запрос с {next_bar_open_utc} по {todate_min_utc}')
-            while True:  # Будем выполнять запрос пока не выполним успешно
-                response = (fp_provider.get_intraday_candles(security_board, security_code, time_frame, interval) if intraday else
-                            fp_provider.get_day_candles(security_board, security_code, time_frame, interval))  # Получаем ответ на запрос бар
-                if not response:  # Если в ответ ничего не получили
-                    sleep_seconds = (next_run - datetime.now()).total_seconds()  # Время ожидания 1 минута с первого запроса
-                    if sleep_seconds <= 0:  # Если вышло время ожидания с первого запроса
-                        sleep_seconds = timedelta(minutes=1, seconds=3).total_seconds()  # то будем ждать 1 минуту с небольшим запасом с этого запроса
-                    logger.warning(f'Достигнут предел кол-ва запросов в минуту. Ждем {sleep_seconds} с до следующей группы запросов...')
-                    sleep(sleep_seconds)  # Ждем минуту с первого запроса
-                    next_run = datetime.now() + timedelta(minutes=1, seconds=3)  # Время следующего запуска запросов 1 минута с небольшим запасом с первого запроса
-                else:  # Если в ответ пришли бары
-                    response_dict = MessageToDict(response, including_default_value_fields=True)  # Переводим в словарь из JSON
-                    if 'candles' not in response_dict:  # Если бар нет в словаре
-                        logger.error(f'Ошибка при получении истории: {response_dict}')
-                        return  # то выходим, дальше не продолжаем
-                    break  # Выходим
+            response = (fp_provider.get_intraday_candles(security_board, security_code, time_frame, interval) if intraday else
+                        fp_provider.get_day_candles(security_board, security_code, time_frame, interval))  # Получаем ответ на запрос бар
+            if not response:  # Если в ответ ничего не получили
+                return  # то возникла ошибка. Ее получим в логе FinamPy. Выходим, дальше не продолжаем
+            response_dict = MessageToDict(response, including_default_value_fields=True)  # Переводим в словарь из JSON
+            if 'candles' not in response_dict:  # Если бар нет в словаре
+                logger.error(f'Ошибка при получении истории: {response_dict}')
+                return  # то выходим, дальше не продолжаем
             new_bars_dict = response_dict['candles']  # Получаем все бары из Finam
             if len(new_bars_dict) > 0:  # Если пришли новые бары
                 # Дату/время UTC получаем в формате ISO 8601. Пример: 2023-06-16T20:01:00Z
@@ -183,9 +174,9 @@ if __name__ == '__main__':  # Точка входа при запуске это
 
     skip_last_date = True  # Если получаем данные внутри сессии, то не берем бары за дату незавершенной сессии
     # skip_last_date = False  # Если получаем данные, когда рынок не работает, то берем все бары
-    save_candles_to_file(fp_provider, security_board, security_codes, four_price_doji=True, skip_last_date=skip_last_date)  # Дневные бары
+    # save_candles_to_file(fp_provider, security_board, security_codes, four_price_doji=True, skip_last_date=skip_last_date)  # Дневные бары
     # save_candles_to_file(fp_provider, security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_H1, skip_last_date=skip_last_date)  # Часовые бары
-    # save_candles_to_file(fp_provider, security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M15, skip_last_date=skip_last_date)  # 15-и минутные бары
+    save_candles_to_file(fp_provider, security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M15, skip_last_date=skip_last_date)  # 15-и минутные бары
     # save_candles_to_file(fp_provider, security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M5, skip_last_date=skip_last_date)  # 5-и минутные бары
     # save_candles_to_file(fp_provider, security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M1, skip_last_date=skip_last_date, four_price_doji=True)  # Минутные бары
 

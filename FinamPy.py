@@ -1,3 +1,4 @@
+import time
 from typing import Union  # Объединение типов
 from datetime import datetime
 from os.path import isfile  # Справочник тикеров будем хранить в файле
@@ -87,12 +88,18 @@ class FinamPy:
 
     def call_function(self, func, request):
         """Вызов функции"""
-        try:  # Пытаемся
-            response, call = func.with_call(request=request, metadata=self.metadata)  # вызвать функцию
-            return response  # и вернуть ответ
-        except RpcError as ex:  # Если получили ошибку канала
-            logger.debug(f'Ошибка {ex.args[0].details} вызова функции {request}')
-            return None  # то возвращаем пустое значение
+        while True:  # Пока не получим ответ или ошибку
+            try:  # Пытаемся
+                response, call = func.with_call(request=request, metadata=self.metadata)  # вызвать функцию
+                return response  # и вернуть ответ
+            except RpcError as ex:  # Если получили ошибку канала
+                details = ex.args[0].details  # Сообщение об ошибке
+                if 'Too many requests' in details:  # Если превышено допустимое кол-во запросов в минуту
+                    logger.warning(f'Превышение кол-ва запросов в минуту при вызове функции {request}Запрос повторится через минуту')
+                    time.sleep(60)  # Ждем минуту, т.к. не знаем, за какое время возникло превышение
+                else:  # В остальных случаях
+                    logger.error(f'Ошибка {details} при вызове функции {request}')
+                    return None  # Возвращаем пустое значение
 
     # Заявки / Orders (https://finamweb.github.io/trade-api-docs/grpc/orders)
 
