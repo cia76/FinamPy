@@ -67,11 +67,11 @@ class FinamPy:
         self.channel = secure_channel(self.server, ssl_channel_credentials())  # Защищенный канал
 
         # Сервисы
-        self.candles_stub = CandlesStub(self.channel)  # Сервис свечей
-        self.orders_stub = OrdersStub(self.channel)  # Сервис заявок
-        self.portfolios_stub = PortfoliosStub(self.channel)  # Сервис портфелей
-        self.securities_stub = SecuritiesStub(self.channel)  # Сервис тикеров
-        self.stops_stub = StopsStub(self.channel)  # Сервис стоп заявок
+        self.candles_stub = CandlesStub(self.channel)  # Свечи
+        self.orders_stub = OrdersStub(self.channel)  # Заявки
+        self.portfolios_stub = PortfoliosStub(self.channel)  # Портфели
+        self.securities_stub = SecuritiesStub(self.channel)  # Тикеры
+        self.stops_stub = StopsStub(self.channel)  # Стоп заявки
 
         # События
         self.on_order = self.default_handler  # Заявка
@@ -84,27 +84,6 @@ class FinamPy:
         self.subscriptions_thread = None  # Поток обработки подписок создадим при первой подписке
 
         self.symbols = self.get_securities()  # Получаем справочник тикеров из файла или сервиса (занимает несколько секунд)
-
-    # Запросы
-
-    def call_function(self, func, request):
-        """Вызов функции"""
-        while True:  # Пока не получим ответ или ошибку
-            try:  # Пытаемся
-                response, call = func.with_call(request=request, metadata=self.metadata)  # вызвать функцию
-                return response  # и вернуть ответ
-            except RpcError as ex:  # Если получили ошибку канала
-                func_name = func._method.decode("utf-8")  # Название функции
-                details = ex.args[0].details  # Сообщение об ошибке
-                if 'Too many requests' in details:  # Если превышено допустимое кол-во запросов в минуту
-                    sleep_seconds = 60 - datetime.now().second + timedelta(seconds=3).total_seconds()  # Время в секундах до начала следующей минуты с учетом разницы локального времени и времени торгового сервера
-                    logger.warning(f'Превышение кол-ва запросов в минуту при вызове функции {func_name} с параметрами {request}Запрос повторится через {sleep_seconds} с')
-                    sleep(sleep_seconds)  # Ждем
-                    # logger.warning(f'Превышение кол-ва запросов в минуту при вызове функции {func_name} с параметрами {request}Запрос повторится через минуту')
-                    # sleep(60)  # Ждем минуту, т.к. не знаем, за какое время возникло превышение
-                else:  # В остальных случаях
-                    logger.error(f'Ошибка {details} при вызове функции {func_name} с параметрами {request}')
-                    return None  # Возвращаем пустое значение
 
     # Заявки / Orders (https://finamweb.github.io/trade-api-docs/grpc/orders)
 
@@ -389,7 +368,28 @@ class FinamPy:
                                             time_frame=time_frame, interval=interval)
         return self.call_function(self.candles_stub.GetIntradayCandles, request)
 
-    # Поток обработки подписок
+    # Запросы
+
+    def call_function(self, func, request):
+        """Вызов функции"""
+        while True:  # Пока не получим ответ или ошибку
+            try:  # Пытаемся
+                response, call = func.with_call(request=request, metadata=self.metadata)  # вызвать функцию
+                return response  # и вернуть ответ
+            except RpcError as ex:  # Если получили ошибку канала
+                func_name = func._method.decode('utf-8')  # Название функции
+                details = ex.args[0].details  # Сообщение об ошибке
+                if 'Too many requests' in details:  # Если превышено допустимое кол-во запросов в минуту
+                    sleep_seconds = 60 - datetime.now().second + timedelta(seconds=3).total_seconds()  # Время в секундах до начала следующей минуты с учетом разницы локального времени и времени торгового сервера
+                    logger.warning(f'Превышение кол-ва запросов в минуту при вызове функции {func_name} с параметрами {request}Запрос повторится через {sleep_seconds} с')
+                    sleep(sleep_seconds)  # Ждем
+                    # logger.warning(f'Превышение кол-ва запросов в минуту при вызове функции {func_name} с параметрами {request}Запрос повторится через минуту')
+                    # sleep(60)  # Ждем минуту, т.к. не знаем, за какое время возникло превышение
+                else:  # В остальных случаях
+                    logger.error(f'Ошибка {details} при вызове функции {func_name} с параметрами {request}')
+                    return None  # Возвращаем пустое значение
+
+    # Подписки
 
     def default_handler(self, event: Union[OrderEvent, TradeEvent, OrderBookEvent, PortfolioEvent, ResponseEvent]):
         """Пустой обработчик события по умолчанию. Его можно заменить на пользовательский"""
@@ -403,7 +403,7 @@ class FinamPy:
 
     def request_iterator(self):
         """Генератор запросов на подписку/отписку"""
-        while True:  # Будем пытаться читать из очереди до закрытии канала
+        while True:  # Будем пытаться читать из очереди до закрытия канала
             yield self.subscription_queue.get()  # Возврат из этой функции. При повторном ее вызове исполнение продолжится с этой строки
 
     def subscriptions_handler(self):
