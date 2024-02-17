@@ -380,7 +380,7 @@ class FinamPy:
                 func_name = func._method.decode('utf-8')  # Название функции
                 details = ex.args[0].details  # Сообщение об ошибке
                 if 'Too many requests' in details:  # Если превышено допустимое кол-во запросов в минуту
-                    sleep_seconds = 60 - datetime.now().second + timedelta(seconds=3).total_seconds()  # Время в секундах до начала следующей минуты с учетом разницы локального времени и времени торгового сервера
+                    sleep_seconds = 60  # Т.к. мы не знаем время начала серии запросов, то придется ждать 1 минуту
                     logger.warning(f'Превышение кол-ва запросов в минуту при вызове функции {func_name} с параметрами {request}Запрос повторится через {sleep_seconds} с')
                     sleep(sleep_seconds)  # Ждем
                     # logger.warning(f'Превышение кол-ва запросов в минуту при вызове функции {func_name} с параметрами {request}Запрос повторится через минуту')
