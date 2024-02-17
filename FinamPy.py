@@ -1,6 +1,6 @@
-import time
 from typing import Union  # Объединение типов
-from datetime import datetime
+from datetime import datetime, timedelta
+from time import sleep
 from os.path import isfile  # Справочник тикеров будем хранить в файле
 from uuid import uuid4  # Номера подписок должны быть уникальными во времени и пространстве
 from queue import SimpleQueue  # Очередь подписок/отписок
@@ -81,7 +81,7 @@ class FinamPy:
         self.on_response = self.default_handler  # Подтверждающее сообщение для поддержания активности
 
         self.subscription_queue: SimpleQueue[SubscriptionRequest] = SimpleQueue()  # Буфер команд на подписку/отписку
-        self.subscriptions_thread = None  # Поток обработки подписок создадим позже
+        self.subscriptions_thread = None  # Поток обработки подписок создадим при первой подписке
 
         self.symbols = self.get_securities()  # Получаем справочник тикеров из файла или сервиса (занимает несколько секунд)
 
@@ -97,8 +97,11 @@ class FinamPy:
                 func_name = func._method.decode("utf-8")  # Название функции
                 details = ex.args[0].details  # Сообщение об ошибке
                 if 'Too many requests' in details:  # Если превышено допустимое кол-во запросов в минуту
-                    logger.warning(f'Превышение кол-ва запросов в минуту при вызове функции {func_name} с параметрами {request}Запрос повторится через минуту')
-                    time.sleep(60)  # Ждем минуту, т.к. не знаем, за какое время возникло превышение
+                    sleep_seconds = 60 - datetime.now().second + timedelta(seconds=3).total_seconds()  # Время в секундах до начала следующей минуты с учетом разницы локального времени и времени торгового сервера
+                    logger.warning(f'Превышение кол-ва запросов в минуту при вызове функции {func_name} с параметрами {request}Запрос повторится через {sleep_seconds} с')
+                    sleep(sleep_seconds)  # Ждем
+                    # logger.warning(f'Превышение кол-ва запросов в минуту при вызове функции {func_name} с параметрами {request}Запрос повторится через минуту')
+                    # sleep(60)  # Ждем минуту, т.к. не знаем, за какое время возникло превышение
                 else:  # В остальных случаях
                     logger.error(f'Ошибка {details} при вызове функции {func_name} с параметрами {request}')
                     return None  # Возвращаем пустое значение
@@ -278,11 +281,9 @@ class FinamPy:
         :param bool include_orders: Включить заявки в подписку
         :param str request_id: Идентификатор запроса
         """
+        self.check_subscriptions_thread()  # Запускаем поток обработки подписок, если не был запущен
         if not request_id:  # Если идентификатор запроса не указан
             request_id = uuid4().hex[:16].upper()  # то создаем его из первых 16-и символов уникального идентификатора
-        if not self.subscriptions_thread:  # Если еще нет потока обработки подписок
-            self.subscriptions_thread = Thread(target=self.subscriptions_handler, name='SubscriptionsThread')  # Создаем поток обработки подписок
-            self.subscriptions_thread.start()  # Запускаем поток
         request = SubscriptionRequest(order_trade_subscribe_request=OrderTradeSubscribeRequest(
             request_id=request_id, client_ids=client_ids, include_trades=include_trades, include_orders=include_orders))
         self.subscription_queue.put(request)  # Отправляем в очередь на отправку
@@ -304,11 +305,9 @@ class FinamPy:
         :param str security_board: Режим торгов
         :param str request_id: Идентификатор запроса
         """
+        self.check_subscriptions_thread()  # Запускаем поток обработки подписок, если не был запущен
         if not request_id:  # Если идентификатор запроса не указан
             request_id = uuid4().hex[:16].upper()  # то создаем его из первых 16-и символов уникального идентификатора
-        if not self.subscriptions_thread:  # Если еще нет потока обработки подписок
-            self.subscriptions_thread = Thread(target=self.subscriptions_handler, name='SubscriptionsThread')  # Создаем поток обработки подписок
-            self.subscriptions_thread.start()  # Запускаем поток
         request = SubscriptionRequest(order_book_subscribe_request=OrderBookSubscribeRequest(
             request_id=request_id, security_code=security_code, security_board=security_board))
         self.subscription_queue.put(request)  # Отправляем в очередь на отправку
@@ -330,11 +329,9 @@ class FinamPy:
 
         :param str request_id: Идентификатор запроса
         """
+        self.check_subscriptions_thread()  # Запускаем поток обработки подписок, если не был запущен
         if not request_id:  # Если идентификатор запроса не указан
             request_id = uuid4().hex[:16].upper()  # то создаем его из первых 16-и символов уникального идентификатора
-        if not self.subscriptions_thread:  # Если еще нет потока обработки подписок
-            self.subscriptions_thread = Thread(target=self.subscriptions_handler, name='SubscriptionsThread')  # Создаем поток обработки подписок
-            self.subscriptions_thread.start()  # Запускаем поток
         request = SubscriptionRequest(keep_alive_request=KeepAliveRequest(request_id=request_id))
         self.subscription_queue.put(request)  # Отправляем в очередь на отправку
         return request_id
@@ -397,6 +394,12 @@ class FinamPy:
     def default_handler(self, event: Union[OrderEvent, TradeEvent, OrderBookEvent, PortfolioEvent, ResponseEvent]):
         """Пустой обработчик события по умолчанию. Его можно заменить на пользовательский"""
         pass
+
+    def check_subscriptions_thread(self):
+        """Запуск потока обработки подписок, если не был запущен"""
+        if not self.subscriptions_thread:  # Если еще нет потока обработки подписок
+            self.subscriptions_thread = Thread(target=self.subscriptions_handler, name='SubscriptionsThread')  # Создаем поток обработки подписок
+            self.subscriptions_thread.start()  # Запускаем поток
 
     def request_iterator(self):
         """Генератор запросов на подписку/отписку"""
