@@ -262,7 +262,7 @@ class FinamPy:
         :param bool include_orders: Включить заявки в подписку
         :param str request_id: Идентификатор запроса
         """
-        self.check_subscriptions_thread()  # Запускаем поток обработки подписок, если не был запущен
+        self.check_threads()  # Запускаем поток обработки подписок, если не был запущен
         if not request_id:  # Если идентификатор запроса не указан
             request_id = uuid4().hex[:16].upper()  # то создаем его из первых 16-и символов уникального идентификатора
         request = SubscriptionRequest(order_trade_subscribe_request=OrderTradeSubscribeRequest(
@@ -286,7 +286,7 @@ class FinamPy:
         :param str security_board: Режим торгов
         :param str request_id: Идентификатор запроса
         """
-        self.check_subscriptions_thread()  # Запускаем поток обработки подписок, если не был запущен
+        self.check_threads()  # Запускаем поток обработки подписок, если не был запущен
         if not request_id:  # Если идентификатор запроса не указан
             request_id = uuid4().hex[:16].upper()  # то создаем его из первых 16-и символов уникального идентификатора
         request = SubscriptionRequest(order_book_subscribe_request=OrderBookSubscribeRequest(
@@ -310,7 +310,7 @@ class FinamPy:
 
         :param str request_id: Идентификатор запроса
         """
-        self.check_subscriptions_thread()  # Запускаем поток обработки подписок, если не был запущен
+        self.check_threads()  # Запускаем поток обработки подписок, если не был запущен
         if not request_id:  # Если идентификатор запроса не указан
             request_id = uuid4().hex[:16].upper()  # то создаем его из первых 16-и символов уникального идентификатора
         request = SubscriptionRequest(keep_alive_request=KeepAliveRequest(request_id=request_id))
@@ -397,8 +397,8 @@ class FinamPy:
         """Пустой обработчик события по умолчанию. Его можно заменить на пользовательский"""
         pass
 
-    def check_subscriptions_thread(self):
-        """Запуск потока обработки подписок, если не был запущен"""
+    def check_threads(self):
+        """Запуск потоков поддержания активности и обработки подписок, если не были запущены"""
         if not self.keep_alive_thread:  # Если еще нет потока поддержания активности
             self.keep_alive_thread = Thread(target=self.keep_alive_handler, name='KeepAliveThread')  # Создаем поток поддержания активности
             self.keep_alive_thread.start()  # Запускаем поток
