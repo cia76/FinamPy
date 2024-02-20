@@ -4,7 +4,7 @@ from time import sleep
 from os.path import isfile  # Справочник тикеров будем хранить в файле
 from uuid import uuid4  # Номера подписок должны быть уникальными во времени и пространстве
 from queue import SimpleQueue  # Очередь подписок/отписок
-from threading import Thread  # Поток обработки подписок
+from threading import Thread, Event as ThreadingEvent  # Поток обработки подписок и событие
 import logging  # Будем вести лог
 
 from pytz import timezone, utc  # Работаем с временнОй зоной и UTC
@@ -22,7 +22,7 @@ from .proto.tradeapi.v1.candles_pb2 import (
     IntradayCandleTimeFrame, IntradayCandleInterval, GetIntradayCandlesRequest, GetIntradayCandlesResult)  # Свечи
 from .proto.tradeapi.v1.events_pb2 import (
     SubscriptionRequest, OrderBookSubscribeRequest, OrderBookUnsubscribeRequest, OrderTradeSubscribeRequest, OrderTradeUnsubscribeRequest,
-    Event, OrderEvent, TradeEvent, OrderBookEvent, PortfolioEvent)  # Запросы и события подписок
+    Event as FinamEvent, OrderEvent, TradeEvent, OrderBookEvent, PortfolioEvent)  # Запросы и события подписок
 from .grpc.tradeapi.v1.events_pb2_grpc import EventsStub  # Сервис подписок
 from .proto.tradeapi.v1.orders_pb2 import (
     GetOrdersRequest, GetOrdersResult,
@@ -80,6 +80,8 @@ class FinamPy:
         self.on_portfolio = self.default_handler  # Портфель
         self.on_response = self.default_handler  # Подтверждающее сообщение для поддержания активности
 
+        self.keep_alive_exit_event = ThreadingEvent()  # Определяем событие выхода из потока поддержания активности
+        self.keep_alive_thread = None  # Поток поддержания активности создадим при первой подписке
         self.subscription_queue: SimpleQueue[SubscriptionRequest] = SimpleQueue()  # Буфер команд на подписку/отписку
         self.subscriptions_thread = None  # Поток обработки подписок создадим при первой подписке
 
@@ -397,6 +399,9 @@ class FinamPy:
 
     def check_subscriptions_thread(self):
         """Запуск потока обработки подписок, если не был запущен"""
+        if not self.keep_alive_thread:  # Если еще нет потока поддержания активности
+            self.keep_alive_thread = Thread(target=self.keep_alive_handler, name='KeepAliveThread')  # Создаем поток поддержания активности
+            self.keep_alive_thread.start()  # Запускаем поток
         if not self.subscriptions_thread:  # Если еще нет потока обработки подписок
             self.subscriptions_thread = Thread(target=self.subscriptions_handler, name='SubscriptionsThread')  # Создаем поток обработки подписок
             self.subscriptions_thread.start()  # Запускаем поток
@@ -412,7 +417,7 @@ class FinamPy:
         events = events_stub.GetEvents(request_iterator=self.request_iterator(), metadata=self.metadata)  # Получаем значения подписок
         try:
             for event in events:  # Пробегаемся по значениям подписок до закрытия канала
-                e: Event = event  # Приводим пришедшее значение к подпискам
+                e: FinamEvent = event  # Приводим пришедшее значение к подпискам
                 if e.order != OrderEvent():  # Если пришло событие с заявкой
                     logger.debug(f'subscriptions_handler: Пришли данные подписки OrderEvent {e.order}')
                     self.on_order(e.order)
@@ -431,6 +436,15 @@ class FinamPy:
         except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
             self.subscriptions_thread = None  # Сбрасываем поток обработки подписок. Запустим его снова на новой подписке
 
+    def keep_alive_handler(self):
+        """Поток поддержания активности. Чтобы сервер Финам не удалял канал, и не получали ошибку Stream removed"""
+        while True:
+            logger.debug(f'keep_alive_handler: Отправлено сообщение для поддержания активности {self.keep_alive()}')
+            exit_event_set = self.keep_alive_exit_event.wait(120)  # Ждем нового бара или события выхода из потока  # Ждем 2 минуты (подбирается экспериментально)
+            if exit_event_set:  # Если произошло событие выхода из потока
+                logger.debug('Выход из потока поддержания активности')
+                return  # Выходим из потока, дальше не продолжаем
+
     # Выход и закрытие
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -441,7 +455,8 @@ class FinamPy:
 
     def close_channel(self):
         """Закрытие канала"""
-        self.channel.close()
+        self.keep_alive_exit_event.set()  # Останавливаем поток поддержания активности
+        self.channel.close()  # Закрываем канал
 
     # Функции конвертации
 
