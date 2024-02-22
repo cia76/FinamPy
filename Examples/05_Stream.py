@@ -1,6 +1,6 @@
 import logging  # Выводим лог на консоль и в файл
 from datetime import datetime  # Дата и время
-import time  # Подписка на события по времени
+from time import sleep  # Подписка на события по времени
 
 from FinamPy import FinamPy  # Работа с сервером TRANSAQ
 from FinamPy.Config import Config  # Файл конфигурации
@@ -30,7 +30,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
     request_id = 'orderbook1'  # Код подписки может быть любым
     fp_provider.subscribe_order_book(security_code, security_board, request_id)  # Подписываемся на стакан тикера
     logger.info(f'Подписка на стакан {request_id} тикера {security_board}.{security_code} создана')
-    time.sleep(sleep_secs)  # Ждем кол-во секунд получения стакана
+    sleep(sleep_secs)  # Ждем кол-во секунд получения стакана
     logger.info(f'Подписка на стакан {request_id} тикера {security_board}.{security_code} отменена')
     fp_provider.unsubscribe_order_book(request_id, security_code, security_board)  # Отписываемся от стакана тикера
 
