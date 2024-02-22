@@ -1,6 +1,5 @@
 from typing import Union  # Объединение типов
-from datetime import datetime, timedelta
-from time import sleep
+from datetime import datetime
 from os.path import isfile  # Справочник тикеров будем хранить в файле
 from uuid import uuid4  # Номера подписок должны быть уникальными во времени и пространстве
 from queue import SimpleQueue  # Очередь подписок/отписок
