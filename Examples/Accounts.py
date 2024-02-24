@@ -21,13 +21,16 @@ if __name__ == '__main__':  # Точка входа при запуске это
         logger.info(f'Учетная запись {client_id}')
         portfolio = fp_provider.get_portfolio(client_id)  # Получаем портфель
         for position in portfolio.positions:  # Пробегаемся по всем позициям
-            logger.info(f'- Позиция ({position.security_code}) {position.balance} @ {position.average_price:.2f} / {position.current_price:.2f}')
-        logger.info('- Позиции + Свободные средства:')
-        for currency in portfolio.currencies:
-            logger.info(f'  - {currency.balance:.2f} {currency.name}')
+            si = fp_provider.get_symbol_info(position.market, position.security_code)  # Ищем тикер в справочнике по рынку (не по площадке)
+            entry_price = fp_provider.finam_price_to_price(si.board, position.security_code, position.average_price)  # Цена входа
+            last_price = fp_provider.finam_price_to_price(si.board, position.security_code, position.current_price)  # Последняя цена
+            logger.info(f'- Позиция {si.board}.{position.security_code} ({si.short_name}) {position.balance} @ {entry_price} / {last_price}')
         logger.info('- Свободные средства:')
         for m in portfolio.money:
-            logger.info(f'  - {m.balance:.2f} {m.currency}')
+            logger.info(f'  - {m.balance} {m.currency}')
+        logger.info('- Портфель:')
+        for currency in portfolio.currencies:
+            logger.info(f'  - {currency.balance} {currency.name}')
         orders = fp_provider.get_orders(client_id).orders  # Получаем заявки
         for order in orders:  # Пробегаемся по всем заявкам
             logger.info(f'- Заявка номер {order.order_no} {"Покупка" if order.buy_sell == "Buy" else "Продажа"} {order.security_board}.{order.security_code} {order.quantity} @ {order.price}')

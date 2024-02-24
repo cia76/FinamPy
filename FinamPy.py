@@ -483,18 +483,19 @@ class FinamPy:
         """
         return f'{board}.{symbol}'
 
-    def get_symbol_info(self, board, symbol) -> Union[Security, None]:
+    def get_symbol_info(self, board_market, symbol) -> Union[Security, None]:
         """Спецификация тикера
 
-        :param str board: Код режима торгов
+        :param str board_market: Код режима торгов или рынка
         :param str symbol: Тикер
         :return: Значение из кэша или None, если тикер не найден
         """
-        try:  # Пробуем
-            return next(item for item in self.symbols.securities if item.board == board and item.code == symbol)  # вернуть значение из справочника
-        except StopIteration:  # Если тикер не найден
-            print(f'Информация о {board}.{symbol} не найдена')
-            return None  # то возвращаем пустое значение
+        symbol_info = next((sequrity for sequrity in self.symbols.securities if sequrity.board == board_market and sequrity.code == symbol), None)  # Ищем значение в справочнике по коду режима торгов
+        if not symbol_info:  # Если тикер не найден
+            symbol_info = next((security for security in self.symbols.securities if security.market == board_market and security.code == symbol), None)  # то ищем по рынку тикера (для позиций)
+        if not symbol_info:  # Если тикер не найден
+            logger.warning(f'Информация о {board_market}.{symbol} не найдена')
+        return symbol_info
 
     @staticmethod
     def timeframe_to_finam_timeframe(tf):
@@ -554,22 +555,29 @@ class FinamPy:
         :return: Цена в Финам
         """
         si = self.get_symbol_info(board, symbol)  # Информация о тикере
-        if board == 'TQOB':  # Для рынка облигаций
-            price /= 10  # цену делим на 10
-        return round(price, si.decimals)  # Округляем цену
+        if board in ('TQOB', 'TQCB', 'TQRD', 'TQIR'):  # Для облигаций (Т+ Гособлигации, Т+ Облигации, Т+ Облигации Д, Т+ Облигации ПИР)
+            finam_price = price * si.bp_cost  # Пункты цены для котировок облигаций представляют собой проценты номинала облигации
+        else:  # В остальных случаях
+            finam_price = price  # Цена не изменяется
+        min_step = 10 ** -si.decimals * si.min_step  # Шаг цены
+        return round(finam_price // min_step * min_step, si.decimals)  # Округляем цену кратно шага цены
 
-    def finam_price_to_price(self, board, symbol, price) -> float:
+    def finam_price_to_price(self, board, symbol, finam_price) -> float:
         """Перевод цены Финама в цену
 
         :param str board: Код режима торгов
         :param str symbol: Тикер
-        :param float price: Цена в Финам
+        :param float finam_price: Цена в Финам
         :return: Цена
         """
-        # si = self.get_symbol_info(board, symbol)  # Информация о тикере (возможно, потребуется в будущем)
-        if board == 'TQOB':  # Для рынка облигаций
-            price *= 10  # цену умножаем на 10
-        return price
+        si = self.get_symbol_info(board, symbol)  # Информация о тикере
+        min_step = 10 ** -si.decimals * si.min_step  # Шаг цены
+        finam_price = finam_price // min_step * min_step  # Цена кратная шагу цены
+        if board in ('TQOB', 'TQCB', 'TQRD', 'TQIR'):  # Для облигаций (Т+ Гособлигации, Т+ Облигации, Т+ Облигации Д, Т+ Облигации ПИР)
+            price = finam_price / si.bp_cost  # Пункты цены для котировок облигаций представляют собой проценты номинала облигации
+        else:  # В остальных случаях
+            price = finam_price  # Цена не изменяется
+        return round(price, si.decimals)
 
     def msk_to_utc_datetime(self, dt, tzinfo=False) -> datetime:
         """Перевод времени из московского в UTC
