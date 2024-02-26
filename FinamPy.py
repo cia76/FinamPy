@@ -1,5 +1,6 @@
 from typing import Union  # Объединение типов
 from datetime import datetime
+from time import sleep
 from os.path import isfile  # Справочник тикеров будем хранить в файле
 from uuid import uuid4  # Номера подписок должны быть уникальными во времени и пространстве
 from queue import SimpleQueue  # Очередь подписок/отписок
@@ -381,7 +382,9 @@ class FinamPy:
                 func_name = func._method.decode('utf-8')  # Название функции
                 details = ex.args[0].details  # Сообщение об ошибке
                 if 'Too many requests' in details:  # Если превышено допустимое кол-во запросов в минуту
-                    logger.warning(f'Превышение кол-ва запросов в минуту при вызове функции {func_name} с параметрами {request}Запрос повторится через 60 с')
+                    sleep_seconds = 60
+                    logger.warning(f'Превышение кол-ва запросов в минуту при вызове функции {func_name} с параметрами {request}Запрос повторится через {sleep_seconds} с')
+                    sleep(sleep_seconds)  # Ждем
                 else:  # В остальных случаях
                     logger.error(f'Ошибка {details} при вызове функции {func_name} с параметрами {request}')
                     return None  # Возвращаем пустое значение
