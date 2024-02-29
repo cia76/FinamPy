@@ -7,9 +7,6 @@ from queue import SimpleQueue  # Очередь подписок/отписок
 from threading import Thread, Event as ThreadingEvent  # Поток обработки подписок и событие
 import logging  # Будем вести лог
 
-from pytz import timezone, utc  # Работаем с временнОй зоной и UTC
-from grpc import ssl_channel_credentials, secure_channel, RpcError  # Защищенный канал
-
 from google.protobuf.json_format import MessageToJson, Parse  # Будем хранить справочник в файле в формате JSON
 from google.protobuf.timestamp_pb2 import Timestamp  # Представление времени
 from google.protobuf.wrappers_pb2 import DoubleValue  # Представление цены
@@ -38,8 +35,10 @@ from .proto.tradeapi.v1.stops_pb2 import (
     GetStopsRequest, GetStopsResult, StopLoss, TakeProfit, NewStopRequest, NewStopResult, CancelStopRequest, CancelStopResult)   # Стоп заявки
 from .grpc.tradeapi.v1.stops_pb2_grpc import StopsStub  # Сервис стоп заявок
 
+from pytz import timezone, utc  # Работаем с временнОй зоной и UTC
+from grpc import ssl_channel_credentials, secure_channel, RpcError  # Защищенный канал
 
-logger = logging.getLogger('FinamPy')  # Будем вести лог
+from FinamPy import Config  # Файл конфигурации
 
 
 # noinspection PyProtectedMember
@@ -57,13 +56,10 @@ class FinamPy:
                Market.MARKET_BONDS: 'Долговой рынок Московской Биржи',
                Market.MARKET_OPTIONS: 'Рынок опционов Московской Биржи'}  # Рынки
     securities_filename = 'FinamSecurities.json'  # Имя файла справочника тикеров
+    logger = logging.getLogger('FinamPy')  # Будем вести лог
 
-    def __init__(self, access_token):
-        """Инициализация
-
-        :param str access_token: Торговый токен доступа
-        """
-        self.metadata = [('x-api-key', access_token)]  # Торговый токен доступа
+    def __init__(self):
+        self.metadata = [('x-api-key', Config.access_token)]  # Торговый токен доступа
         self.channel = secure_channel(self.server, ssl_channel_credentials())  # Защищенный канал
 
         # Сервисы
@@ -85,6 +81,7 @@ class FinamPy:
         self.subscription_queue: SimpleQueue[SubscriptionRequest] = SimpleQueue()  # Буфер команд на подписку/отписку
         self.subscriptions_thread = None  # Поток обработки подписок создадим при первой подписке
 
+        self.client_ids = Config.client_ids  # Пока нет сервиса получения торговых счетов, указываем явно счета в файле конфигурации
         self.symbols = self.get_securities()  # Получаем справочник тикеров из файла или сервиса (занимает несколько секунд)
 
     # Заявки / Orders (https://finamweb.github.io/trade-api-docs/grpc/orders)
@@ -383,10 +380,10 @@ class FinamPy:
                 details = ex.args[0].details  # Сообщение об ошибке
                 if 'Too many requests' in details:  # Если превышено допустимое кол-во запросов в минуту
                     sleep_seconds = 60
-                    logger.warning(f'Превышение кол-ва запросов в минуту при вызове функции {func_name} с параметрами {request}Запрос повторится через {sleep_seconds} с')
+                    self.logger.warning(f'Превышение кол-ва запросов в минуту при вызове функции {func_name} с параметрами {request}Запрос повторится через {sleep_seconds} с')
                     sleep(sleep_seconds)  # Ждем
                 else:  # В остальных случаях
-                    logger.error(f'Ошибка {details} при вызове функции {func_name} с параметрами {request}')
+                    self.logger.error(f'Ошибка {details} при вызове функции {func_name} с параметрами {request}')
                     return None  # Возвращаем пустое значение
 
     # Подписки
@@ -417,19 +414,19 @@ class FinamPy:
             for event in events:  # Пробегаемся по значениям подписок до закрытия канала
                 e: FinamEvent = event  # Приводим пришедшее значение к подпискам
                 if e.order != OrderEvent():  # Если пришло событие с заявкой
-                    logger.debug(f'subscriptions_handler: Пришли данные подписки OrderEvent {e.order}')
+                    self.logger.debug(f'subscriptions_handler: Пришли данные подписки OrderEvent {e.order}')
                     self.on_order(e.order)
                 if e.trade != TradeEvent():  # Если пришло событие со сделкой
-                    logger.debug(f'subscriptions_handler: Пришли данные подписки TradeEvent {e.trade}')
+                    self.logger.debug(f'subscriptions_handler: Пришли данные подписки TradeEvent {e.trade}')
                     self.on_trade(e.trade)
                 if e.order_book != OrderBookEvent():  # Если пришло событие стакана
-                    logger.debug(f'subscriptions_handler: Пришли данные подписки OrderBookEvent {e.order_book}')
+                    self.logger.debug(f'subscriptions_handler: Пришли данные подписки OrderBookEvent {e.order_book}')
                     self.on_order_book(e.order_book)
                 if e.portfolio != PortfolioEvent():  # Если пришло событие портфеля
-                    logger.debug(f'subscriptions_handler: Пришли данные подписки PortfolioEvent {e.portfolio}')
+                    self.logger.debug(f'subscriptions_handler: Пришли данные подписки PortfolioEvent {e.portfolio}')
                     self.on_portfolio(e.portfolio)
                 if e.response != ResponseEvent():  # Если пришло событие результата выполнения запроса
-                    logger.debug(f'subscriptions_handler: Пришли данные подписки ResponseEvent {e.response}')
+                    self.logger.debug(f'subscriptions_handler: Пришли данные подписки ResponseEvent {e.response}')
                     self.on_response(e.response)
         except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
             self.subscriptions_thread = None  # Сбрасываем поток обработки подписок. Запустим его снова на новой подписке
@@ -437,10 +434,10 @@ class FinamPy:
     def keep_alive_handler(self):
         """Поток поддержания активности. Чтобы сервер Финам не удалял канал, и не получали ошибку Stream removed"""
         while True:
-            logger.debug(f'keep_alive_handler: Отправлено сообщение для поддержания активности {self.keep_alive()}')
+            self.logger.debug(f'keep_alive_handler: Отправлено сообщение для поддержания активности {self.keep_alive()}')
             exit_event_set = self.keep_alive_exit_event.wait(120)  # Ждем нового бара или события выхода из потока  # Ждем 2 минуты (подбирается экспериментально)
             if exit_event_set:  # Если произошло событие выхода из потока
-                logger.debug('Выход из потока поддержания активности')
+                self.logger.debug('Выход из потока поддержания активности')
                 return  # Выходим из потока, дальше не продолжаем
 
     # Выход и закрытие
@@ -497,7 +494,7 @@ class FinamPy:
         if not symbol_info:  # Если тикер не найден
             symbol_info = next((security for security in self.symbols.securities if security.market == board_market and security.code == symbol), None)  # то ищем по рынку тикера (для позиций)
         if not symbol_info:  # Если тикер не найден
-            logger.warning(f'Информация о {board_market}.{symbol} не найдена')
+            self.logger.warning(f'Информация о {board_market}.{symbol} не найдена')
         return symbol_info
 
     @staticmethod
