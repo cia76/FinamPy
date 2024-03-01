@@ -6,7 +6,6 @@ import os.path
 import pandas as pd
 
 from FinamPy import FinamPy  # Работа с сервером TRANSAQ
-from FinamPy.Config import Config  # Файл конфигурации
 
 from FinamPy.proto.tradeapi.v1.candles_pb2 import DayCandleTimeFrame, DayCandleInterval, IntradayCandleTimeFrame, IntradayCandleInterval
 from google.type.date_pb2 import Date
@@ -14,11 +13,8 @@ from google.protobuf.timestamp_pb2 import Timestamp
 from google.protobuf.json_format import MessageToDict
 
 
-logger = logging.getLogger('FinamPy.Bars')  # Будем вести лог
-
-
 # noinspection PyShadowingNames
-def save_candles_to_file(fp_provider=FinamPy(Config.AccessToken),
+def save_candles_to_file(fp_provider=FinamPy(),
                          security_board='TQBR', security_codes=('SBER',), intraday=False, time_frame=DayCandleTimeFrame.DAYCANDLE_TIMEFRAME_D1,
                          datapath=os.path.join('..', '..', 'Data', 'Finam', ''), delimiter='\t', dt_format='%d.%m.%Y %H:%M',
                          skip_first_date=False, skip_last_date=False, four_price_doji=False):
@@ -47,9 +43,9 @@ def save_candles_to_file(fp_provider=FinamPy(Config.AccessToken),
             logger.info(f'Получение файла {file_name}')
             file_bars = pd.read_csv(file_name, sep=delimiter, parse_dates=['datetime'], date_format=dt_format, index_col='datetime')  # Считываем файл в DataFrame
             last_date: datetime = file_bars.index[-1]  # Дата и время последнего бара по МСК
-            logger.info(f'Первая запись файла: {file_bars.index[0]}')
-            logger.info(f'Последняя запись файла: {last_date}')
-            logger.info(f'Кол-во записей в файле: {len(file_bars)}')
+            logger.info(f'Первый бар: {file_bars.index[0]}')
+            logger.info(f'Последний бар: {last_date}')
+            logger.info(f'Кол-во бар: {len(file_bars)}')
             next_bar_open_utc = fp_provider.msk_to_utc_datetime(last_date + timedelta(minutes=1), True) if intraday else \
                 last_date.replace(tzinfo=timezone.utc) + timedelta(days=1)  # Смещаем время на возможный следующий бар по UTC
         else:  # Файл не существует
@@ -123,6 +119,9 @@ def save_candles_to_file(fp_provider=FinamPy(Config.AccessToken),
         pd_bars = pd.DataFrame(new_bars_list)  # Список новых бар -> DataFrame
         pd_bars.index = pd_bars['datetime']  # В индекс ставим дату/время
         pd_bars = pd_bars[['datetime', 'open', 'high', 'low', 'close', 'volume']]  # Отбираем нужные колонки. Дата и время нужна, чтобы не удалять одинаковые OHLCV на разное время
+        logger.info(f'Первый бар: {pd_bars.index[0]}')
+        logger.info(f'Последний бар: {pd_bars.index[-1]}')
+        logger.info(f'Кол-во бар: {len(pd_bars)}')
         if not file_exists and skip_first_date:  # Если файла нет, и убираем бары на первую дату
             len_with_first_date = len(pd_bars)  # Кол-во бар до удаления на первую дату
             first_date = pd_bars.index[0].date()  # Первая дата
@@ -151,12 +150,13 @@ def save_candles_to_file(fp_provider=FinamPy(Config.AccessToken),
         logger.info(f'Первый бар: {pd_bars.index[0]}')
         logger.info(f'Последний бар: {pd_bars.index[-1]}')
         logger.info(f'Кол-во бар: {len(pd_bars)}')
-        logger.info(f'- В файл {file_name} сохранено записей: {len(pd_bars)}')
+        logger.info(f'В файл {file_name} сохранено записей: {len(pd_bars)}')
 
 
 if __name__ == '__main__':  # Точка входа при запуске этого скрипта
     start_time = time()  # Время начала запуска скрипта
-    fp_provider = FinamPy(Config.AccessToken)  # Подключаемся к торговому счету
+    logger = logging.getLogger('FinamPy.Bars')  # Будем вести лог
+    fp_provider = FinamPy()  # Подключаемся ко всем торговым счетам
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',  # Формат сообщения
                         datefmt='%d.%m.%Y %H:%M:%S',  # Формат даты
                         level=logging.DEBUG,  # Уровень логируемых событий NOTSET/DEBUG/INFO/WARNING/ERROR/CRITICAL
@@ -175,10 +175,10 @@ if __name__ == '__main__':  # Точка входа при запуске это
     skip_last_date = True  # Если получаем данные внутри сессии, то не берем бары за дату незавершенной сессии
     # skip_last_date = False  # Если получаем данные, когда рынок не работает, то берем все бары
     save_candles_to_file(fp_provider, security_board, security_codes, four_price_doji=True, skip_last_date=skip_last_date)  # Дневные бары
-    save_candles_to_file(fp_provider, security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_H1, skip_last_date=skip_last_date)  # Часовые бары
-    save_candles_to_file(fp_provider, security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M15, skip_last_date=skip_last_date)  # 15-и минутные бары
-    save_candles_to_file(fp_provider, security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M5, skip_last_date=skip_last_date)  # 5-и минутные бары
-    save_candles_to_file(fp_provider, security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M1, skip_last_date=skip_last_date, four_price_doji=True)  # Минутные бары
+    # save_candles_to_file(fp_provider, security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_H1, skip_last_date=skip_last_date)  # Часовые бары
+    # save_candles_to_file(fp_provider, security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M15, skip_last_date=skip_last_date)  # 15-и минутные бары
+    # save_candles_to_file(fp_provider, security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M5, skip_last_date=skip_last_date)  # 5-и минутные бары
+    # save_candles_to_file(fp_provider, security_board, security_codes, True, IntradayCandleTimeFrame.INTRADAYCANDLE_TIMEFRAME_M1, skip_last_date=skip_last_date, four_price_doji=True)  # Минутные бары
 
     fp_provider.close_channel()  # Закрываем канал перед выходом
 

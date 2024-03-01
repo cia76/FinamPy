@@ -1,0 +1,32 @@
+import logging  # Выводим лог на консоль и в файл
+from datetime import datetime  # Дата и время
+
+from FinamPy.FinamPy import FinamPy  # Работа с сервером TRANSAQ
+
+
+if __name__ == '__main__':  # Точка входа при запуске этого скрипта
+    logger = logging.getLogger('FinamPy.Ticker')  # Будем вести лог
+    fp_provider = FinamPy()  # Подключаемся ко всем торговым счетам
+
+    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',  # Формат сообщения
+                        datefmt='%d.%m.%Y %H:%M:%S',  # Формат даты
+                        level=logging.DEBUG,  # Уровень логируемых событий NOTSET/DEBUG/INFO/WARNING/ERROR/CRITICAL
+                        handlers=[logging.FileHandler('Ticker.log'), logging.StreamHandler()])  # Лог записываем в файл и выводим на консоль
+    logging.Formatter.converter = lambda *args: datetime.now(tz=fp_provider.tz_msk).timetuple()  # В логе время указываем по МСК
+
+    datanames = ('TQBR.SBER', 'TQBR.VTBR', 'FUT.SiH4', 'FUT.RIH4')  # Кортеж тикеров
+
+    securities = fp_provider.symbols  # Получаем справочник всех тикеров из провайдера
+    for dataname in datanames:  # Пробегаемся по всем тикерам
+        security_board, security_code = fp_provider.dataname_to_board_symbol(dataname)  # Код режима торгов и тикер
+        si = next((item for item in securities.securities if item.board == security_board and item.code == security_code), None)  # Пытаемся найти тикер в справочнике
+        logger.info(f'Ответ от сервера: {si}' if si else f'Тикер {security_board}.{security_code} не найден')
+        logger.info(f'Информация о тикере {si.board}.{si.code} ({si.short_name}, {fp_provider.markets[si.market]})')
+        logger.info(f'- Валюта: {si.currency}')
+        logger.info(f'- Лот: {si.lot_size}')
+        decimals = si.decimals  # Кол-во десятичных знаков
+        logger.info(f'- Кол-во десятичных знаков: {decimals}')
+        min_step = round(10 ** -decimals * si.min_step, decimals)  # Шаг цены
+        logger.info(f'- Шаг цены: {min_step}')
+
+    fp_provider.close_channel()  # Закрываем канал перед выходом

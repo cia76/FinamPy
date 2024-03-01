@@ -10,6 +10,7 @@ import logging  # Будем вести лог
 from google.protobuf.json_format import MessageToJson, Parse  # Будем хранить справочник в файле в формате JSON
 from google.protobuf.timestamp_pb2 import Timestamp  # Представление времени
 from google.protobuf.wrappers_pb2 import DoubleValue  # Представление цены
+from google.type.decimal_pb2 import Decimal
 from .proto.tradeapi.v1.events_pb2 import KeepAliveRequest  # Запрос поддержания активности
 from .proto.tradeapi.v1 import common_pb2 as common  # Покупка/продажа
 from .proto.tradeapi.v1.common_pb2 import Market, OrderValidBefore, ResponseEvent  # Рынки и событие результата выполнения запроса
@@ -58,8 +59,13 @@ class FinamPy:
     securities_filename = 'FinamSecurities.json'  # Имя файла справочника тикеров
     logger = logging.getLogger('FinamPy')  # Будем вести лог
 
-    def __init__(self):
-        self.metadata = [('x-api-key', Config.access_token)]  # Торговый токен доступа
+    def __init__(self, client_ids=Config.client_ids, access_token=Config.access_token):
+        """Инициализация
+
+        :param tuple[str] client_ids: Торговые счета
+        :param str access_token: Торговый токен
+        """
+        self.metadata = [('x-api-key', access_token)]  # Торговый токен доступа
         self.channel = secure_channel(self.server, ssl_channel_credentials())  # Защищенный канал
 
         # Сервисы
@@ -81,7 +87,7 @@ class FinamPy:
         self.subscription_queue: SimpleQueue[SubscriptionRequest] = SimpleQueue()  # Буфер команд на подписку/отписку
         self.subscriptions_thread = None  # Поток обработки подписок создадим при первой подписке
 
-        self.client_ids = Config.client_ids  # Пока нет сервиса получения торговых счетов, указываем явно счета в файле конфигурации
+        self.client_ids = client_ids  # Пока нет сервиса получения торговых счетов, указываем явно счета в файле конфигурации
         self.symbols = self.get_securities()  # Получаем справочник тикеров из файла или сервиса (занимает несколько секунд)
 
     # Заявки / Orders (https://finamweb.github.io/trade-api-docs/grpc/orders)
@@ -546,6 +552,14 @@ class FinamPy:
                 return 'W1'
         raise NotImplementedError  # С остальными временнЫми интервалами не работаем
 
+    @staticmethod
+    def decimal_to_float(decimal: Decimal) -> float:
+        return round(decimal.num * 10 ** -decimal.scale, decimal.scale)
+
+    @staticmethod
+    def dict_decimal_to_float(decimal: dict) -> float:
+        return round(int(decimal['num']) * 10 ** -int(decimal['scale']), int(decimal['scale']))
+
     def price_to_finam_price(self, board, symbol, price) -> float:
         """Перевод цены в цену Финама
 
@@ -556,7 +570,7 @@ class FinamPy:
         """
         si = self.get_symbol_info(board, symbol)  # Информация о тикере
         if board in ('TQOB', 'TQCB', 'TQRD', 'TQIR'):  # Для облигаций (Т+ Гособлигации, Т+ Облигации, Т+ Облигации Д, Т+ Облигации ПИР)
-            finam_price = price * si.bp_cost  # Пункты цены для котировок облигаций представляют собой проценты номинала облигации
+            finam_price = price / (si.bp_cost / 10 ** -si.decimals / 100)  # Пункты цены для котировок облигаций представляют собой проценты номинала облигации
         else:  # В остальных случаях
             finam_price = price  # Цена не изменяется
         min_step = 10 ** -si.decimals * si.min_step  # Шаг цены
@@ -574,7 +588,7 @@ class FinamPy:
         min_step = 10 ** -si.decimals * si.min_step  # Шаг цены
         finam_price = finam_price // min_step * min_step  # Цена кратная шагу цены
         if board in ('TQOB', 'TQCB', 'TQRD', 'TQIR'):  # Для облигаций (Т+ Гособлигации, Т+ Облигации, Т+ Облигации Д, Т+ Облигации ПИР)
-            price = finam_price / si.bp_cost  # Пункты цены для котировок облигаций представляют собой проценты номинала облигации
+            price = finam_price * (si.bp_cost / 10 ** -si.decimals / 100)  # Пункты цены для котировок облигаций представляют собой проценты номинала облигации
         else:  # В остальных случаях
             price = finam_price  # Цена не изменяется
         return round(price, si.decimals)

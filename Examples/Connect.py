@@ -2,14 +2,11 @@ import logging  # Выводим лог на консоль и в файл
 from datetime import datetime  # Дата и время
 
 from FinamPy import FinamPy  # Работа с сервером TRANSAQ
-from FinamPy.Config import Config  # Файл конфигурации
-
-
-logger = logging.getLogger('FinamPy.Connect')  # Будем вести лог
 
 
 if __name__ == '__main__':  # Точка входа при запуске этого скрипта
-    fp_provider = FinamPy(Config.AccessToken)  # Провайдер работает со всеми счетами по токену (из файла Config.py)
+    logger = logging.getLogger('FinamPy.Connect')  # Будем вести лог
+    fp_provider = FinamPy()  # Подключаемся ко всем торговым счетам
 
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',  # Формат сообщения
                         datefmt='%d.%m.%Y %H:%M:%S',  # Формат даты
