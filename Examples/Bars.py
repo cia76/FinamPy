@@ -13,6 +13,9 @@ from google.protobuf.timestamp_pb2 import Timestamp
 from google.protobuf.json_format import MessageToDict
 
 
+logger = logging.getLogger('FinamPy.Bars')  # Будем вести лог. Определяем здесь, т.к. возможен внешний вызов ф-ии
+
+
 # noinspection PyShadowingNames
 def save_candles_to_file(fp_provider=FinamPy(),
                          security_board='TQBR', security_codes=('SBER',), intraday=False, time_frame=DayCandleTimeFrame.DAYCANDLE_TIMEFRAME_D1,
@@ -155,7 +158,6 @@ def save_candles_to_file(fp_provider=FinamPy(),
 
 if __name__ == '__main__':  # Точка входа при запуске этого скрипта
     start_time = time()  # Время начала запуска скрипта
-    logger = logging.getLogger('FinamPy.Bars')  # Будем вести лог
     fp_provider = FinamPy()  # Подключаемся ко всем торговым счетам
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',  # Формат сообщения
                         datefmt='%d.%m.%Y %H:%M:%S',  # Формат даты
