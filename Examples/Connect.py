@@ -23,7 +23,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
     # TODO Ждем от Финама функцию получения времени на сервере. Пока выдаем информацию о тикере
     logger.info(f'Данные тикера {security_board}.{security_code}')
     securities = fp_provider.symbols  # Получаем справочник всех тикеров из провайдера
-    si = next((item for item in securities.securities if item.board == security_board and item.code == security_code), None)  # Пытаемся найти тикер в справочнике
+    si = next((security for security in securities.securities if security.board == security_board and security.code == security_code), None)  # Пытаемся найти тикер в справочнике
     logger.info(f'Ответ от сервера: {si}' if si else f'Тикер {security_board}.{security_code} не найден')
 
     # Проверяем работу подписок
