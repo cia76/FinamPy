@@ -19,8 +19,11 @@ if __name__ == '__main__':  # Точка входа при запуске это
     securities = fp_provider.symbols  # Получаем справочник всех тикеров из провайдера
     for dataname in datanames:  # Пробегаемся по всем тикерам
         security_board, security_code = fp_provider.dataname_to_board_symbol(dataname)  # Код режима торгов и тикер
-        si = next((item for item in securities.securities if item.board == security_board and item.code == security_code), None)  # Пытаемся найти тикер в справочнике
-        logger.info(f'Ответ от сервера: {si}' if si else f'Тикер {security_board}.{security_code} не найден')
+        si = next((security for security in securities.securities if security.board == security_board and security.code == security_code), None)  # Пытаемся найти тикер в справочнике
+        if not si:  # Если тикер не найден
+            logger.warning(f'Тикер {security_board}.{security_code} не найден')
+            continue  # то переходим к следующему тикеру, дальше не продолжаем
+        logger.info(f'Ответ от сервера: {si}')
         logger.info(f'Информация о тикере {si.board}.{si.code} ({si.short_name}, {fp_provider.markets[si.market]})')
         logger.info(f'- Валюта: {si.currency}')
         logger.info(f'- Лот: {si.lot_size}')
