@@ -1,7 +1,7 @@
 import logging  # Выводим лог на консоль и в файл
 from datetime import datetime  # Дата и время
 
-from FinamPy.FinamPy import FinamPy  # Работа с сервером TRANSAQ
+from FinamPy import FinamPy  # Работа с сервером TRANSAQ
 from FinamPy.proto.tradeapi.v1.common_pb2 import BUY_SELL_BUY
 from FinamPy.proto.tradeapi.v1.orders_pb2 import ORDER_STATUS_ACTIVE
 from FinamPy.proto.tradeapi.v1.stops_pb2 import STOP_STATUS_ACTIVE
