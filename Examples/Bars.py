@@ -166,13 +166,14 @@ if __name__ == '__main__':  # Точка входа при запуске это
     logging.Formatter.converter = lambda *args: datetime.now(tz=fp_provider.tz_msk).timetuple()  # В логе время указываем по МСК
 
     security_board = 'TQBR'  # Акции ММВБ
+    security_codes = ('SBER',)  # Для тестов
     # security_codes = ('SBER', 'VTBR', 'GAZP', 'NMTP', 'LKOH', 'BSPB', 'FESH', 'ALRS', 'YNDX', 'BELU',
     #                   'GMKN', 'MTLR', 'HYDR', 'MAGN', 'SNGSP', 'NVTK', 'ROSN', 'TATN', 'SBERP', 'CHMF',
     #                   'MGNT', 'RTKM', 'TRNFP', 'MTSS', 'FEES', 'SNGS', 'NLMK', 'PLZL', 'RNFT', 'MOEX',
     #                   'DVEC', 'TGKA', 'MTLRP', 'RUAL', 'TRMK', 'IRAO', 'SMLT', 'AFKS', 'AFLT', 'PIKK')  # TOP 40 акций ММВБ
-    security_codes = ('SBER',)  # Для тестов
     # security_board = 'FUT'  # Фьючерсы
-    # security_codes = ('SiH4', 'RIH4')  # Формат фьючерса: <Тикер><Месяц экспирации><Последняя цифра года> Месяц экспирации: 3-H, 6-M, 9-U, 12-Z
+    # security_codes = ('SiM4', 'RIM4')  # Формат фьючерса: <Тикер><Месяц экспирации><Последняя цифра года> Месяц экспирации: 3-H, 6-M, 9-U, 12-Z
+    # security_codes = ('USDRUBF', 'EURRUBF', 'CNYRUBF', 'GLDRUBF', 'IMOEXF')  # Вечные фьючерсы ММВБ
 
     skip_last_date = True  # Если получаем данные внутри сессии, то не берем бары за дату незавершенной сессии
     # skip_last_date = False  # Если получаем данные, когда рынок не работает, то берем все бары
