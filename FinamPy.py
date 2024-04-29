@@ -10,7 +10,6 @@ import logging  # Будем вести лог
 from google.protobuf.json_format import MessageToJson, Parse  # Будем хранить справочник в файле в формате JSON
 from google.protobuf.timestamp_pb2 import Timestamp  # Представление времени
 from google.protobuf.wrappers_pb2 import DoubleValue  # Представление цены
-from google.type.decimal_pb2 import Decimal
 from .proto.tradeapi.v1.events_pb2 import KeepAliveRequest  # Запрос поддержания активности
 from .proto.tradeapi.v1 import common_pb2 as common  # Покупка/продажа
 from .proto.tradeapi.v1.common_pb2 import Market, OrderValidBefore, ResponseEvent  # Рынки и событие результата выполнения запроса
@@ -474,10 +473,9 @@ class FinamPy:
             symbol = '.'.join(symbol_parts[1:])  # Код тикера
         else:  # Если тикер задан без режима торгов
             symbol = dataname  # Код тикера
-            try:  # Пробуем по тикеру получить режим торгов
-                board = next(item.board for item in self.symbols.securities if item.code == symbol)  # Получаем код режима торгов первого совпадающего тикера
-            except StopIteration:  # Если режим торгов не найден
-                board = None  # то возвращаем пустое значение
+            board = next((item.board for item in self.symbols.securities if item.code == symbol), None)  # Получаем код режима торгов первого совпадающего тикера
+        if board == 'SPBFUT':  # Для фьючерсов
+            board = 'FUT'  # Меняем код режима торгов на принятое в Финаме
         return board, symbol  # Возвращаем код режима торгов и тикера
 
     @staticmethod
@@ -488,6 +486,8 @@ class FinamPy:
         :param str symbol: Тикер
         :return: Название тикера
         """
+        if board == 'FUT':  # Для фьючерсов
+            board = 'SPBFUT'  # Меняем код режима торгов на каноническое
         return f'{board}.{symbol}'
 
     def get_symbol_info(self, board_market, symbol) -> Union[Security, None]:
@@ -554,12 +554,22 @@ class FinamPy:
         raise NotImplementedError  # С остальными временнЫми интервалами не работаем
 
     @staticmethod
-    def decimal_to_float(decimal: Decimal) -> float:
+    def decimal_to_float(decimal) -> float:
+        """Перевод из Google Decimal в вещественное число
+
+        :param Decimal decimal: Google Decimal
+        :return: Вещественное число
+        """
         return round(decimal.num * 10 ** -decimal.scale, decimal.scale)
 
     @staticmethod
-    def dict_decimal_to_float(decimal: dict) -> float:
-        return round(int(decimal['num']) * 10 ** -int(decimal['scale']), int(decimal['scale']))
+    def dict_decimal_to_float(dict_decimal) -> float:
+        """Перевод из словаря Google Decimal в вещественное число
+
+        :param dict dict_decimal: Словарь Google Decimal
+        :return: Вещественное число
+        """
+        return round(int(dict_decimal['num']) * 10 ** -int(dict_decimal['scale']), int(dict_decimal['scale']))
 
     def price_to_finam_price(self, board, symbol, price) -> float:
         """Перевод цены в цену Финама
