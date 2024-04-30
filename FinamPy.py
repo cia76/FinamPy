@@ -43,8 +43,8 @@ from FinamPy import Config  # Файл конфигурации
 
 # noinspection PyProtectedMember
 class FinamPy:
-    """Работа с Finam Trade gRPC Api из Python https://finamweb.github.io/trade-api-docs/category/grpc
-    Генерация кода в папках grpc/proto осуществлена из proto контрактов: https://github.com/FinamWeb/trade-api-docs/tree/master/contracts
+    """Работа с Finam Trade API gRPC https://finamweb.github.io/trade-api-docs/category/grpc из Python
+    Генерация кода в папки grpc/proto осуществлена из proto контрактов: https://github.com/FinamWeb/trade-api-docs/tree/master/contracts
     """
     tz_msk = timezone('Europe/Moscow')  # Время UTC будем приводить к московскому времени
     server = 'trade-api.finam.ru'  # Сервер для исполнения вызовов
