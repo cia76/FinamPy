@@ -1,6 +1,6 @@
 requests
 pytz
 grpcio
-protobuf
+protobuf>=5.26.0
 types-protobuf
 googleapis-common-protos
