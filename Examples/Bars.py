@@ -7,8 +7,8 @@ import pandas as pd
 
 from FinamPy import FinamPy  # Работа с сервером TRANSAQ
 
-from FinamPy.proto.tradeapi.v1.candles_pb2 import DayCandleInterval, IntradayCandleInterval
-from google.type.date_pb2 import Date
+from FinamPy.proto.candles_pb2 import DayCandleInterval, IntradayCandleInterval
+from FinamPy.proto.google.type.date_pb2 import Date
 from google.protobuf.json_format import MessageToDict
 
 
@@ -88,7 +88,7 @@ def get_candles_from_provider(fp_provider=FinamPy(), class_code='TQBR', security
         if not candles:  # Если бары не получены
             logger.error('Ошибка при получении истории: История не получена')
             return pd.DataFrame()  # то выходим, дальше не продолжаем
-        candles_dict = MessageToDict(candles, including_default_value_fields=True)  # Переводим в словарь из JSON
+        candles_dict = MessageToDict(candles, always_print_fields_with_no_presence=True)  # Переводим в словарь из JSON
         if 'candles' not in candles_dict:  # Если бар нет в словаре
             logger.error(f'Ошибка при получении истории: {candles_dict}')
             return pd.DataFrame()  # то выходим, дальше не продолжаем

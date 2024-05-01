@@ -18,7 +18,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
     security_board = 'TQBR'  # Код режима торгов
     security_code = 'SBER'  # Тикер
     # security_board = 'FUT'  # Код режима торгов
-    # security_code = 'SiH4'  # Тикер
+    # security_code = 'SiM4'  # Тикер
 
     # Стакан
     sleep_secs = 5  # Кол-во секунд получения стакана

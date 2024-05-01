@@ -14,7 +14,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
                         handlers=[logging.FileHandler('Ticker.log'), logging.StreamHandler()])  # Лог записываем в файл и выводим на консоль
     logging.Formatter.converter = lambda *args: datetime.now(tz=fp_provider.tz_msk).timetuple()  # В логе время указываем по МСК
 
-    datanames = ('TQBR.SBER', 'TQBR.VTBR', 'FUT.SiH4', 'FUT.RIH4')  # Кортеж тикеров
+    datanames = ('TQBR.SBER', 'TQBR.VTBR', 'FUT.SiM4', 'FUT.RIM4')  # Кортеж тикеров
 
     securities = fp_provider.symbols  # Получаем справочник всех тикеров из провайдера
     for dataname in datanames:  # Пробегаемся по всем тикерам
