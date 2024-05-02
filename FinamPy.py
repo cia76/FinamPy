@@ -317,14 +317,28 @@ class FinamPy:
 
     # Инструменты / Securities
 
-    def get_securities(self) -> Union[grpc_securities.GetSecuritiesResult, None]:
-        """Справочник инструментов"""
+    # noinspection PyUnusedLocal
+    def get_securities(self, security_board=None, security_code=None) -> Union[grpc_securities.GetSecuritiesResult, None]:
+        """Справочник инструментов
+
+        :param str security_board: Режим торгов
+        :param str security_code: Тикер инструмента
+        """
         symbols = grpc_securities.GetSecuritiesResult()  # Тип списка инструментов
         if isfile(self.securities_filename):  # Если справочник уже был сохранен в файл
             with open(self.securities_filename, 'r', encoding='UTF-8') as f:  # Открываем файл на чтение
                 Parse(f.read(), symbols)  # Получаем список инструментов из файла, приводим к типу
         else:  # Если файла справочника нет
             request = grpc_securities.GetSecuritiesRequest()  # Запрос справочника
+            # TODO Пока поиск по режиму торгов и тикеру не работает у Финама
+            # if security_board and security_code:  # Если указаны режим торгов и тикер
+            #     request = grpc_securities.GetSecuritiesRequest(board=security_board, seccode=security_code)  # Запрос справочника по режиму торгов и тикеру
+            # elif security_board:  # Если указан только режим торгов
+            #     request = grpc_securities.GetSecuritiesRequest(board=security_board)  # Запрос справочника по режиму торгов
+            # elif security_code:  # Если указан только тикер
+            #     request = grpc_securities.GetSecuritiesRequest(seccode=security_code)  # Запрос справочника по тикеру
+            # else:  # Ничего не указано
+            #     request = grpc_securities.GetSecuritiesRequest()  # Запрос справочника
             symbols = self.call_function(self.securities_stub.GetSecurities, request)  # Выполняем запрос
             with open(self.securities_filename, 'w', encoding='UTF-8') as f:  # Открываем файл на запись
                 f.write(MessageToJson(symbols))  # Сохраняем список инструментов в файл
