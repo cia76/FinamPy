@@ -111,7 +111,7 @@ def get_candles_from_provider(fp_provider=FinamPy(), class_code='TQBR', security
                 high = fp_provider.dict_decimal_to_float(new_bar['high'])
                 low = fp_provider.dict_decimal_to_float(new_bar['low'])
                 close = fp_provider.dict_decimal_to_float(new_bar['close'])
-                volume = new_bar['volume']  # Объем в штуках
+                volume = int(new_bar['volume'])  # Объем в штуках
                 new_bars.append({'datetime': dt, 'open': open_, 'high': high, 'low': low, 'close': close, 'volume': volume})
             last_bar_open_utc = fp_provider.msk_to_utc_datetime(last_bar_open_dt, True) if intraday else last_bar_open_dt.replace(tzinfo=timezone.utc)  # Дата и время открытия последнего бара UTC
             next_bar_open_utc = last_bar_open_utc + timedelta(minutes=1) if intraday else last_bar_open_utc + timedelta(days=1)  # Смещаем время на возможный следующий бар UTC
