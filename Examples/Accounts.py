@@ -37,6 +37,6 @@ if __name__ == '__main__':  # Точка входа при запуске это
         stop_orders = fp_provider.get_stops(client_id).stops  # Получаем стоп заявки
         for stop_order in stop_orders:  # Пробегаемся по всем стоп заявкам
             if stop_order.status == STOP_STATUS_ACTIVE:  # Если заявка еще не исполнилась
-                logger.info(f'- Стоп заявка номер {stop_order.stop_id} {"Покупка" if stop_order.buy_sell == BUY_SELL_BUY else "Продажа"} {stop_order.security_board}.{stop_order.security_code} {stop_order.stop_loss.quantity.value} @ {stop_order.stop_loss.activation_price}')
+                logger.info(f'- Стоп заявка номер {stop_order.stop_id} {"Покупка" if stop_order.buy_sell == BUY_SELL_BUY else "Продажа"} {stop_order.security_board}.{stop_order.security_code} SL {stop_order.stop_loss.quantity.value} @ {stop_order.stop_loss.activation_price} / TP {stop_order.take_profit.quantity.value} @ {stop_order.take_profit.activation_price}')
 
     fp_provider.close_channel()  # Закрываем канал перед выходом
