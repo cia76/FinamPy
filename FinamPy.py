@@ -81,7 +81,7 @@ class FinamPy:
         self.subscriptions_thread = None  # Поток обработки подписок создадим при первой подписке
 
         self.client_ids = client_ids  # Пока нет сервиса получения торговых счетов, указываем явно счета в файле конфигурации
-        self.symbols = self.get_securities()  # Получаем справочник тикеров из файла или сервиса (занимает несколько секунд)
+        self.symbols = self.get_securities()  # Получаем справочник тикеров из файла или сервиса
 
     # Заявки / Orders (https://finamweb.github.io/trade-api-docs/grpc/orders)
 
@@ -470,7 +470,7 @@ class FinamPy:
     # Функции конвертации
 
     def dataname_to_board_symbol(self, dataname) -> tuple[str, str]:
-        """Код режима торгов и тикера из названия тикера
+        """Код режима торгов и тикер из названия тикера
 
         :param str dataname: Название тикера
         :return: Код режима торгов и тикер
@@ -484,7 +484,7 @@ class FinamPy:
             board = next((item.board for item in self.symbols.securities if item.code == symbol), None)  # Получаем код режима торгов первого совпадающего тикера
         if board == 'SPBFUT':  # Для фьючерсов
             board = 'FUT'  # Меняем код режима торгов на принятое в Финаме
-        return board, symbol  # Возвращаем код режима торгов и тикера
+        return board, symbol
 
     @staticmethod
     def board_symbol_to_dataname(board, symbol) -> str:
