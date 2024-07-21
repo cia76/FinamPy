@@ -298,7 +298,7 @@ class FinamRestPy:
         if date_from:  # Если указана дата начала
             params['from'] = date_from  # то выставляем ее
         if date_to:  # Если указана дата окончания
-            params['to'] = date_from  # то выставляем ее
+            params['to'] = date_to  # то выставляем ее
         if count:  # Если указано кол-во свечей
             params['count'] = count  # то выставляем их
         return self.check_result(
