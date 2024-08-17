@@ -20,7 +20,7 @@ min_bar_open_utc = datetime(1990, 1, 1, tzinfo=timezone.utc)  # Дата, ког
 
 
 # noinspection PyShadowingNames
-def load_candles_from_file(class_code='TQBR', security_code='SBER', tf='D1') -> pd.DataFrame:
+def load_candles_from_file(class_code, security_code, tf) -> pd.DataFrame:
     """Получение бар из файла
 
     :param str class_code: Код режима торгов
@@ -31,7 +31,8 @@ def load_candles_from_file(class_code='TQBR', security_code='SBER', tf='D1') -> 
     file_exists = os.path.isfile(filename)  # Существует ли файл
     if file_exists:  # Если файл существует
         logger.info(f'Получение файла {filename}')
-        file_bars = pd.read_csv(filename, sep=delimiter, parse_dates=['datetime'], date_format=dt_format, index_col='datetime')
+        file_bars = pd.read_csv(filename, sep=delimiter, parse_dates=['datetime'], date_format=dt_format)  # Получаем и разбираем бары из файла
+        file_bars.index = file_bars['datetime']  # Дата/время также будет индексом
         logger.info(f'Первый бар    : {file_bars.index[0]:{dt_format}}')
         logger.info(f'Последний бар : {file_bars.index[-1]:{dt_format}}')
         logger.info(f'Кол-во бар    : {len(file_bars)}')
@@ -42,7 +43,7 @@ def load_candles_from_file(class_code='TQBR', security_code='SBER', tf='D1') -> 
 
 
 # noinspection PyShadowingNames
-def get_candles_from_provider(fp_provider=FinamPy(), class_code='TQBR', security_code='SBER', tf='D1', next_bar_open_utc=min_bar_open_utc) -> pd.DataFrame:
+def get_candles_from_provider(fp_provider, class_code, security_code, tf, next_bar_open_utc=min_bar_open_utc) -> pd.DataFrame:
     """Получение бар из провайдера
 
     :param FinamPy fp_provider: Провайдер Finam
@@ -123,8 +124,8 @@ def get_candles_from_provider(fp_provider=FinamPy(), class_code='TQBR', security
         logger.info('Новых записей нет')
         return pd.DataFrame()  # то выходим, дальше не продолжаем
     pd_bars = pd.DataFrame(new_bars)  # Переводим список бар в pandas DataFrame
-    pd_bars.index = pd_bars['datetime']  # В индекс ставим дату/время
     pd_bars = pd_bars[['datetime', 'open', 'high', 'low', 'close', 'volume']]  # Отбираем нужные колонки. Дата и время нужна, чтобы не удалять одинаковые OHLCV на разное время
+    pd_bars.index = pd_bars['datetime']  # Дата/время также будет индексом
     logger.info(f'Первый бар    : {pd_bars.index[0]:{dt_format}}')
     logger.info(f'Последний бар : {pd_bars.index[-1]:{dt_format}}')
     logger.info(f'Кол-во бар    : {len(pd_bars)}')
@@ -132,13 +133,13 @@ def get_candles_from_provider(fp_provider=FinamPy(), class_code='TQBR', security
 
 
 # noinspection PyShadowingNames
-def save_candles_to_file(fp_provider=FinamPy(), class_code='TQBR', security_codes=('SBER',), tf='D1',
+def save_candles_to_file(fp_provider, class_code, security_codes, tf,
                          skip_first_date=False, skip_last_date=False, four_price_doji=False):
     """Получение новых бар из провайдера, объединение с имеющимися барами в файле (если есть), сохранение бар в файл
 
     :param FinamPy fp_provider: Провайдер Finam
     :param str class_code: Код режима торгов
-    :param tuple security_codes: Коды тикеров в виде кортежа
+    :param tuple[str] security_codes: Коды тикеров в виде кортежа
     :param str tf: Временной интервал https://ru.wikipedia.org/wiki/Таймфрейм
     :param bool skip_first_date: Убрать бары на первую полученную дату
     :param bool skip_last_date: Убрать бары на последнюю полученную дату
