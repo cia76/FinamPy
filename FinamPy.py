@@ -505,7 +505,7 @@ class FinamPy:
         :param str symbol: Тикер
         :return: Значение из кэша или None, если тикер не найден
         """
-        symbol_info = next((sequrity for sequrity in self.symbols.securities if sequrity.board == board_market and sequrity.code == symbol), None)  # Ищем значение в справочнике по коду режима торгов
+        symbol_info = next((security for security in self.symbols.securities if security.board == board_market and security.code == symbol), None)  # Ищем значение в справочнике по коду режима торгов
         if not symbol_info:  # Если тикер не найден
             symbol_info = next((security for security in self.symbols.securities if security.market == board_market and security.code == symbol), None)  # то ищем по рынку тикера (для позиций)
         if not symbol_info:  # Если тикер не найден
