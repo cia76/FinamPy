@@ -136,7 +136,7 @@ def get_candles_from_provider(fp_provider, class_code, security_code, tf, next_b
 
 
 # noinspection PyShadowingNames
-def save_candles_to_file(fp_provider, class_code, security_codes, tf,
+def save_candles_to_file(fp_provider, class_code, security_codes, tf='D1',
                          skip_first_date=False, skip_last_date=False, four_price_doji=False):
     """Получение новых бар из провайдера, объединение с имеющимися барами в файле (если есть), сохранение бар в файл
 
