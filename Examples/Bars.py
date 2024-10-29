@@ -55,8 +55,10 @@ def get_candles_from_provider(fp_provider, class_code, security_code, tf, next_b
     :param str tf: Временной интервал https://ru.wikipedia.org/wiki/Таймфрейм
     :param datetime next_bar_open_utc: Первый возможный бар по UTC
     """
+    dataname = fp_provider.board_symbol_to_dataname(class_code, security_code)  # По коду режима торгов и тикера получаем название тикера
+    board, _ = fp_provider.dataname_to_board_symbol(dataname)  # По названию тикера получаем код режима торгов. Может отличаться от исходного. Например, SPBFUT - FUT
     time_frame, intraday = fp_provider.timeframe_to_finam_timeframe(tf)  # Временной интервал Finam, внутридневной интервал
-    logger.info(f'Получение истории {class_code}.{security_code} {tf} из Finam')
+    logger.info(f'Получение истории {dataname} {tf} из Finam')
     td = timedelta(days=(30 if intraday else 365))  # Максимальный запрос за 30 дней для внутридневных интервалов и 1 год (365 дней) для дневных и выше
     interval = IntradayCandleInterval(count=500) if intraday else DayCandleInterval(count=500)  # Нужно поставить максимальное кол-во бар. Максимум, можно поставить 500
     todate_utc = datetime.utcnow().replace(tzinfo=timezone.utc)  # Будем получать бары до текущей даты и времени UTC
@@ -87,8 +89,9 @@ def get_candles_from_provider(fp_provider, class_code, security_code, tf, next_b
         if first_request:  # Для первого запроса
             first_request = False  # далее будем ставить в запросы дату окончания интервала
         logger.debug(f'Запрос с {next_bar_open_utc} по {todate_min_utc}')
-        candles = (fp_provider.get_intraday_candles(class_code, security_code, time_frame, interval) if intraday else
-                   fp_provider.get_day_candles(class_code, security_code, time_frame, interval))  # Получаем ответ на запрос бар
+
+        candles = (fp_provider.get_intraday_candles(board, security_code, time_frame, interval) if intraday else
+                   fp_provider.get_day_candles(board, security_code, time_frame, interval))  # Получаем ответ на запрос бар с режимом торгов Финам
         if not candles:  # Если бары не получены
             logger.error('Ошибка при получении истории: История не получена')
             return pd.DataFrame()  # то выходим, дальше не продолжаем
@@ -207,7 +210,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
     #                   'VKCO', 'MOEX', 'SMLT', 'ALRS', 'CHMF', 'RNFT', 'BSPB', 'MAGN', 'FLOT', 'POSI',
     #                   'RUAL', 'PHOR', 'IRAO', 'PIKK', 'AQUA', 'RTKM', 'UPRO', 'TATNP', 'FEES', 'SELG')  # TOP 40 акций ММВБ
     # class_code = 'SPBFUT'  # Фьючерсы (FUT)
-    # security_codes = ('SiM4', 'RIM4')  # Формат фьючерса: <Тикер><Месяц экспирации><Последняя цифра года> Месяц экспирации: 3-H, 6-M, 9-U, 12-Z
+    # security_codes = ('SiZ4', 'RIZ4')  # Формат фьючерса: <Тикер><Месяц экспирации><Последняя цифра года> Месяц экспирации: 3-H, 6-M, 9-U, 12-Z
     # security_codes = ('USDRUBF', 'EURRUBF', 'CNYRUBF', 'GLDRUBF', 'IMOEXF')  # Вечные фьючерсы ММВБ
 
     skip_last_date = True  # Если получаем данные внутри сессии, то не берем бары за дату незавершенной сессии
