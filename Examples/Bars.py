@@ -183,7 +183,9 @@ def save_candles_to_file(fp_provider, class_code, security_codes, tf='D1',
             logger.info('Новых бар нет')
             continue  # то переходим к следующему тикеру, дальше не продолжаем
         if not file_bars.empty:  # Если файл существует
-            pd_bars = pd.concat([file_bars, pd_bars]).drop_duplicates(keep='last').sort_index()  # Объединяем файл с данными из Finam, убираем дубликаты, сортируем заново
+            pd_bars = pd.concat([file_bars, pd_bars])  # Объединяем файл с данными из Finam
+            pd_bars = pd_bars[~pd_bars.index.duplicated(keep='last')]  # Убираем дубликаты самым быстрым методом
+            pd_bars.sort_index(inplace=True)  # Сортируем по индексу заново
         pd_bars = pd_bars[['open', 'high', 'low', 'close', 'volume']]  # Отбираем нужные колонки. Дата и время будет экспортирована как индекс
         filename = f'{datapath}{class_code}.{security_code}_{tf}.txt'
         logger.info('Сохранение файла')
