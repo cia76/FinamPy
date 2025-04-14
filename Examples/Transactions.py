@@ -1,13 +1,12 @@
 import logging  # Выводим лог на консоль и в файл
-from datetime import datetime, timedelta  # Дата и время
+from datetime import datetime  # Дата и время
 from time import sleep  # Задержка в секундах перед выполнением операций
 
-from FinamPy import FinamPy  # Работа с сервером TRANSAQ
-from FinamPy.proto.candles_pb2 import DayCandleTimeFrame, DayCandleInterval
-
-from FinamPy.proto.google.type.date_pb2 import Date  # Дата Google
-from FinamPy.proto.common_pb2 import BuySell  # Покупка/продажа
-from FinamPy.proto.stops_pb2 import StopLoss, StopQuantity, StopQuantityUnits  # Стоп заявка
+from FinamPy import FinamPy
+from google.type.decimal_pb2 import Decimal
+from FinamPy.grpc.orders.orders_service_pb2 import Order, OrderState, CancelOrderRequest, TIME_IN_FORCE_GOOD_TILL_CANCEL, ORDER_TYPE_MARKET, ORDER_TYPE_LIMIT, ORDER_TYPE_STOP  # Заявки
+from FinamPy.grpc.side_pb2 import SIDE_BUY, SIDE_SELL  # Направление заявки
+from FinamPy.grpc.marketdata.marketdata_service_pb2 import QuoteRequest, QuoteResponse  # Последняя цена сделки
 
 
 if __name__ == '__main__':  # Точка входа при запуске этого скрипта
@@ -17,101 +16,87 @@ if __name__ == '__main__':  # Точка входа при запуске это
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',  # Формат сообщения
                         datefmt='%d.%m.%Y %H:%M:%S',  # Формат даты
                         level=logging.DEBUG,  # Уровень логируемых событий NOTSET/DEBUG/INFO/WARNING/ERROR/CRITICAL
-                        handlers=[logging.FileHandler('Transactions.log'), logging.StreamHandler()])  # Лог записываем в файл и выводим на консоль
+                        handlers=[logging.FileHandler('Transactions.log', encoding='utf-8'), logging.StreamHandler()])  # Лог записываем в файл и выводим на консоль
     logging.Formatter.converter = lambda *args: datetime.now(tz=fp_provider.tz_msk).timetuple()  # В логе время указываем по МСК
 
-    security_board = 'TQBR'  # Код режима торгов
-    security_code = 'SBER'  # Тикер
-    # security_board = 'FUT'  # Код режима торгов
-    # security_code = 'SiM4'  # Тикер
+    symbol = 'SBER@RUSX'  # Символ инструмента
 
-    client_id = fp_provider.client_ids[0]  # Будем работать с первым торговым счетом
-    si = fp_provider.get_symbol_info(security_board, security_code)  # Получаем информацию о тикере
-    logger.debug(si)
-    decimals = si.decimals  # Кол-во десятичных знаков
-    min_step = round(10 ** -decimals * si.min_step, decimals)  # Минимальный шаг цены
+    account_id = fp_provider.account_ids[0]  # Торговый счет, где будут выставляться заявки
+    quantity = Decimal(str(10))  # Количество в шт.
 
-    tommorrow = datetime.today() + timedelta(days=1)  # Завтрашняя дата
-    last_bar = fp_provider.get_day_candles(
-        security_board, security_code, DayCandleTimeFrame.DAYCANDLE_TIMEFRAME_D1,
-        DayCandleInterval(to=Date(year=tommorrow.year, month=tommorrow.month, day=tommorrow.day), count=1))  # Последний бар (до завтра)
-    last_price = fp_provider.decimal_to_float(last_bar.candles[0].close)  # Последняя цена сделки
-    logger.info(f'Последняя цена сделки {security_board}.{security_code}: {last_price}')
+    # TODO Ждем от Финама подписки на изменения счета, заявок, позиций
 
-    # Обработчики подписок
-    fp_provider.on_order = lambda order_event: logger.info(f'Заявка - {order_event}')  # Заявки
-    fp_provider.on_trade = lambda trade_event: logger.info(f'Сделка - {trade_event}')  # Сделки
-    fp_provider.on_portfolio = lambda portfolio_event: logger.info(f'Портфель - {portfolio_event}')  # Портфель
+    # Новая рыночная заявка на покупку (открытие позиции)
+    logger.info(f'Заявка {symbol} на покупку минимального лота по рыночной цене')
+    order_state: OrderState = fp_provider.call_function(
+        fp_provider.orders_stub.PlaceOrder,
+        Order(account_id=account_id, symbol=symbol, quantity=quantity, side=SIDE_BUY, type=ORDER_TYPE_MARKET, time_in_force=TIME_IN_FORCE_GOOD_TILL_CANCEL, client_order_id='MarketBuy')
+    )  # Выставление заявки
+    logger.debug(order_state)
+    logger.info(f'Номер заявки: {order_state.order_id}')
+    logger.info(f'Номер исполнения заявки: {order_state.exec_id}')
+    logger.info(f'Статус заявки: {order_state.status}')
 
-    # Создание подписок
-    order_trade_request_id = 'OrderTrade1'  # Код подписки на заявки и сделки
-    fp_provider.subscribe_order_trade([client_id], request_id=order_trade_request_id)  # Подписка на заявки и сделки
-    logger.info(f'Подписка на заявки и сделки {order_trade_request_id} создана')
+    sleep(10)  # Ждем 10 секунд
 
-    # Новая рыночная заявка (открытие позиции)
-    # logger.info(f'Заявка {security_board}.{security_code} на покупку минимального лота по рыночной цене')
-    # response = fp_provider.new_order(client_id, security_board, security_code, BuySell.BUY_SELL_BUY, 1)
-    # logger.debug(response)
-    # transaction_id = response.transaction_id
-    # logger.info(f'Номер заявки: {transaction_id}')
-    #
-    # sleep(10)  # Ждем 10 секунд
+    # Новая рыночная заявка на продажу (закрытие позиции)
+    logger.info(f'Заявка {symbol} на продажу минимального лота по рыночной цене')
+    order_state: OrderState = fp_provider.call_function(
+        fp_provider.orders_stub.PlaceOrder,
+        Order(account_id=account_id, symbol=symbol, quantity=quantity, side=SIDE_SELL, type=ORDER_TYPE_MARKET, time_in_force=TIME_IN_FORCE_GOOD_TILL_CANCEL, client_order_id='MarketSell')
+    )  # Выставление заявки
+    logger.debug(order_state)
+    logger.info(f'Номер заявки: {order_state.order_id}')
+    logger.info(f'Номер исполнения заявки: {order_state.exec_id}')
+    logger.info(f'Статус заявки: {order_state.status}')
 
-    # Новая рыночная заявка (закрытие позиции)
-    # logger.info(f'Заявка {security_board}.{security_code} на продажу минимального лота по рыночной цене')
-    # response = fp_provider.new_order(client_id, security_board, security_code, BuySell.BUY_SELL_SELL, 1)
-    # logger.debug(response)
-    # transaction_id = response.transaction_id
-    # logger.info(f'Номер заявки: {transaction_id}')
-    #
-    # sleep(10)  # Ждем 10 секунд
+    sleep(10)  # Ждем 10 секунд
 
-    # Новая лимитная заявка
-    limit_price = last_price * 0.99  # Лимитная цена на 1% ниже последней цены сделки
-    limit_price = limit_price // min_step * min_step  # Округляем цену кратно минимальному шагу цены
-    logger.info(f'Заявка {security_board}.{security_code} на покупку минимального лота по лимитной цене {limit_price}')
-    response = fp_provider.new_order(client_id, security_board, security_code, BuySell.BUY_SELL_BUY, 1, price=limit_price)  # Новая лимитная заявка
-    logger.debug(response)
-    transaction_id = response.transaction_id  # Номер заявки
-    logger.info(f'Номер заявки: {transaction_id}')
+    quote_response: QuoteResponse = fp_provider.call_function(fp_provider.marketdata_stub.LastQuote, QuoteRequest(symbol=symbol))  # Получение последней котировки по инструменту
+    last_price = float(quote_response.quote.last.value)  # Последняя цена сделки
+
+    # Новая лимитная заявка на покупку
+    limit_price = last_price * 0.99  # Лимитная цена на 1% ниже последней цены сделки TODO Ждем от Финама спецификацию тикеров, чтобы правильно округлять цены
+    logger.info(f'Заявка {symbol} на покупку минимального лота по лимитной цене {limit_price}')
+    order_state: OrderState = fp_provider.call_function(
+        fp_provider.orders_stub.PlaceOrder,
+        Order(account_id=account_id, symbol=symbol, quantity=quantity, side=SIDE_BUY, type=ORDER_TYPE_LIMIT, time_in_force=TIME_IN_FORCE_GOOD_TILL_CANCEL, limit_price=Decimal(str(limit_price)), client_order_id='LimitBuy')
+    )  # Выставление заявки
+    logger.debug(order_state)
+    order_id = order_state.order_id  # Номер заявки
+    logger.info(f'Номер заявки: {order_id}')
+    logger.info(f'Статус заявки: {order_state.status}')
 
     sleep(10)  # Ждем 10 секунд
 
     # Удаление существующей лимитной заявки
-    logger.info(f'Удаление заявки: {transaction_id}')
-    response = fp_provider.cancel_order(client_id, transaction_id)  # Удаление существующей лимитной заявки
-    logger.info(f'Статус: {response}')
+    logger.info(f'Удаление заявки: {order_id}')
+    order_state: OrderState = fp_provider.call_function(fp_provider.orders_stub.CancelOrder, CancelOrderRequest(account_id=account_id, order_id=order_id))  # Удаление заявки
+    logger.debug(order_state)
+    logger.info(f'Статус заявки: {order_state.status}')
 
     sleep(10)  # Ждем 10 секунд
 
-    # Новая стоп заявка
-    stop_price = last_price * 1.01  # Стоп цена на 1% выше последней цены сделки
-    stop_price = stop_price // min_step * min_step  # Округляем цену кратно минимальному шагу цены
-    logger.info(f'Заявка {security_board}.{security_code} на покупку минимального лота по стоп цене {stop_price}')
-    quantity = StopQuantity(value=1, units=StopQuantityUnits.STOP_QUANTITY_UNITS_LOTS)  # Кол-во в лотах
-    stop_loss = StopLoss(activation_price=stop_price, market_price=True, price=0, quantity=quantity)  # Стоп заявка
-    response = fp_provider.new_stop(client_id, security_board, security_code, BuySell.BUY_SELL_BUY, stop_loss)  # Новая стоп заявка
-    logger.debug(response)
-    stop_id = response.stop_id  # Номер стоп заявки
-    logger.info(f'Номер стоп заявки: {stop_id}')
+    # Новая стоп заявка на покупку
+    stop_price = last_price * 1.01  # Стоп цена на 1% выше последней цены сделки TODO Ждем от Финама спецификацию тикеров, чтобы правильно округлять цены
+    logger.info(f'Заявка {symbol} на покупку минимального лота по стоп цене {stop_price}')
+    order_state: OrderState = fp_provider.call_function(
+        fp_provider.orders_stub.PlaceOrder,
+        Order(account_id=account_id, symbol=symbol, quantity=quantity, side=SIDE_BUY, type=ORDER_TYPE_STOP, time_in_force=TIME_IN_FORCE_GOOD_TILL_CANCEL, stop_price=Decimal(str(stop_price)), client_order_id='StopMarketBuy')
+    )  # Выставление заявки
+    logger.debug(order_state)
+    order_id = order_state.order_id  # Номер заявки
+    logger.info(f'Номер заявки: {order_id}')
+    logger.info(f'Статус заявки: {order_state.status}')
 
     sleep(10)  # Ждем 10 секунд
 
     # Удаление существующей стоп заявки
-    logger.info(f'Удаление стоп заявки: {stop_id}')
-    response = fp_provider.cancel_stop(client_id, stop_id)  # Удаление существующей стоп заявки
-    logger.info(f'Статус: {response}')
+    logger.info(f'Удаление стоп заявки: {order_id}')
+    order_state: OrderState = fp_provider.call_function(fp_provider.orders_stub.CancelOrder, CancelOrderRequest(account_id=account_id, order_id=order_id))  # Удаление заявки
+    logger.debug(order_state)
+    logger.info(f'Статус заявки: {order_state.status}')
 
     sleep(10)  # Ждем 10 секунд
 
-    # Отмена подписок
-    fp_provider.unsubscribe_order_trade(order_trade_request_id)  # Отмена подписки на заявки и сделки
-    logger.info(f'Подписка на заявки и сделки {order_trade_request_id} отменена')
-
-    # Сброс обработчиков подписок
-    fp_provider.on_order = fp_provider.default_handler  # Заявки
-    fp_provider.on_trade = fp_provider.default_handler  # Сделки
-    fp_provider.on_portfolio = fp_provider.default_handler  # Портфель
-
-    # Выход
     fp_provider.close_channel()  # Закрываем канал перед выходом

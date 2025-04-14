@@ -1,2 +1,3 @@
 from .FinamPy import FinamPy
-from .FinamRestPy import FinamRestPy
+from .FinamPyOld import FinamPyOld
+from .FinamRestPyOld import FinamRestPy
