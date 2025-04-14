@@ -1,6 +1,6 @@
 # Получить токен: https://tradeapi.finam.ru/docs/tokens/
 
-access_token = '<Токен>'  # Торговый токен 528d7a6e-ed79-401d-9f5b-104933b028d9
+access_token = '<Токен>'  # Торговый токен
 
 # Чтобы получить торговый токен (старая версия):
 # 1. Открыть счет в "Финаме" https://open.finam.ru/registration
