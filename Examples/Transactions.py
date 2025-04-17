@@ -27,30 +27,30 @@ if __name__ == '__main__':  # Точка входа при запуске это
     # TODO Ждем от Финама подписки на изменения счета, заявок, позиций
 
     # Новая рыночная заявка на покупку (открытие позиции)
-    logger.info(f'Заявка {symbol} на покупку минимального лота по рыночной цене')
-    order_state: OrderState = fp_provider.call_function(
-        fp_provider.orders_stub.PlaceOrder,
-        Order(account_id=account_id, symbol=symbol, quantity=quantity, side=SIDE_BUY, type=ORDER_TYPE_MARKET, time_in_force=TIME_IN_FORCE_GOOD_TILL_CANCEL, client_order_id='MarketBuy')
-    )  # Выставление заявки
-    logger.debug(order_state)
-    logger.info(f'Номер заявки: {order_state.order_id}')
-    logger.info(f'Номер исполнения заявки: {order_state.exec_id}')
-    logger.info(f'Статус заявки: {order_state.status}')
-
-    sleep(10)  # Ждем 10 секунд
+    # logger.info(f'Заявка {symbol} на покупку минимального лота по рыночной цене')
+    # order_state: OrderState = fp_provider.call_function(
+    #     fp_provider.orders_stub.PlaceOrder,
+    #     Order(account_id=account_id, symbol=symbol, quantity=quantity, side=SIDE_BUY, type=ORDER_TYPE_MARKET, time_in_force=TIME_IN_FORCE_GOOD_TILL_CANCEL, client_order_id='MarketBuy')
+    # )  # Выставление заявки
+    # logger.debug(order_state)
+    # logger.info(f'Номер заявки: {order_state.order_id}')
+    # logger.info(f'Номер исполнения заявки: {order_state.exec_id}')
+    # logger.info(f'Статус заявки: {order_state.status}')
+    #
+    # sleep(10)  # Ждем 10 секунд
 
     # Новая рыночная заявка на продажу (закрытие позиции)
-    logger.info(f'Заявка {symbol} на продажу минимального лота по рыночной цене')
-    order_state: OrderState = fp_provider.call_function(
-        fp_provider.orders_stub.PlaceOrder,
-        Order(account_id=account_id, symbol=symbol, quantity=quantity, side=SIDE_SELL, type=ORDER_TYPE_MARKET, time_in_force=TIME_IN_FORCE_GOOD_TILL_CANCEL, client_order_id='MarketSell')
-    )  # Выставление заявки
-    logger.debug(order_state)
-    logger.info(f'Номер заявки: {order_state.order_id}')
-    logger.info(f'Номер исполнения заявки: {order_state.exec_id}')
-    logger.info(f'Статус заявки: {order_state.status}')
-
-    sleep(10)  # Ждем 10 секунд
+    # logger.info(f'Заявка {symbol} на продажу минимального лота по рыночной цене')
+    # order_state: OrderState = fp_provider.call_function(
+    #     fp_provider.orders_stub.PlaceOrder,
+    #     Order(account_id=account_id, symbol=symbol, quantity=quantity, side=SIDE_SELL, type=ORDER_TYPE_MARKET, time_in_force=TIME_IN_FORCE_GOOD_TILL_CANCEL, client_order_id='MarketSell')
+    # )  # Выставление заявки
+    # logger.debug(order_state)
+    # logger.info(f'Номер заявки: {order_state.order_id}')
+    # logger.info(f'Номер исполнения заявки: {order_state.exec_id}')
+    # logger.info(f'Статус заявки: {order_state.status}')
+    #
+    # sleep(10)  # Ждем 10 секунд
 
     quote_response: QuoteResponse = fp_provider.call_function(fp_provider.marketdata_stub.LastQuote, QuoteRequest(symbol=symbol))  # Получение последней котировки по инструменту
     last_price = float(quote_response.quote.last.value)  # Последняя цена сделки
