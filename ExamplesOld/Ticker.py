@@ -18,7 +18,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
 
     securities = fp_provider.symbols  # Получаем справочник всех тикеров из провайдера
     for dataname in datanames:  # Пробегаемся по всем тикерам
-        security_board, security_code = fp_provider.dataname_to_board_symbol(dataname)  # Код режима торгов и тикер
+        security_board, security_code = fp_provider.dataname_to_finam_board_symbol(dataname)  # Код режима торгов и тикер
         si = next((security for security in securities.securities if security.board == security_board and security.code == security_code), None)  # Пытаемся найти тикер в справочнике
         if not si:  # Если тикер не найден
             logger.warning(f'Тикер {security_board}.{security_code} не найден')

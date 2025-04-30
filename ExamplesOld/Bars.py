@@ -54,8 +54,8 @@ def get_candles_from_provider(fp_provider, class_code, security_code, tf, next_b
     :param str tf: Временной интервал https://ru.wikipedia.org/wiki/Таймфрейм
     :param datetime next_bar_open_utc: Первый возможный бар по UTC
     """
-    dataname = fp_provider.board_symbol_to_dataname(class_code, security_code)  # По коду режима торгов и тикера получаем название тикера
-    board, _ = fp_provider.dataname_to_board_symbol(dataname)  # По названию тикера получаем код режима торгов. Может отличаться от исходного. Например, SPBFUT - FUT
+    dataname = fp_provider.finam_board_symbol_to_dataname(class_code, security_code)  # По коду режима торгов и тикера получаем название тикера
+    board, _ = fp_provider.dataname_to_finam_board_symbol(dataname)  # По названию тикера получаем код режима торгов. Может отличаться от исходного. Например, SPBFUT - FUT
     time_frame, intraday = fp_provider.timeframe_to_finam_timeframe(tf)  # Временной интервал Finam, внутридневной интервал
     logger.info(f'Получение истории {dataname} {tf} из Finam')
     td = timedelta(days=(30 if intraday else 365))  # Максимальный запрос за 30 дней для внутридневных интервалов и 1 год (365 дней) для дневных и выше

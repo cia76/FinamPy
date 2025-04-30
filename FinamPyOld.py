@@ -481,13 +481,38 @@ class FinamPyOld:
 
     # Функции конвертации
 
-    def dataname_to_board_symbol(self, dataname) -> tuple[str, str]:
+    @staticmethod
+    def finam_board_to_board(finam_board):
+        """Канонический код режима торгов из кода режима торгов Финам
+
+        :param str finam_board: Код режима торгов Финам
+        :return: Канонический код режима торгов
+        """
+        if finam_board == 'FUT':  # Для фьючерсов
+            return 'SPBFUT'
+        elif finam_board == 'OPT':  # Для опционов
+            return 'SPBOPT'
+        return finam_board
+
+    @staticmethod
+    def board_to_finam_board(board):
+        """Код режима торгов Финам из канонического кода режима торгов
+
+        :param str board: Канонический код режима торгов
+        :return: Код режима торгов Финам
+        """
+        if board == 'SPBFUT':  # Для фьючерсов
+            return 'FUT'
+        if board == 'SPBOPT':  # Для опционов
+            return 'OPT'
+        return board
+
+    def dataname_to_finam_board_symbol(self, dataname) -> tuple[Union[str, None], str]:
         """Код режима торгов и тикер из названия тикера
 
         :param str dataname: Название тикера
         :return: Код режима торгов и тикер
         """
-        board = None  # Код режима торгов
         symbol_parts = dataname.split('.')  # По разделителю пытаемся разбить тикер на части
         if len(symbol_parts) >= 2:  # Если тикер задан в формате <Код режима торгов>.<Код тикера>
             board = symbol_parts[0]  # Код режима торгов
@@ -495,25 +520,19 @@ class FinamPyOld:
         else:  # Если тикер задан без режима торгов
             symbol = dataname  # Код тикера
             board = next((item.board for item in self.symbols.securities if item.code == symbol), None)  # Получаем код режима торгов первого совпадающего тикера
-        if board == 'SPBFUT':  # Для фьючерсов
-            board = 'FUT'  # Меняем канонический код режима торгов на Финам
-        elif board == 'SPBOPT':  # Для опционов
-            board = 'OPT'  # Меняем канонический код режима торгов на Финам
-        return board, symbol
+            if board is None:  # Если спецификация тикера нигде не найдена
+                return None, symbol  # то возвращаем без кода режима торгов
+        finam_board = self.board_to_finam_board(board)  # Код режима торгов Финам
+        return finam_board, symbol
 
-    @staticmethod
-    def board_symbol_to_dataname(board, symbol) -> str:
-        """Название тикера из кода режима торгов и тикера
+    def finam_board_symbol_to_dataname(self, finam_board, symbol) -> str:
+        """Название тикера из кода режима торгов Финам и тикера
 
-        :param str board: Код режима торгов
+        :param str finam_board: Код режима торгов Финам
         :param str symbol: Тикер
         :return: Название тикера
         """
-        if board == 'FUT':  # Для фьючерсов
-            board = 'SPBFUT'  # Меняем код режима торгов Финам на канонический
-        elif board == 'OPT':  # Для опционов
-            board = 'SPBOPT'  # Меняем код режима торгов Финам на канонический
-        return f'{board}.{symbol}'
+        return f'{self.finam_board_to_board(finam_board)}.{symbol}'
 
     def get_symbol_info(self, board_market, symbol) -> Union[proto_security.Security, None]:
         """Спецификация тикера
