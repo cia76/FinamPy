@@ -90,11 +90,7 @@ class FinamPy:
 
     # Подписки
 
-    def default_handler(self, event: Union[
-        marketdata_service.Quote,
-        marketdata_service.StreamOrderBook,
-        marketdata_service.StreamOrderBook
-    ]):
+    def default_handler(self, event: Union[marketdata_service.Quote, marketdata_service.StreamOrderBook, marketdata_service.Trade]):
         """Пустой обработчик события по умолчанию. Его можно заменить на пользовательский"""
         pass
 
