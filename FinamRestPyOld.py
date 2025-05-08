@@ -1,3 +1,5 @@
+from typing import Any
+
 from requests import post, get, delete  # Запросы/ответы от сервера запросов
 from json import loads  # Ответы принимаются в виде JSON сообщений
 
@@ -268,13 +270,11 @@ class FinamRestPy:
         :param datetime date_to: Дата окончания в формате yyyy-MM-dd в часовом поясе UTC
         :param int count: Кол-во свечей. Максимум 500
         """
-        params = {'securityBoard': security_board,
-                  'securityCode': security_code,
-                  'timeFrame': time_frame}
+        params: dict[str, Any] = {'securityBoard': security_board, 'securityCode': security_code, 'timeFrame': time_frame}
         if date_from:  # Если указана дата начала
             params['from'] = date_from  # то выставляем ее
         if date_to:  # Если указана дата окончания
-            params['to'] = date_from  # то выставляем ее
+            params['to'] = date_to  # то выставляем ее
         if count:  # Если указано кол-во свечей
             params['count'] = count  # то выставляем их
         return self.check_result(get(url=f'{self.server}/api/v1/day-candles', params=params, headers=self.get_headers()))
@@ -292,9 +292,7 @@ class FinamRestPy:
         :param datetime date_to: Дата окончания в формате yyyy-MM-ddTHH:mm:ssZ в часовом поясе UTC
         :param int count: Кол-во свечей. Максимум 500
         """
-        params = {'securityBoard': security_board,
-                  'securityCode': security_code,
-                  'timeFrame': time_frame}
+        params: dict[str, Any] = {'securityBoard': security_board, 'securityCode': security_code, 'timeFrame': time_frame}
         if date_from:  # Если указана дата начала
             params['from'] = date_from  # то выставляем ее
         if date_to:  # Если указана дата окончания

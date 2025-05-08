@@ -121,7 +121,7 @@ class FinamPyOld:
         :param int quantity: Количество лотов инструмента для заявки
         :param bool use_credit: Использовать кредит. Недоступно для срочного рынка
         :param float price: Цена заявки. None для рыночной заявки
-        :param proto_orders.OrderProperty order_property: Поведение заявки при выставлении в стакан
+        :param proto_orders.OrderProperty.ValueType order_property: Поведение заявки при выставлении в стакан
             ORDER_PROPERTY_PUT_IN_QUEUE - Неисполненная часть заявки помещается в очередь заявок Биржи
             ORDER_PROPERTY_CANCEL_BALANCE - (FOK) Неисполненная часть заявки снимается с торгов
             ORDER_PROPERTY_IMM_OR_CANCEL - (IOC) Сделки совершаются только в том случае, если заявка может быть удовлетворена полностью и сразу при выставлении
