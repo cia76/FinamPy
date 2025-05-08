@@ -115,7 +115,7 @@ class FinamPyOld:
         :param str client_id: Идентификатор торгового счёта
         :param str security_board: Режим торгов
         :param str security_code: Тикер инструмента
-        :param proto_common.BuySell buy_sell: Направление сделки
+        :param proto_common.BuySell.ValueType buy_sell: Направление сделки
             BUY_SELL_BUY - Покупка
             BUY_SELL_SELL - Продажа
         :param int quantity: Количество лотов инструмента для заявки
@@ -186,7 +186,7 @@ class FinamPyOld:
         :param str client_id: Идентификатор торгового счёта
         :param str security_board: Режим торгов
         :param str security_code: Тикер инструмента
-        :param proto_common.BuySell buy_sell: Направление сделки
+        :param proto_common.BuySell.ValueType buy_sell: Направление сделки
             BUY_SELL_BUY - Покупка
             BUY_SELL_SELL - Продажа
         :param proto_stops.StopLoss stop_loss: Стоп лосс заявка
