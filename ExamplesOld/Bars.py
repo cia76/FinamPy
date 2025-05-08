@@ -1,5 +1,5 @@
 import logging  # Выводим лог на консоль и в файл
-from datetime import datetime, timezone, timedelta  # Дата и время, временнАя зона, временной интервал
+from datetime import datetime, timezone, timedelta, UTC
 from time import time
 import os.path
 
@@ -60,7 +60,7 @@ def get_candles_from_provider(fp_provider, class_code, security_code, tf, next_b
     logger.info(f'Получение истории {dataname} {tf} из Finam')
     td = timedelta(days=(30 if intraday else 365))  # Максимальный запрос за 30 дней для внутридневных интервалов и 1 год (365 дней) для дневных и выше
     interval = fp_provider.proto_candles.IntradayCandleInterval(count=500) if intraday else fp_provider.proto_candles.DayCandleInterval(count=500)  # Нужно поставить максимальное кол-во бар. Максимум, можно поставить 500
-    todate_utc = datetime.utcnow().replace(tzinfo=timezone.utc)  # Будем получать бары до текущей даты и времени UTC
+    todate_utc = datetime.now(UTC)  # Будем получать бары до текущей даты и времени UTC
     from_ = getattr(interval, 'from')  # Т.к. from - ключевое слово в Python, то получаем атрибут from из атрибута интервала
     to_ = getattr(interval, 'to')  # Аналогично будем работать с атрибутом to для единообразия
     first_request = next_bar_open_utc == min_bar_open_utc  # Если файл не существует, то первый запрос будем формировать без даты окончания. Так мы в первом запросе получим первые бары истории
