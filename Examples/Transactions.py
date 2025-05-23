@@ -4,7 +4,7 @@ from time import sleep  # Задержка в секундах перед вып
 
 from FinamPy import FinamPy
 from google.type.decimal_pb2 import Decimal
-from FinamPy.grpc.orders.orders_service_pb2 import Order, OrderState, CancelOrderRequest, TIME_IN_FORCE_GOOD_TILL_CANCEL, ORDER_TYPE_MARKET, ORDER_TYPE_LIMIT, ORDER_TYPE_STOP  # Заявки
+from FinamPy.grpc.orders.orders_service_pb2 import Order, OrderState, CancelOrderRequest, ORDER_TYPE_MARKET, ORDER_TYPE_LIMIT, ORDER_TYPE_STOP  # Заявки
 from FinamPy.grpc.side_pb2 import SIDE_BUY, SIDE_SELL  # Направление заявки
 from FinamPy.grpc.marketdata.marketdata_service_pb2 import QuoteRequest, QuoteResponse  # Последняя цена сделки
 
@@ -22,7 +22,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
     symbol = 'SBER@RUSX'  # Символ инструмента
 
     account_id = fp_provider.account_ids[0]  # Торговый счет, где будут выставляться заявки
-    quantity = Decimal(str(10))  # Количество в шт.
+    quantity = Decimal(value=str(10))  # Количество в шт.
 
     # TODO Ждем от Финама подписки на изменения счета, заявок, позиций
 
@@ -30,7 +30,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
     # logger.info(f'Заявка {symbol} на покупку минимального лота по рыночной цене')
     # order_state: OrderState = fp_provider.call_function(
     #     fp_provider.orders_stub.PlaceOrder,
-    #     Order(account_id=account_id, symbol=symbol, quantity=quantity, side=SIDE_BUY, type=ORDER_TYPE_MARKET, time_in_force=TIME_IN_FORCE_GOOD_TILL_CANCEL, client_order_id='MarketBuy')
+    #     Order(account_id=account_id, symbol=symbol, quantity=quantity, side=SIDE_BUY, type=ORDER_TYPE_MARKET, client_order_id='MarketBuy')
     # )  # Выставление заявки
     # logger.debug(order_state)
     # logger.info(f'Номер заявки: {order_state.order_id}')
@@ -43,7 +43,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
     # logger.info(f'Заявка {symbol} на продажу минимального лота по рыночной цене')
     # order_state: OrderState = fp_provider.call_function(
     #     fp_provider.orders_stub.PlaceOrder,
-    #     Order(account_id=account_id, symbol=symbol, quantity=quantity, side=SIDE_SELL, type=ORDER_TYPE_MARKET, time_in_force=TIME_IN_FORCE_GOOD_TILL_CANCEL, client_order_id='MarketSell')
+    #     Order(account_id=account_id, symbol=symbol, quantity=quantity, side=SIDE_SELL, type=ORDER_TYPE_MARKET, client_order_id='MarketSell')
     # )  # Выставление заявки
     # logger.debug(order_state)
     # logger.info(f'Номер заявки: {order_state.order_id}')
@@ -60,7 +60,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
     logger.info(f'Заявка {symbol} на покупку минимального лота по лимитной цене {limit_price}')
     order_state: OrderState = fp_provider.call_function(
         fp_provider.orders_stub.PlaceOrder,
-        Order(account_id=account_id, symbol=symbol, quantity=quantity, side=SIDE_BUY, type=ORDER_TYPE_LIMIT, time_in_force=TIME_IN_FORCE_GOOD_TILL_CANCEL, limit_price=Decimal(str(limit_price)), client_order_id='LimitBuy')
+        Order(account_id=account_id, symbol=symbol, quantity=quantity, side=SIDE_BUY, type=ORDER_TYPE_LIMIT, limit_price=Decimal(str(limit_price)), client_order_id='LimitBuy')
     )  # Выставление заявки
     logger.debug(order_state)
     order_id = order_state.order_id  # Номер заявки
@@ -82,7 +82,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
     logger.info(f'Заявка {symbol} на покупку минимального лота по стоп цене {stop_price}')
     order_state: OrderState = fp_provider.call_function(
         fp_provider.orders_stub.PlaceOrder,
-        Order(account_id=account_id, symbol=symbol, quantity=quantity, side=SIDE_BUY, type=ORDER_TYPE_STOP, time_in_force=TIME_IN_FORCE_GOOD_TILL_CANCEL, stop_price=Decimal(str(stop_price)), client_order_id='StopMarketBuy')
+        Order(account_id=account_id, symbol=symbol, quantity=quantity, side=SIDE_BUY, type=ORDER_TYPE_STOP, stop_price=Decimal(str(stop_price)), client_order_id='StopMarketBuy')
     )  # Выставление заявки
     logger.debug(order_state)
     order_id = order_state.order_id  # Номер заявки
