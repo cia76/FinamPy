@@ -50,5 +50,6 @@ if __name__ == '__main__':  # Точка входа при запуске это
         else:
             logger.info(f'Первый бар    : {bars_response.bars[0]}')
             logger.info(f'Последний бар : {bars_response.bars[-1]}')
+            logger.info(f'Получено бар  : {len(bars_response.bars)}')
         start_date = end_date  # Дату начала переносим на дату окончания
     fp_provider.close_channel()  # Закрываем канал перед выходом
