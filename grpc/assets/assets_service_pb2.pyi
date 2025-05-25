@@ -12,6 +12,7 @@ import google.protobuf.message
 import google.type.date_pb2
 import google.type.decimal_pb2
 import google.type.interval_pb2
+import google.type.money_pb2
 import sys
 import typing
 
@@ -85,6 +86,91 @@ class AssetsResponse(google.protobuf.message.Message):
     def ClearField(self, field_name: typing.Literal["assets", b"assets"]) -> None: ...
 
 global___AssetsResponse = AssetsResponse
+
+@typing.final
+class GetAssetParamsRequest(google.protobuf.message.Message):
+    """Запрос торговых параметров инструмента"""
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    SYMBOL_FIELD_NUMBER: builtins.int
+    ACCOUNT_ID_FIELD_NUMBER: builtins.int
+    symbol: builtins.str
+    """Символ инструмента"""
+    account_id: builtins.str
+    """ID аккаунта для которого будут подбираться торговые параметры"""
+    def __init__(
+        self,
+        *,
+        symbol: builtins.str = ...,
+        account_id: builtins.str = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["account_id", b"account_id", "symbol", b"symbol"]) -> None: ...
+
+global___GetAssetParamsRequest = GetAssetParamsRequest
+
+@typing.final
+class GetAssetParamsResponse(google.protobuf.message.Message):
+    """Торговые параметры инструмента"""
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    SYMBOL_FIELD_NUMBER: builtins.int
+    ACCOUNT_ID_FIELD_NUMBER: builtins.int
+    TRADEABLE_FIELD_NUMBER: builtins.int
+    LONGABLE_FIELD_NUMBER: builtins.int
+    SHORTABLE_FIELD_NUMBER: builtins.int
+    LONG_RISK_RATE_FIELD_NUMBER: builtins.int
+    LONG_COLLATERAL_FIELD_NUMBER: builtins.int
+    SHORT_RISK_RATE_FIELD_NUMBER: builtins.int
+    SHORT_COLLATERAL_FIELD_NUMBER: builtins.int
+    symbol: builtins.str
+    """Символ инструмента"""
+    account_id: builtins.str
+    """ID аккаунта для которого подбираются торговые параметры"""
+    tradeable: builtins.bool
+    """Доступны ли торговые операции"""
+    @property
+    def longable(self) -> global___Longable:
+        """Доступны ли операции в Лонг"""
+
+    @property
+    def shortable(self) -> global___Shortable:
+        """Доступны ли операции в Шорт"""
+
+    @property
+    def long_risk_rate(self) -> google.type.decimal_pb2.Decimal:
+        """Ставка риска для операции в Лонг"""
+
+    @property
+    def long_collateral(self) -> google.type.money_pb2.Money:
+        """Сумма обеспечения для поддержания позиции Лонг"""
+
+    @property
+    def short_risk_rate(self) -> google.type.decimal_pb2.Decimal:
+        """Ставка риска для операции в Шорт"""
+
+    @property
+    def short_collateral(self) -> google.type.money_pb2.Money:
+        """Сумма обеспечения для поддержания позиции Шорт"""
+
+    def __init__(
+        self,
+        *,
+        symbol: builtins.str = ...,
+        account_id: builtins.str = ...,
+        tradeable: builtins.bool = ...,
+        longable: global___Longable | None = ...,
+        shortable: global___Shortable | None = ...,
+        long_risk_rate: google.type.decimal_pb2.Decimal | None = ...,
+        long_collateral: google.type.money_pb2.Money | None = ...,
+        short_risk_rate: google.type.decimal_pb2.Decimal | None = ...,
+        short_collateral: google.type.money_pb2.Money | None = ...,
+    ) -> None: ...
+    def HasField(self, field_name: typing.Literal["long_collateral", b"long_collateral", "long_risk_rate", b"long_risk_rate", "longable", b"longable", "short_collateral", b"short_collateral", "short_risk_rate", b"short_risk_rate", "shortable", b"shortable"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["account_id", b"account_id", "long_collateral", b"long_collateral", "long_risk_rate", b"long_risk_rate", "longable", b"longable", "short_collateral", b"short_collateral", "short_risk_rate", b"short_risk_rate", "shortable", b"shortable", "symbol", b"symbol", "tradeable", b"tradeable"]) -> None: ...
+
+global___GetAssetParamsResponse = GetAssetParamsResponse
 
 @typing.final
 class OptionsChainRequest(google.protobuf.message.Message):
@@ -259,7 +345,7 @@ global___Asset = Asset
 
 @typing.final
 class Option(google.protobuf.message.Message):
-    """Инфомация об опционе"""
+    """Информация об опционе"""
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -332,3 +418,101 @@ class Option(google.protobuf.message.Message):
     def ClearField(self, field_name: typing.Literal["contract_size", b"contract_size", "multiplier", b"multiplier", "strike", b"strike", "symbol", b"symbol", "trade_first_day", b"trade_first_day", "trade_last_day", b"trade_last_day", "type", b"type"]) -> None: ...
 
 global___Option = Option
+
+@typing.final
+class Longable(google.protobuf.message.Message):
+    """Доступны ли операции в Лонг"""
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    class _Status:
+        ValueType = typing.NewType("ValueType", builtins.int)
+        V: typing_extensions.TypeAlias = ValueType
+
+    class _StatusEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[Longable._Status.ValueType], builtins.type):
+        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+        NOT_AVAILABLE: Longable._Status.ValueType  # 0
+        """Не доступен"""
+        AVAILABLE: Longable._Status.ValueType  # 1
+        """Доступен"""
+        ACCOUNT_NOT_APPROVED: Longable._Status.ValueType  # 2
+        """Запрещено на уровне счета"""
+
+    class Status(_Status, metaclass=_StatusEnumTypeWrapper):
+        """Статус"""
+
+    NOT_AVAILABLE: Longable.Status.ValueType  # 0
+    """Не доступен"""
+    AVAILABLE: Longable.Status.ValueType  # 1
+    """Доступен"""
+    ACCOUNT_NOT_APPROVED: Longable.Status.ValueType  # 2
+    """Запрещено на уровне счета"""
+
+    VALUE_FIELD_NUMBER: builtins.int
+    HALTED_DAYS_FIELD_NUMBER: builtins.int
+    value: global___Longable.Status.ValueType
+    """Статус инструмента"""
+    halted_days: builtins.int
+    """Сколько дней действует запрет на операции в Лонг (если есть)"""
+    def __init__(
+        self,
+        *,
+        value: global___Longable.Status.ValueType = ...,
+        halted_days: builtins.int = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["halted_days", b"halted_days", "value", b"value"]) -> None: ...
+
+global___Longable = Longable
+
+@typing.final
+class Shortable(google.protobuf.message.Message):
+    """Доступны ли операции в Шорт"""
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    class _Status:
+        ValueType = typing.NewType("ValueType", builtins.int)
+        V: typing_extensions.TypeAlias = ValueType
+
+    class _StatusEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[Shortable._Status.ValueType], builtins.type):
+        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+        NOT_AVAILABLE: Shortable._Status.ValueType  # 0
+        """Не доступен"""
+        AVAILABLE: Shortable._Status.ValueType  # 1
+        """Доступен"""
+        HTB: Shortable._Status.ValueType  # 2
+        """Признак того, что бумага Hard To Borrow (если есть)"""
+        ACCOUNT_NOT_APPROVED: Shortable._Status.ValueType  # 3
+        """Запрещено на уровне счета"""
+        AVAILABLE_STRATEGY: Shortable._Status.ValueType  # 4
+        """Разрешено в составе стратегии"""
+
+    class Status(_Status, metaclass=_StatusEnumTypeWrapper):
+        """Статус"""
+
+    NOT_AVAILABLE: Shortable.Status.ValueType  # 0
+    """Не доступен"""
+    AVAILABLE: Shortable.Status.ValueType  # 1
+    """Доступен"""
+    HTB: Shortable.Status.ValueType  # 2
+    """Признак того, что бумага Hard To Borrow (если есть)"""
+    ACCOUNT_NOT_APPROVED: Shortable.Status.ValueType  # 3
+    """Запрещено на уровне счета"""
+    AVAILABLE_STRATEGY: Shortable.Status.ValueType  # 4
+    """Разрешено в составе стратегии"""
+
+    VALUE_FIELD_NUMBER: builtins.int
+    HALTED_DAYS_FIELD_NUMBER: builtins.int
+    value: global___Shortable.Status.ValueType
+    """Статус инструмента"""
+    halted_days: builtins.int
+    """Сколько дней действует запрет на операции в Шорт (если есть)"""
+    def __init__(
+        self,
+        *,
+        value: global___Shortable.Status.ValueType = ...,
+        halted_days: builtins.int = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["halted_days", b"halted_days", "value", b"value"]) -> None: ...
+
+global___Shortable = Shortable

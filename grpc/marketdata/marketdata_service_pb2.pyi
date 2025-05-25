@@ -37,29 +37,29 @@ class BarsRequest(google.protobuf.message.Message):
         TIME_FRAME_UNSPECIFIED: BarsRequest._TimeFrame.ValueType  # 0
         """Таймфрейм не указан"""
         TIME_FRAME_M1: BarsRequest._TimeFrame.ValueType  # 1
-        """1 минута"""
+        """1 минута. Глубина данных 7 дней."""
         TIME_FRAME_M5: BarsRequest._TimeFrame.ValueType  # 5
-        """5 минут"""
+        """5 минут. Глубина данных 30 дней."""
         TIME_FRAME_M15: BarsRequest._TimeFrame.ValueType  # 9
-        """15 минут"""
+        """15 минут. Глубина данных 30 дней."""
         TIME_FRAME_M30: BarsRequest._TimeFrame.ValueType  # 11
-        """30 минут"""
+        """30 минут. Глубина данных 30 дней."""
         TIME_FRAME_H1: BarsRequest._TimeFrame.ValueType  # 12
-        """1 час"""
+        """1 час. Глубина данных 30 дней."""
         TIME_FRAME_H2: BarsRequest._TimeFrame.ValueType  # 13
-        """2 часа"""
+        """2 часа. Глубина данных 30 дней."""
         TIME_FRAME_H4: BarsRequest._TimeFrame.ValueType  # 15
-        """4 часа"""
+        """4 часа. Глубина данных 30 дней."""
         TIME_FRAME_H8: BarsRequest._TimeFrame.ValueType  # 17
-        """8 часов"""
+        """8 часов. Глубина данных 30 дней."""
         TIME_FRAME_D: BarsRequest._TimeFrame.ValueType  # 19
-        """День"""
+        """День. Глубина данных 365 дней."""
         TIME_FRAME_W: BarsRequest._TimeFrame.ValueType  # 20
-        """Неделя"""
+        """Неделя. Глубина данных 365*5 дней."""
         TIME_FRAME_MN: BarsRequest._TimeFrame.ValueType  # 21
-        """Месяц"""
+        """Месяц. Глубина данных 365*5 дней."""
         TIME_FRAME_QR: BarsRequest._TimeFrame.ValueType  # 22
-        """Квартал"""
+        """Квартал. Глубина данных 365*5 дней."""
 
     class TimeFrame(_TimeFrame, metaclass=_TimeFrameEnumTypeWrapper):
         """Доступные таймфреймы для свечей"""
@@ -67,29 +67,29 @@ class BarsRequest(google.protobuf.message.Message):
     TIME_FRAME_UNSPECIFIED: BarsRequest.TimeFrame.ValueType  # 0
     """Таймфрейм не указан"""
     TIME_FRAME_M1: BarsRequest.TimeFrame.ValueType  # 1
-    """1 минута"""
+    """1 минута. Глубина данных 7 дней."""
     TIME_FRAME_M5: BarsRequest.TimeFrame.ValueType  # 5
-    """5 минут"""
+    """5 минут. Глубина данных 30 дней."""
     TIME_FRAME_M15: BarsRequest.TimeFrame.ValueType  # 9
-    """15 минут"""
+    """15 минут. Глубина данных 30 дней."""
     TIME_FRAME_M30: BarsRequest.TimeFrame.ValueType  # 11
-    """30 минут"""
+    """30 минут. Глубина данных 30 дней."""
     TIME_FRAME_H1: BarsRequest.TimeFrame.ValueType  # 12
-    """1 час"""
+    """1 час. Глубина данных 30 дней."""
     TIME_FRAME_H2: BarsRequest.TimeFrame.ValueType  # 13
-    """2 часа"""
+    """2 часа. Глубина данных 30 дней."""
     TIME_FRAME_H4: BarsRequest.TimeFrame.ValueType  # 15
-    """4 часа"""
+    """4 часа. Глубина данных 30 дней."""
     TIME_FRAME_H8: BarsRequest.TimeFrame.ValueType  # 17
-    """8 часов"""
+    """8 часов. Глубина данных 30 дней."""
     TIME_FRAME_D: BarsRequest.TimeFrame.ValueType  # 19
-    """День"""
+    """День. Глубина данных 365 дней."""
     TIME_FRAME_W: BarsRequest.TimeFrame.ValueType  # 20
-    """Неделя"""
+    """Неделя. Глубина данных 365*5 дней."""
     TIME_FRAME_MN: BarsRequest.TimeFrame.ValueType  # 21
-    """Месяц"""
+    """Месяц. Глубина данных 365*5 дней."""
     TIME_FRAME_QR: BarsRequest.TimeFrame.ValueType  # 22
-    """Квартал"""
+    """Квартал. Глубина данных 365*5 дней."""
 
     SYMBOL_FIELD_NUMBER: builtins.int
     TIMEFRAME_FIELD_NUMBER: builtins.int
@@ -385,7 +385,7 @@ class Bar(google.protobuf.message.Message):
 
     @property
     def volume(self) -> google.type.decimal_pb2.Decimal:
-        """Объём торгов за свечу"""
+        """Объём торгов за свечу в шт."""
 
     def __init__(
         self,

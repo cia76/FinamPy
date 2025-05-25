@@ -45,6 +45,11 @@ class AssetsServiceStub(object):
                 request_serializer=FinamPy_dot_grpc_dot_assets_dot_assets__service__pb2.AssetsRequest.SerializeToString,
                 response_deserializer=FinamPy_dot_grpc_dot_assets_dot_assets__service__pb2.AssetsResponse.FromString,
                 _registered_method=True)
+        self.GetAssetParams = channel.unary_unary(
+                '/grpc.tradeapi.v1.assets.AssetsService/GetAssetParams',
+                request_serializer=FinamPy_dot_grpc_dot_assets_dot_assets__service__pb2.GetAssetParamsRequest.SerializeToString,
+                response_deserializer=FinamPy_dot_grpc_dot_assets_dot_assets__service__pb2.GetAssetParamsResponse.FromString,
+                _registered_method=True)
         self.OptionsChain = channel.unary_unary(
                 '/grpc.tradeapi.v1.assets.AssetsService/OptionsChain',
                 request_serializer=FinamPy_dot_grpc_dot_assets_dot_assets__service__pb2.OptionsChainRequest.SerializeToString,
@@ -76,6 +81,20 @@ class AssetsServiceServicer(object):
         Пример HTTP запроса:
         GET /v1/assets
         Authorization: <token>
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetAssetParams(self, request, context):
+        """Получение торговых параметров по инструменту
+        Пример HTTP запроса:
+        GET /v1/assets/SBER@MISX/params?account_id=1440399
+        Authorization: <token>
+
+        Параметры:
+        - symbol - передается в URL пути
+        - account_id - передаётся как query-параметр
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -113,6 +132,11 @@ def add_AssetsServiceServicer_to_server(servicer, server):
                     servicer.Assets,
                     request_deserializer=FinamPy_dot_grpc_dot_assets_dot_assets__service__pb2.AssetsRequest.FromString,
                     response_serializer=FinamPy_dot_grpc_dot_assets_dot_assets__service__pb2.AssetsResponse.SerializeToString,
+            ),
+            'GetAssetParams': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetAssetParams,
+                    request_deserializer=FinamPy_dot_grpc_dot_assets_dot_assets__service__pb2.GetAssetParamsRequest.FromString,
+                    response_serializer=FinamPy_dot_grpc_dot_assets_dot_assets__service__pb2.GetAssetParamsResponse.SerializeToString,
             ),
             'OptionsChain': grpc.unary_unary_rpc_method_handler(
                     servicer.OptionsChain,
@@ -180,6 +204,33 @@ class AssetsService(object):
             '/grpc.tradeapi.v1.assets.AssetsService/Assets',
             FinamPy_dot_grpc_dot_assets_dot_assets__service__pb2.AssetsRequest.SerializeToString,
             FinamPy_dot_grpc_dot_assets_dot_assets__service__pb2.AssetsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetAssetParams(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/grpc.tradeapi.v1.assets.AssetsService/GetAssetParams',
+            FinamPy_dot_grpc_dot_assets_dot_assets__service__pb2.GetAssetParamsRequest.SerializeToString,
+            FinamPy_dot_grpc_dot_assets_dot_assets__service__pb2.GetAssetParamsResponse.FromString,
             options,
             channel_credentials,
             insecure,

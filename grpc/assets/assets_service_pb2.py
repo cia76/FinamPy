@@ -26,9 +26,10 @@ from google.api import annotations_pb2 as google_dot_api_dot_annotations__pb2
 from google.type import date_pb2 as google_dot_type_dot_date__pb2
 from google.type import decimal_pb2 as google_dot_type_dot_decimal__pb2
 from google.type import interval_pb2 as google_dot_type_dot_interval__pb2
+from google.type import money_pb2 as google_dot_type_dot_money__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n(FinamPy/grpc/assets/assets_service.proto\x12\x17grpc.tradeapi.v1.assets\x1a\x1cgoogle/api/annotations.proto\x1a\x16google/type/date.proto\x1a\x19google/type/decimal.proto\x1a\x1agoogle/type/interval.proto\"\x12\n\x10\x45xchangesRequest\"I\n\x11\x45xchangesResponse\x12\x34\n\texchanges\x18\x01 \x03(\x0b\x32!.grpc.tradeapi.v1.assets.Exchange\"\x0f\n\rAssetsRequest\"@\n\x0e\x41ssetsResponse\x12.\n\x06\x61ssets\x18\x01 \x03(\x0b\x32\x1e.grpc.tradeapi.v1.assets.Asset\"0\n\x13OptionsChainRequest\x12\x19\n\x11underlying_symbol\x18\x01 \x01(\t\"X\n\x14OptionsChainResponse\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x30\n\x07options\x18\x02 \x03(\x0b\x32\x1f.grpc.tradeapi.v1.assets.Option\"!\n\x0fScheduleRequest\x12\x0e\n\x06symbol\x18\x01 \x01(\t\"\xab\x01\n\x10ScheduleResponse\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x44\n\x08sessions\x18\x02 \x03(\x0b\x32\x32.grpc.tradeapi.v1.assets.ScheduleResponse.Sessions\x1a\x41\n\x08Sessions\x12\x0c\n\x04type\x18\x01 \x01(\t\x12\'\n\x08interval\x18\x02 \x01(\x0b\x32\x15.google.type.Interval\"%\n\x08\x45xchange\x12\x0b\n\x03mic\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"j\n\x05\x41sset\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\n\n\x02id\x18\x02 \x01(\t\x12\x0e\n\x06ticker\x18\x03 \x01(\t\x12\x0b\n\x03mic\x18\x04 \x01(\t\x12\x0c\n\x04isin\x18\x05 \x01(\t\x12\x0c\n\x04type\x18\x06 \x01(\t\x12\x0c\n\x04name\x18\x07 \x01(\t\"\xdb\x02\n\x06Option\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x32\n\x04type\x18\x02 \x01(\x0e\x32$.grpc.tradeapi.v1.assets.Option.Type\x12+\n\rcontract_size\x18\x04 \x01(\x0b\x32\x14.google.type.Decimal\x12*\n\x0ftrade_first_day\x18\x05 \x01(\x0b\x32\x11.google.type.Date\x12)\n\x0etrade_last_day\x18\x06 \x01(\x0b\x32\x11.google.type.Date\x12$\n\x06strike\x18\x07 \x01(\x0b\x32\x14.google.type.Decimal\x12(\n\nmultiplier\x18\t \x01(\x0b\x32\x14.google.type.Decimal\"9\n\x04Type\x12\x14\n\x10TYPE_UNSPECIFIED\x10\x00\x12\r\n\tTYPE_CALL\x10\x01\x12\x0c\n\x08TYPE_PUT\x10\x02\x32\x9f\x04\n\rAssetsService\x12y\n\tExchanges\x12).grpc.tradeapi.v1.assets.ExchangesRequest\x1a*.grpc.tradeapi.v1.assets.ExchangesResponse\"\x15\x82\xd3\xe4\x93\x02\x0f\x12\r/v1/exchanges\x12m\n\x06\x41ssets\x12&.grpc.tradeapi.v1.assets.AssetsRequest\x1a\'.grpc.tradeapi.v1.assets.AssetsResponse\"\x12\x82\xd3\xe4\x93\x02\x0c\x12\n/v1/assets\x12\x9b\x01\n\x0cOptionsChain\x12,.grpc.tradeapi.v1.assets.OptionsChainRequest\x1a-.grpc.tradeapi.v1.assets.OptionsChainResponse\".\x82\xd3\xe4\x93\x02(\x12&/v1/assets/{underlying_symbol}/options\x12\x85\x01\n\x08Schedule\x12(.grpc.tradeapi.v1.assets.ScheduleRequest\x1a).grpc.tradeapi.v1.assets.ScheduleResponse\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/v1/assets/{symbol}/scheduleB&P\x01Z\"trade_api/v1/assets/assets_serviceb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n(FinamPy/grpc/assets/assets_service.proto\x12\x17grpc.tradeapi.v1.assets\x1a\x1cgoogle/api/annotations.proto\x1a\x16google/type/date.proto\x1a\x19google/type/decimal.proto\x1a\x1agoogle/type/interval.proto\x1a\x17google/type/money.proto\"\x12\n\x10\x45xchangesRequest\"I\n\x11\x45xchangesResponse\x12\x34\n\texchanges\x18\x01 \x03(\x0b\x32!.grpc.tradeapi.v1.assets.Exchange\"\x0f\n\rAssetsRequest\"@\n\x0e\x41ssetsResponse\x12.\n\x06\x61ssets\x18\x01 \x03(\x0b\x32\x1e.grpc.tradeapi.v1.assets.Asset\";\n\x15GetAssetParamsRequest\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x12\n\naccount_id\x18\x02 \x01(\t\"\xf3\x02\n\x16GetAssetParamsResponse\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x12\n\naccount_id\x18\x02 \x01(\t\x12\x11\n\ttradeable\x18\x03 \x01(\x08\x12\x33\n\x08longable\x18\x04 \x01(\x0b\x32!.grpc.tradeapi.v1.assets.Longable\x12\x35\n\tshortable\x18\x05 \x01(\x0b\x32\".grpc.tradeapi.v1.assets.Shortable\x12,\n\x0elong_risk_rate\x18\x06 \x01(\x0b\x32\x14.google.type.Decimal\x12+\n\x0flong_collateral\x18\x07 \x01(\x0b\x32\x12.google.type.Money\x12-\n\x0fshort_risk_rate\x18\x08 \x01(\x0b\x32\x14.google.type.Decimal\x12,\n\x10short_collateral\x18\t \x01(\x0b\x32\x12.google.type.Money\"0\n\x13OptionsChainRequest\x12\x19\n\x11underlying_symbol\x18\x01 \x01(\t\"X\n\x14OptionsChainResponse\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x30\n\x07options\x18\x02 \x03(\x0b\x32\x1f.grpc.tradeapi.v1.assets.Option\"!\n\x0fScheduleRequest\x12\x0e\n\x06symbol\x18\x01 \x01(\t\"\xab\x01\n\x10ScheduleResponse\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x44\n\x08sessions\x18\x02 \x03(\x0b\x32\x32.grpc.tradeapi.v1.assets.ScheduleResponse.Sessions\x1a\x41\n\x08Sessions\x12\x0c\n\x04type\x18\x01 \x01(\t\x12\'\n\x08interval\x18\x02 \x01(\x0b\x32\x15.google.type.Interval\"%\n\x08\x45xchange\x12\x0b\n\x03mic\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"j\n\x05\x41sset\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\n\n\x02id\x18\x02 \x01(\t\x12\x0e\n\x06ticker\x18\x03 \x01(\t\x12\x0b\n\x03mic\x18\x04 \x01(\t\x12\x0c\n\x04isin\x18\x05 \x01(\t\x12\x0c\n\x04type\x18\x06 \x01(\t\x12\x0c\n\x04name\x18\x07 \x01(\t\"\xdb\x02\n\x06Option\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x32\n\x04type\x18\x02 \x01(\x0e\x32$.grpc.tradeapi.v1.assets.Option.Type\x12+\n\rcontract_size\x18\x04 \x01(\x0b\x32\x14.google.type.Decimal\x12*\n\x0ftrade_first_day\x18\x05 \x01(\x0b\x32\x11.google.type.Date\x12)\n\x0etrade_last_day\x18\x06 \x01(\x0b\x32\x11.google.type.Date\x12$\n\x06strike\x18\x07 \x01(\x0b\x32\x14.google.type.Decimal\x12(\n\nmultiplier\x18\t \x01(\x0b\x32\x14.google.type.Decimal\"9\n\x04Type\x12\x14\n\x10TYPE_UNSPECIFIED\x10\x00\x12\r\n\tTYPE_CALL\x10\x01\x12\x0c\n\x08TYPE_PUT\x10\x02\"\x9e\x01\n\x08Longable\x12\x37\n\x05value\x18\x01 \x01(\x0e\x32(.grpc.tradeapi.v1.assets.Longable.Status\x12\x13\n\x0bhalted_days\x18\x02 \x01(\x05\"D\n\x06Status\x12\x11\n\rNOT_AVAILABLE\x10\x00\x12\r\n\tAVAILABLE\x10\x01\x12\x18\n\x14\x41\x43\x43OUNT_NOT_APPROVED\x10\x02\"\xc1\x01\n\tShortable\x12\x38\n\x05value\x18\x01 \x01(\x0e\x32).grpc.tradeapi.v1.assets.Shortable.Status\x12\x13\n\x0bhalted_days\x18\x02 \x01(\x05\"e\n\x06Status\x12\x11\n\rNOT_AVAILABLE\x10\x00\x12\r\n\tAVAILABLE\x10\x01\x12\x07\n\x03HTB\x10\x02\x12\x18\n\x14\x41\x43\x43OUNT_NOT_APPROVED\x10\x03\x12\x16\n\x12\x41VAILABLE_STRATEGY\x10\x04\x32\xb7\x05\n\rAssetsService\x12y\n\tExchanges\x12).grpc.tradeapi.v1.assets.ExchangesRequest\x1a*.grpc.tradeapi.v1.assets.ExchangesResponse\"\x15\x82\xd3\xe4\x93\x02\x0f\x12\r/v1/exchanges\x12m\n\x06\x41ssets\x12&.grpc.tradeapi.v1.assets.AssetsRequest\x1a\'.grpc.tradeapi.v1.assets.AssetsResponse\"\x12\x82\xd3\xe4\x93\x02\x0c\x12\n/v1/assets\x12\x95\x01\n\x0eGetAssetParams\x12..grpc.tradeapi.v1.assets.GetAssetParamsRequest\x1a/.grpc.tradeapi.v1.assets.GetAssetParamsResponse\"\"\x82\xd3\xe4\x93\x02\x1c\x12\x1a/v1/assets/{symbol}/params\x12\x9b\x01\n\x0cOptionsChain\x12,.grpc.tradeapi.v1.assets.OptionsChainRequest\x1a-.grpc.tradeapi.v1.assets.OptionsChainResponse\".\x82\xd3\xe4\x93\x02(\x12&/v1/assets/{underlying_symbol}/options\x12\x85\x01\n\x08Schedule\x12(.grpc.tradeapi.v1.assets.ScheduleRequest\x1a).grpc.tradeapi.v1.assets.ScheduleResponse\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/v1/assets/{symbol}/scheduleB&P\x01Z\"trade_api/v1/assets/assets_serviceb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -40,36 +41,50 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_ASSETSSERVICE'].methods_by_name['Exchanges']._serialized_options = b'\202\323\344\223\002\017\022\r/v1/exchanges'
   _globals['_ASSETSSERVICE'].methods_by_name['Assets']._loaded_options = None
   _globals['_ASSETSSERVICE'].methods_by_name['Assets']._serialized_options = b'\202\323\344\223\002\014\022\n/v1/assets'
+  _globals['_ASSETSSERVICE'].methods_by_name['GetAssetParams']._loaded_options = None
+  _globals['_ASSETSSERVICE'].methods_by_name['GetAssetParams']._serialized_options = b'\202\323\344\223\002\034\022\032/v1/assets/{symbol}/params'
   _globals['_ASSETSSERVICE'].methods_by_name['OptionsChain']._loaded_options = None
   _globals['_ASSETSSERVICE'].methods_by_name['OptionsChain']._serialized_options = b'\202\323\344\223\002(\022&/v1/assets/{underlying_symbol}/options'
   _globals['_ASSETSSERVICE'].methods_by_name['Schedule']._loaded_options = None
   _globals['_ASSETSSERVICE'].methods_by_name['Schedule']._serialized_options = b'\202\323\344\223\002\036\022\034/v1/assets/{symbol}/schedule'
-  _globals['_EXCHANGESREQUEST']._serialized_start=178
-  _globals['_EXCHANGESREQUEST']._serialized_end=196
-  _globals['_EXCHANGESRESPONSE']._serialized_start=198
-  _globals['_EXCHANGESRESPONSE']._serialized_end=271
-  _globals['_ASSETSREQUEST']._serialized_start=273
-  _globals['_ASSETSREQUEST']._serialized_end=288
-  _globals['_ASSETSRESPONSE']._serialized_start=290
-  _globals['_ASSETSRESPONSE']._serialized_end=354
-  _globals['_OPTIONSCHAINREQUEST']._serialized_start=356
-  _globals['_OPTIONSCHAINREQUEST']._serialized_end=404
-  _globals['_OPTIONSCHAINRESPONSE']._serialized_start=406
-  _globals['_OPTIONSCHAINRESPONSE']._serialized_end=494
-  _globals['_SCHEDULEREQUEST']._serialized_start=496
-  _globals['_SCHEDULEREQUEST']._serialized_end=529
-  _globals['_SCHEDULERESPONSE']._serialized_start=532
-  _globals['_SCHEDULERESPONSE']._serialized_end=703
-  _globals['_SCHEDULERESPONSE_SESSIONS']._serialized_start=638
-  _globals['_SCHEDULERESPONSE_SESSIONS']._serialized_end=703
-  _globals['_EXCHANGE']._serialized_start=705
-  _globals['_EXCHANGE']._serialized_end=742
-  _globals['_ASSET']._serialized_start=744
-  _globals['_ASSET']._serialized_end=850
-  _globals['_OPTION']._serialized_start=853
-  _globals['_OPTION']._serialized_end=1200
-  _globals['_OPTION_TYPE']._serialized_start=1143
-  _globals['_OPTION_TYPE']._serialized_end=1200
-  _globals['_ASSETSSERVICE']._serialized_start=1203
-  _globals['_ASSETSSERVICE']._serialized_end=1746
+  _globals['_EXCHANGESREQUEST']._serialized_start=203
+  _globals['_EXCHANGESREQUEST']._serialized_end=221
+  _globals['_EXCHANGESRESPONSE']._serialized_start=223
+  _globals['_EXCHANGESRESPONSE']._serialized_end=296
+  _globals['_ASSETSREQUEST']._serialized_start=298
+  _globals['_ASSETSREQUEST']._serialized_end=313
+  _globals['_ASSETSRESPONSE']._serialized_start=315
+  _globals['_ASSETSRESPONSE']._serialized_end=379
+  _globals['_GETASSETPARAMSREQUEST']._serialized_start=381
+  _globals['_GETASSETPARAMSREQUEST']._serialized_end=440
+  _globals['_GETASSETPARAMSRESPONSE']._serialized_start=443
+  _globals['_GETASSETPARAMSRESPONSE']._serialized_end=814
+  _globals['_OPTIONSCHAINREQUEST']._serialized_start=816
+  _globals['_OPTIONSCHAINREQUEST']._serialized_end=864
+  _globals['_OPTIONSCHAINRESPONSE']._serialized_start=866
+  _globals['_OPTIONSCHAINRESPONSE']._serialized_end=954
+  _globals['_SCHEDULEREQUEST']._serialized_start=956
+  _globals['_SCHEDULEREQUEST']._serialized_end=989
+  _globals['_SCHEDULERESPONSE']._serialized_start=992
+  _globals['_SCHEDULERESPONSE']._serialized_end=1163
+  _globals['_SCHEDULERESPONSE_SESSIONS']._serialized_start=1098
+  _globals['_SCHEDULERESPONSE_SESSIONS']._serialized_end=1163
+  _globals['_EXCHANGE']._serialized_start=1165
+  _globals['_EXCHANGE']._serialized_end=1202
+  _globals['_ASSET']._serialized_start=1204
+  _globals['_ASSET']._serialized_end=1310
+  _globals['_OPTION']._serialized_start=1313
+  _globals['_OPTION']._serialized_end=1660
+  _globals['_OPTION_TYPE']._serialized_start=1603
+  _globals['_OPTION_TYPE']._serialized_end=1660
+  _globals['_LONGABLE']._serialized_start=1663
+  _globals['_LONGABLE']._serialized_end=1821
+  _globals['_LONGABLE_STATUS']._serialized_start=1753
+  _globals['_LONGABLE_STATUS']._serialized_end=1821
+  _globals['_SHORTABLE']._serialized_start=1824
+  _globals['_SHORTABLE']._serialized_end=2017
+  _globals['_SHORTABLE_STATUS']._serialized_start=1916
+  _globals['_SHORTABLE_STATUS']._serialized_end=2017
+  _globals['_ASSETSSERVICE']._serialized_start=2020
+  _globals['_ASSETSSERVICE']._serialized_end=2715
 # @@protoc_insertion_point(module_scope)
