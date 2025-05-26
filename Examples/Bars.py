@@ -17,7 +17,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
                         handlers=[logging.FileHandler('Bars.log', encoding='utf-8'), logging.StreamHandler()])  # Лог записываем в файл и выводим на консоль
     logging.Formatter.converter = lambda *args: datetime.now(tz=fp_provider.tz_msk).timetuple()  # В логе время указываем по МСК
 
-    symbol = 'SBER@RUSX'
+    symbol = 'SBER@MISX'
     timeframe = BarsRequest.TIME_FRAME_D  # Дневной интервал
 
     min_date = datetime(2015, 6, 29)  # Первая дата, с которой можно получать историю

@@ -15,7 +15,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
                         handlers=[logging.FileHandler('Ticker.log', encoding='utf-8'), logging.StreamHandler()])  # Лог записываем в файл и выводим на консоль
     logging.Formatter.converter = lambda *args: datetime.now(tz=fp_provider.tz_msk).timetuple()  # В логе время указываем по МСК
 
-    symbols = ('SBER@RUSX', 'VTBR@RUSX', 'SIM5@RTSX', 'RIM5@RTSX', 'USDRUBF@RTSX', 'CNYRUBF@RTSX')  # Кортеж тикеров
+    symbols = ('SBER@MISX', 'VTBR@MISX', 'SIM5@RTSX', 'RIM5@RTSX', 'USDRUBF@RTSX', 'CNYRUBF@RTSX')  # Кортеж тикеров
 
     assets: AssetsResponse = fp_provider.call_function(fp_provider.assets_stub.Assets, AssetsRequest())  # Получаем справочник всех тикеров из провайдера
     for symbol in symbols:  # Пробегаемся по всем тикерам

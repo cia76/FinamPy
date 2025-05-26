@@ -19,7 +19,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
                         handlers=[logging.FileHandler('Transactions.log', encoding='utf-8'), logging.StreamHandler()])  # Лог записываем в файл и выводим на консоль
     logging.Formatter.converter = lambda *args: datetime.now(tz=fp_provider.tz_msk).timetuple()  # В логе время указываем по МСК
 
-    symbol = 'SBER@RUSX'  # Символ инструмента
+    symbol = 'SBER@MISX'  # Символ инструмента
 
     account_id = fp_provider.account_ids[0]  # Торговый счет, где будут выставляться заявки
     quantity = Decimal(value=str(10))  # Количество в шт.
