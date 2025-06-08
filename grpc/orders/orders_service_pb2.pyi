@@ -4,6 +4,7 @@ isort:skip_file
 """
 
 import FinamPy.grpc.side_pb2
+import FinamPy.grpc.trade_pb2
 import builtins
 import collections.abc
 import google.protobuf.descriptor
@@ -259,6 +260,100 @@ ORDER_STATUS_TP_CORR_GUARD_TIME: OrderStatus.ValueType  # 34
 global___OrderStatus = OrderStatus
 
 @typing.final
+class OrderTradeRequest(google.protobuf.message.Message):
+    """Запрос подписки на собственные заявки и сделки. Стрим"""
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    class _Action:
+        ValueType = typing.NewType("ValueType", builtins.int)
+        V: typing_extensions.TypeAlias = ValueType
+
+    class _ActionEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[OrderTradeRequest._Action.ValueType], builtins.type):
+        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+        ACTION_SUBSCRIBE: OrderTradeRequest._Action.ValueType  # 0
+        """Подписаться"""
+        ACTION_UNSUBSCRIBE: OrderTradeRequest._Action.ValueType  # 1
+        """Отписаться"""
+
+    class Action(_Action, metaclass=_ActionEnumTypeWrapper):
+        """Доступные действия"""
+
+    ACTION_SUBSCRIBE: OrderTradeRequest.Action.ValueType  # 0
+    """Подписаться"""
+    ACTION_UNSUBSCRIBE: OrderTradeRequest.Action.ValueType  # 1
+    """Отписаться"""
+
+    class _DataType:
+        ValueType = typing.NewType("ValueType", builtins.int)
+        V: typing_extensions.TypeAlias = ValueType
+
+    class _DataTypeEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[OrderTradeRequest._DataType.ValueType], builtins.type):
+        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+        DATA_TYPE_ALL: OrderTradeRequest._DataType.ValueType  # 0
+        """Все: заявки и сделки"""
+        DATA_TYPE_ORDERS: OrderTradeRequest._DataType.ValueType  # 1
+        """Заявки"""
+        DATA_TYPE_TRADES: OrderTradeRequest._DataType.ValueType  # 2
+        """Сделки"""
+
+    class DataType(_DataType, metaclass=_DataTypeEnumTypeWrapper):
+        """Тип подписки"""
+
+    DATA_TYPE_ALL: OrderTradeRequest.DataType.ValueType  # 0
+    """Все: заявки и сделки"""
+    DATA_TYPE_ORDERS: OrderTradeRequest.DataType.ValueType  # 1
+    """Заявки"""
+    DATA_TYPE_TRADES: OrderTradeRequest.DataType.ValueType  # 2
+    """Сделки"""
+
+    ACTION_FIELD_NUMBER: builtins.int
+    DATA_TYPE_FIELD_NUMBER: builtins.int
+    ACCOUNT_ID_FIELD_NUMBER: builtins.int
+    action: global___OrderTradeRequest.Action.ValueType
+    """Изменение статуса подписки: подписка/отписка"""
+    data_type: global___OrderTradeRequest.DataType.ValueType
+    """Подписка только на заявки/ордера или на все сразу"""
+    account_id: builtins.str
+    """Идентификатор аккаунта"""
+    def __init__(
+        self,
+        *,
+        action: global___OrderTradeRequest.Action.ValueType = ...,
+        data_type: global___OrderTradeRequest.DataType.ValueType = ...,
+        account_id: builtins.str = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["account_id", b"account_id", "action", b"action", "data_type", b"data_type"]) -> None: ...
+
+global___OrderTradeRequest = OrderTradeRequest
+
+@typing.final
+class OrderTradeResponse(google.protobuf.message.Message):
+    """Список собственных заявок и сделок"""
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    ORDERS_FIELD_NUMBER: builtins.int
+    TRADES_FIELD_NUMBER: builtins.int
+    @property
+    def orders(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___OrderState]:
+        """Заявки"""
+
+    @property
+    def trades(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[FinamPy.grpc.trade_pb2.AccountTrade]:
+        """Сделки"""
+
+    def __init__(
+        self,
+        *,
+        orders: collections.abc.Iterable[global___OrderState] | None = ...,
+        trades: collections.abc.Iterable[FinamPy.grpc.trade_pb2.AccountTrade] | None = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["orders", b"orders", "trades", b"trades"]) -> None: ...
+
+global___OrderTradeResponse = OrderTradeResponse
+
+@typing.final
 class GetOrderRequest(google.protobuf.message.Message):
     """Запрос на получение конкретного ордера"""
 
@@ -429,7 +524,7 @@ global___OrderState = OrderState
 
 @typing.final
 class OrdersRequest(google.protobuf.message.Message):
-    """Запрос получения списка активных торговых заявок"""
+    """Запрос получения списка торговых заявок"""
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -447,7 +542,7 @@ global___OrdersRequest = OrdersRequest
 
 @typing.final
 class OrdersResponse(google.protobuf.message.Message):
-    """Список активных торговых заявок"""
+    """Список торговых заявок"""
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 

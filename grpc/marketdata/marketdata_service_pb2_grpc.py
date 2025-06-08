@@ -5,7 +5,7 @@ import warnings
 
 from FinamPy.grpc.marketdata import marketdata_service_pb2 as FinamPy_dot_grpc_dot_marketdata_dot_marketdata__service__pb2
 
-GRPC_GENERATED_VERSION = '1.70.0'
+GRPC_GENERATED_VERSION = '1.71.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -69,6 +69,11 @@ class MarketDataServiceStub(object):
                 '/grpc.tradeapi.v1.marketdata.MarketDataService/SubscribeLatestTrades',
                 request_serializer=FinamPy_dot_grpc_dot_marketdata_dot_marketdata__service__pb2.SubscribeLatestTradesRequest.SerializeToString,
                 response_deserializer=FinamPy_dot_grpc_dot_marketdata_dot_marketdata__service__pb2.SubscribeLatestTradesResponse.FromString,
+                _registered_method=True)
+        self.SubscribeBars = channel.unary_stream(
+                '/grpc.tradeapi.v1.marketdata.MarketDataService/SubscribeBars',
+                request_serializer=FinamPy_dot_grpc_dot_marketdata_dot_marketdata__service__pb2.SubscribeBarsRequest.SerializeToString,
+                response_deserializer=FinamPy_dot_grpc_dot_marketdata_dot_marketdata__service__pb2.SubscribeBarsResponse.FromString,
                 _registered_method=True)
 
 
@@ -141,6 +146,13 @@ class MarketDataServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def SubscribeBars(self, request, context):
+        """Подписка на агрегированные свечи. Стрим метод
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_MarketDataServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -178,6 +190,11 @@ def add_MarketDataServiceServicer_to_server(servicer, server):
                     servicer.SubscribeLatestTrades,
                     request_deserializer=FinamPy_dot_grpc_dot_marketdata_dot_marketdata__service__pb2.SubscribeLatestTradesRequest.FromString,
                     response_serializer=FinamPy_dot_grpc_dot_marketdata_dot_marketdata__service__pb2.SubscribeLatestTradesResponse.SerializeToString,
+            ),
+            'SubscribeBars': grpc.unary_stream_rpc_method_handler(
+                    servicer.SubscribeBars,
+                    request_deserializer=FinamPy_dot_grpc_dot_marketdata_dot_marketdata__service__pb2.SubscribeBarsRequest.FromString,
+                    response_serializer=FinamPy_dot_grpc_dot_marketdata_dot_marketdata__service__pb2.SubscribeBarsResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -370,6 +387,33 @@ class MarketDataService(object):
             '/grpc.tradeapi.v1.marketdata.MarketDataService/SubscribeLatestTrades',
             FinamPy_dot_grpc_dot_marketdata_dot_marketdata__service__pb2.SubscribeLatestTradesRequest.SerializeToString,
             FinamPy_dot_grpc_dot_marketdata_dot_marketdata__service__pb2.SubscribeLatestTradesResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SubscribeBars(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_stream(
+            request,
+            target,
+            '/grpc.tradeapi.v1.marketdata.MarketDataService/SubscribeBars',
+            FinamPy_dot_grpc_dot_marketdata_dot_marketdata__service__pb2.SubscribeBarsRequest.SerializeToString,
+            FinamPy_dot_grpc_dot_marketdata_dot_marketdata__service__pb2.SubscribeBarsResponse.FromString,
             options,
             channel_credentials,
             insecure,

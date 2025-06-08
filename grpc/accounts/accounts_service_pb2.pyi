@@ -3,7 +3,7 @@
 isort:skip_file
 """
 
-import FinamPy.grpc.side_pb2
+import FinamPy.grpc.trade_pb2
 import builtins
 import collections.abc
 import google.protobuf.descriptor
@@ -123,13 +123,13 @@ class TradesResponse(google.protobuf.message.Message):
 
     TRADES_FIELD_NUMBER: builtins.int
     @property
-    def trades(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___AccountTrade]:
+    def trades(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[FinamPy.grpc.trade_pb2.AccountTrade]:
         """Сделки по аккаунту"""
 
     def __init__(
         self,
         *,
-        trades: collections.abc.Iterable[global___AccountTrade] | None = ...,
+        trades: collections.abc.Iterable[FinamPy.grpc.trade_pb2.AccountTrade] | None = ...,
     ) -> None: ...
     def ClearField(self, field_name: typing.Literal["trades", b"trades"]) -> None: ...
 
@@ -220,51 +220,6 @@ class Position(google.protobuf.message.Message):
     def ClearField(self, field_name: typing.Literal["average_price", b"average_price", "current_price", b"current_price", "quantity", b"quantity", "symbol", b"symbol"]) -> None: ...
 
 global___Position = Position
-
-@typing.final
-class AccountTrade(google.protobuf.message.Message):
-    """Информация о сделке"""
-
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    TRADE_ID_FIELD_NUMBER: builtins.int
-    SYMBOL_FIELD_NUMBER: builtins.int
-    PRICE_FIELD_NUMBER: builtins.int
-    SIZE_FIELD_NUMBER: builtins.int
-    SIDE_FIELD_NUMBER: builtins.int
-    TIMESTAMP_FIELD_NUMBER: builtins.int
-    trade_id: builtins.str
-    """Идентификатор сделки"""
-    symbol: builtins.str
-    """Символ инструмента"""
-    side: FinamPy.grpc.side_pb2.Side.ValueType
-    """Сторона сделки (long или short)"""
-    @property
-    def price(self) -> google.type.decimal_pb2.Decimal:
-        """Цена исполнения"""
-
-    @property
-    def size(self) -> google.type.decimal_pb2.Decimal:
-        """Размер в шт."""
-
-    @property
-    def timestamp(self) -> google.protobuf.timestamp_pb2.Timestamp:
-        """Метка времени"""
-
-    def __init__(
-        self,
-        *,
-        trade_id: builtins.str = ...,
-        symbol: builtins.str = ...,
-        price: google.type.decimal_pb2.Decimal | None = ...,
-        size: google.type.decimal_pb2.Decimal | None = ...,
-        side: FinamPy.grpc.side_pb2.Side.ValueType = ...,
-        timestamp: google.protobuf.timestamp_pb2.Timestamp | None = ...,
-    ) -> None: ...
-    def HasField(self, field_name: typing.Literal["price", b"price", "size", b"size", "timestamp", b"timestamp"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["price", b"price", "side", b"side", "size", b"size", "symbol", b"symbol", "timestamp", b"timestamp", "trade_id", b"trade_id"]) -> None: ...
-
-global___AccountTrade = AccountTrade
 
 @typing.final
 class Transaction(google.protobuf.message.Message):

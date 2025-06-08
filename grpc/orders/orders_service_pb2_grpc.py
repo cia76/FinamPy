@@ -5,7 +5,7 @@ import warnings
 
 from FinamPy.grpc.orders import orders_service_pb2 as FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2
 
-GRPC_GENERATED_VERSION = '1.70.0'
+GRPC_GENERATED_VERSION = '1.71.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -55,6 +55,11 @@ class OrdersServiceStub(object):
                 request_serializer=FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.GetOrderRequest.SerializeToString,
                 response_deserializer=FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderState.FromString,
                 _registered_method=True)
+        self.SubscribeOrderTrade = channel.stream_stream(
+                '/grpc.tradeapi.v1.orders.OrdersService/SubscribeOrderTrade',
+                request_serializer=FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderTradeRequest.SerializeToString,
+                response_deserializer=FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderTradeResponse.FromString,
+                _registered_method=True)
 
 
 class OrdersServiceServicer(object):
@@ -94,7 +99,7 @@ class OrdersServiceServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def GetOrders(self, request, context):
-        """Получение списка активных заявок для аккаунта
+        """Получение списка заявок для аккаунта
         Пример HTTP запроса:
         GET /v1/accounts/A12345/orders
         Authorization: <token>
@@ -108,6 +113,13 @@ class OrdersServiceServicer(object):
         Пример HTTP запроса:
         GET /v1/accounts/A12345/orders/ORD789012
         Authorization: <token>
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def SubscribeOrderTrade(self, request_iterator, context):
+        """Подписка на собственные заявки и сделки. Стрим метод
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -135,6 +147,11 @@ def add_OrdersServiceServicer_to_server(servicer, server):
                     servicer.GetOrder,
                     request_deserializer=FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.GetOrderRequest.FromString,
                     response_serializer=FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderState.SerializeToString,
+            ),
+            'SubscribeOrderTrade': grpc.stream_stream_rpc_method_handler(
+                    servicer.SubscribeOrderTrade,
+                    request_deserializer=FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderTradeRequest.FromString,
+                    response_serializer=FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderTradeResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -246,6 +263,33 @@ class OrdersService(object):
             '/grpc.tradeapi.v1.orders.OrdersService/GetOrder',
             FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.GetOrderRequest.SerializeToString,
             FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderState.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SubscribeOrderTrade(request_iterator,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.stream_stream(
+            request_iterator,
+            target,
+            '/grpc.tradeapi.v1.orders.OrdersService/SubscribeOrderTrade',
+            FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderTradeRequest.SerializeToString,
+            FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderTradeResponse.FromString,
             options,
             channel_credentials,
             insecure,

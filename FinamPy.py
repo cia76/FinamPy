@@ -8,15 +8,15 @@ from grpc import ssl_channel_credentials, secure_channel, RpcError  # Защищ
 from FinamPy import Config  # Файл конфигурации
 
 # Структуры
-import FinamPy.grpc.auth.auth_service_pb2 as auth_service  # Подключение https://tradeapi.finam.ru/docs/guides/auth
-import FinamPy.grpc.marketdata.marketdata_service_pb2 as marketdata_service  # Рыночные данные https://tradeapi.finam.ru/docs/guides/marketdata
+import FinamPy.grpc.auth.auth_service_pb2 as auth_service  # Подключение https://tradeapi.finam.ru/docs/guides/grpc/auth_service
+import FinamPy.grpc.marketdata.marketdata_service_pb2 as marketdata_service  # Рыночные данные https://tradeapi.finam.ru/docs/guides/grpc/marketdata_service/
 
 # gRPC - Сервисы
-from FinamPy.grpc.auth.auth_service_pb2_grpc import AuthServiceStub  # Подлключение https://tradeapi.finam.ru/docs/guides/auth#authservice
-from FinamPy.grpc.accounts.accounts_service_pb2_grpc import AccountsServiceStub  # Счета https://tradeapi.finam.ru/docs/guides/accounts#accountsservice
-from FinamPy.grpc.assets.assets_service_pb2_grpc import AssetsServiceStub  # Инструменты https://tradeapi.finam.ru/docs/guides/assets#assetsservice
-from FinamPy.grpc.orders.orders_service_pb2_grpc import OrdersServiceStub  # Заявки https://tradeapi.finam.ru/docs/guides/orders#ordersservice
-from FinamPy.grpc.marketdata.marketdata_service_pb2_grpc import MarketDataServiceStub  # Рыночные данные https://tradeapi.finam.ru/docs/guides/marketdata#marketdataservice
+from FinamPy.grpc.auth.auth_service_pb2_grpc import AuthServiceStub  # Подлключение https://tradeapi.finam.ru/docs/guides/grpc/auth_service
+from FinamPy.grpc.accounts.accounts_service_pb2_grpc import AccountsServiceStub  # Счета https://tradeapi.finam.ru/docs/guides/grpc/accounts_service/
+from FinamPy.grpc.assets.assets_service_pb2_grpc import AssetsServiceStub  # Инструменты https://tradeapi.finam.ru/docs/guides/grpc/assets_service/
+from FinamPy.grpc.orders.orders_service_pb2_grpc import OrdersServiceStub  # Заявки https://tradeapi.finam.ru/docs/guides/grpc/orders_service/
+from FinamPy.grpc.marketdata.marketdata_service_pb2_grpc import MarketDataServiceStub  # Рыночные данные https://tradeapi.finam.ru/docs/guides/grpc/marketdata_service/
 
 
 class FinamPy:

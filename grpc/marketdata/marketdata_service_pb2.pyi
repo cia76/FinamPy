@@ -3,6 +3,7 @@
 isort:skip_file
 """
 
+import FinamPy.grpc.side_pb2
 import builtins
 import collections.abc
 import google.protobuf.descriptor
@@ -22,81 +23,82 @@ else:
 
 DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 
+class _TimeFrame:
+    ValueType = typing.NewType("ValueType", builtins.int)
+    V: typing_extensions.TypeAlias = ValueType
+
+class _TimeFrameEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_TimeFrame.ValueType], builtins.type):
+    DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+    TIME_FRAME_UNSPECIFIED: _TimeFrame.ValueType  # 0
+    """Таймфрейм не указан"""
+    TIME_FRAME_M1: _TimeFrame.ValueType  # 1
+    """1 минута. Глубина данных 7 дней."""
+    TIME_FRAME_M5: _TimeFrame.ValueType  # 5
+    """5 минут. Глубина данных 30 дней."""
+    TIME_FRAME_M15: _TimeFrame.ValueType  # 9
+    """15 минут. Глубина данных 30 дней."""
+    TIME_FRAME_M30: _TimeFrame.ValueType  # 11
+    """30 минут. Глубина данных 30 дней."""
+    TIME_FRAME_H1: _TimeFrame.ValueType  # 12
+    """1 час. Глубина данных 30 дней."""
+    TIME_FRAME_H2: _TimeFrame.ValueType  # 13
+    """2 часа. Глубина данных 30 дней."""
+    TIME_FRAME_H4: _TimeFrame.ValueType  # 15
+    """4 часа. Глубина данных 30 дней."""
+    TIME_FRAME_H8: _TimeFrame.ValueType  # 17
+    """8 часов. Глубина данных 30 дней."""
+    TIME_FRAME_D: _TimeFrame.ValueType  # 19
+    """День. Глубина данных 365 дней."""
+    TIME_FRAME_W: _TimeFrame.ValueType  # 20
+    """Неделя. Глубина данных 365*5 дней."""
+    TIME_FRAME_MN: _TimeFrame.ValueType  # 21
+    """Месяц. Глубина данных 365*5 дней."""
+    TIME_FRAME_QR: _TimeFrame.ValueType  # 22
+    """Квартал. Глубина данных 365*5 дней."""
+
+class TimeFrame(_TimeFrame, metaclass=_TimeFrameEnumTypeWrapper):
+    """Доступные таймфреймы для свечей"""
+
+TIME_FRAME_UNSPECIFIED: TimeFrame.ValueType  # 0
+"""Таймфрейм не указан"""
+TIME_FRAME_M1: TimeFrame.ValueType  # 1
+"""1 минута. Глубина данных 7 дней."""
+TIME_FRAME_M5: TimeFrame.ValueType  # 5
+"""5 минут. Глубина данных 30 дней."""
+TIME_FRAME_M15: TimeFrame.ValueType  # 9
+"""15 минут. Глубина данных 30 дней."""
+TIME_FRAME_M30: TimeFrame.ValueType  # 11
+"""30 минут. Глубина данных 30 дней."""
+TIME_FRAME_H1: TimeFrame.ValueType  # 12
+"""1 час. Глубина данных 30 дней."""
+TIME_FRAME_H2: TimeFrame.ValueType  # 13
+"""2 часа. Глубина данных 30 дней."""
+TIME_FRAME_H4: TimeFrame.ValueType  # 15
+"""4 часа. Глубина данных 30 дней."""
+TIME_FRAME_H8: TimeFrame.ValueType  # 17
+"""8 часов. Глубина данных 30 дней."""
+TIME_FRAME_D: TimeFrame.ValueType  # 19
+"""День. Глубина данных 365 дней."""
+TIME_FRAME_W: TimeFrame.ValueType  # 20
+"""Неделя. Глубина данных 365*5 дней."""
+TIME_FRAME_MN: TimeFrame.ValueType  # 21
+"""Месяц. Глубина данных 365*5 дней."""
+TIME_FRAME_QR: TimeFrame.ValueType  # 22
+"""Квартал. Глубина данных 365*5 дней."""
+global___TimeFrame = TimeFrame
+
 @typing.final
 class BarsRequest(google.protobuf.message.Message):
     """Запрос получения исторических данных по инструменту (агрегированные свечи)"""
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
-    class _TimeFrame:
-        ValueType = typing.NewType("ValueType", builtins.int)
-        V: typing_extensions.TypeAlias = ValueType
-
-    class _TimeFrameEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[BarsRequest._TimeFrame.ValueType], builtins.type):
-        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
-        TIME_FRAME_UNSPECIFIED: BarsRequest._TimeFrame.ValueType  # 0
-        """Таймфрейм не указан"""
-        TIME_FRAME_M1: BarsRequest._TimeFrame.ValueType  # 1
-        """1 минута. Глубина данных 7 дней."""
-        TIME_FRAME_M5: BarsRequest._TimeFrame.ValueType  # 5
-        """5 минут. Глубина данных 30 дней."""
-        TIME_FRAME_M15: BarsRequest._TimeFrame.ValueType  # 9
-        """15 минут. Глубина данных 30 дней."""
-        TIME_FRAME_M30: BarsRequest._TimeFrame.ValueType  # 11
-        """30 минут. Глубина данных 30 дней."""
-        TIME_FRAME_H1: BarsRequest._TimeFrame.ValueType  # 12
-        """1 час. Глубина данных 30 дней."""
-        TIME_FRAME_H2: BarsRequest._TimeFrame.ValueType  # 13
-        """2 часа. Глубина данных 30 дней."""
-        TIME_FRAME_H4: BarsRequest._TimeFrame.ValueType  # 15
-        """4 часа. Глубина данных 30 дней."""
-        TIME_FRAME_H8: BarsRequest._TimeFrame.ValueType  # 17
-        """8 часов. Глубина данных 30 дней."""
-        TIME_FRAME_D: BarsRequest._TimeFrame.ValueType  # 19
-        """День. Глубина данных 365 дней."""
-        TIME_FRAME_W: BarsRequest._TimeFrame.ValueType  # 20
-        """Неделя. Глубина данных 365*5 дней."""
-        TIME_FRAME_MN: BarsRequest._TimeFrame.ValueType  # 21
-        """Месяц. Глубина данных 365*5 дней."""
-        TIME_FRAME_QR: BarsRequest._TimeFrame.ValueType  # 22
-        """Квартал. Глубина данных 365*5 дней."""
-
-    class TimeFrame(_TimeFrame, metaclass=_TimeFrameEnumTypeWrapper):
-        """Доступные таймфреймы для свечей"""
-
-    TIME_FRAME_UNSPECIFIED: BarsRequest.TimeFrame.ValueType  # 0
-    """Таймфрейм не указан"""
-    TIME_FRAME_M1: BarsRequest.TimeFrame.ValueType  # 1
-    """1 минута. Глубина данных 7 дней."""
-    TIME_FRAME_M5: BarsRequest.TimeFrame.ValueType  # 5
-    """5 минут. Глубина данных 30 дней."""
-    TIME_FRAME_M15: BarsRequest.TimeFrame.ValueType  # 9
-    """15 минут. Глубина данных 30 дней."""
-    TIME_FRAME_M30: BarsRequest.TimeFrame.ValueType  # 11
-    """30 минут. Глубина данных 30 дней."""
-    TIME_FRAME_H1: BarsRequest.TimeFrame.ValueType  # 12
-    """1 час. Глубина данных 30 дней."""
-    TIME_FRAME_H2: BarsRequest.TimeFrame.ValueType  # 13
-    """2 часа. Глубина данных 30 дней."""
-    TIME_FRAME_H4: BarsRequest.TimeFrame.ValueType  # 15
-    """4 часа. Глубина данных 30 дней."""
-    TIME_FRAME_H8: BarsRequest.TimeFrame.ValueType  # 17
-    """8 часов. Глубина данных 30 дней."""
-    TIME_FRAME_D: BarsRequest.TimeFrame.ValueType  # 19
-    """День. Глубина данных 365 дней."""
-    TIME_FRAME_W: BarsRequest.TimeFrame.ValueType  # 20
-    """Неделя. Глубина данных 365*5 дней."""
-    TIME_FRAME_MN: BarsRequest.TimeFrame.ValueType  # 21
-    """Месяц. Глубина данных 365*5 дней."""
-    TIME_FRAME_QR: BarsRequest.TimeFrame.ValueType  # 22
-    """Квартал. Глубина данных 365*5 дней."""
-
     SYMBOL_FIELD_NUMBER: builtins.int
     TIMEFRAME_FIELD_NUMBER: builtins.int
     INTERVAL_FIELD_NUMBER: builtins.int
     symbol: builtins.str
     """Символ инструмента"""
-    timeframe: global___BarsRequest.TimeFrame.ValueType
+    timeframe: global___TimeFrame.ValueType
     """Необходимый таймфрейм"""
     @property
     def interval(self) -> google.type.interval_pb2.Interval:
@@ -106,7 +108,7 @@ class BarsRequest(google.protobuf.message.Message):
         self,
         *,
         symbol: builtins.str = ...,
-        timeframe: global___BarsRequest.TimeFrame.ValueType = ...,
+        timeframe: global___TimeFrame.ValueType = ...,
         interval: google.type.interval_pb2.Interval | None = ...,
     ) -> None: ...
     def HasField(self, field_name: typing.Literal["interval", b"interval"]) -> builtins.bool: ...
@@ -350,6 +352,52 @@ class SubscribeOrderBookResponse(google.protobuf.message.Message):
     def ClearField(self, field_name: typing.Literal["order_book", b"order_book"]) -> None: ...
 
 global___SubscribeOrderBookResponse = SubscribeOrderBookResponse
+
+@typing.final
+class SubscribeBarsRequest(google.protobuf.message.Message):
+    """Запрос подписки на агрегированные свечи. Стрим"""
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    SYMBOL_FIELD_NUMBER: builtins.int
+    TIMEFRAME_FIELD_NUMBER: builtins.int
+    symbol: builtins.str
+    """Символ инструмента"""
+    timeframe: global___TimeFrame.ValueType
+    """Необходимый таймфрейм"""
+    def __init__(
+        self,
+        *,
+        symbol: builtins.str = ...,
+        timeframe: global___TimeFrame.ValueType = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["symbol", b"symbol", "timeframe", b"timeframe"]) -> None: ...
+
+global___SubscribeBarsRequest = SubscribeBarsRequest
+
+@typing.final
+class SubscribeBarsResponse(google.protobuf.message.Message):
+    """Список агрегированных свеч. Стрим"""
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    SYMBOL_FIELD_NUMBER: builtins.int
+    BARS_FIELD_NUMBER: builtins.int
+    symbol: builtins.str
+    """Символ инструмента"""
+    @property
+    def bars(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___Bar]:
+        """Агрегированная свеча"""
+
+    def __init__(
+        self,
+        *,
+        symbol: builtins.str = ...,
+        bars: collections.abc.Iterable[global___Bar] | None = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["bars", b"bars", "symbol", b"symbol"]) -> None: ...
+
+global___SubscribeBarsResponse = SubscribeBarsResponse
 
 @typing.final
 class Bar(google.protobuf.message.Message):
@@ -677,10 +725,13 @@ class Trade(google.protobuf.message.Message):
     TIMESTAMP_FIELD_NUMBER: builtins.int
     PRICE_FIELD_NUMBER: builtins.int
     SIZE_FIELD_NUMBER: builtins.int
+    SIDE_FIELD_NUMBER: builtins.int
     trade_id: builtins.str
     """Идентификатор сделки, отправленный биржей"""
     mpid: builtins.str
     """Идентификатор участника рынка"""
+    side: FinamPy.grpc.side_pb2.Side.ValueType
+    """ Сторона сделки (buy или sell)"""
     @property
     def timestamp(self) -> google.protobuf.timestamp_pb2.Timestamp:
         """Метка времени"""
@@ -701,9 +752,10 @@ class Trade(google.protobuf.message.Message):
         timestamp: google.protobuf.timestamp_pb2.Timestamp | None = ...,
         price: google.type.decimal_pb2.Decimal | None = ...,
         size: google.type.decimal_pb2.Decimal | None = ...,
+        side: FinamPy.grpc.side_pb2.Side.ValueType = ...,
     ) -> None: ...
     def HasField(self, field_name: typing.Literal["price", b"price", "size", b"size", "timestamp", b"timestamp"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["mpid", b"mpid", "price", b"price", "size", b"size", "timestamp", b"timestamp", "trade_id", b"trade_id"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["mpid", b"mpid", "price", b"price", "side", b"side", "size", b"size", "timestamp", b"timestamp", "trade_id", b"trade_id"]) -> None: ...
 
 global___Trade = Trade
 

@@ -9,6 +9,7 @@ import google.protobuf.descriptor
 import google.protobuf.internal.containers
 import google.protobuf.internal.enum_type_wrapper
 import google.protobuf.message
+import google.protobuf.timestamp_pb2
 import google.type.date_pb2
 import google.type.decimal_pb2
 import google.type.interval_pb2
@@ -86,6 +87,91 @@ class AssetsResponse(google.protobuf.message.Message):
     def ClearField(self, field_name: typing.Literal["assets", b"assets"]) -> None: ...
 
 global___AssetsResponse = AssetsResponse
+
+@typing.final
+class GetAssetRequest(google.protobuf.message.Message):
+    """Запрос получения информации по конкретному инструменту"""
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    SYMBOL_FIELD_NUMBER: builtins.int
+    ACCOUNT_ID_FIELD_NUMBER: builtins.int
+    symbol: builtins.str
+    """Символ инструмента"""
+    account_id: builtins.str
+    """ID аккаунта для которого будет подбираться информация по инструменту"""
+    def __init__(
+        self,
+        *,
+        symbol: builtins.str = ...,
+        account_id: builtins.str = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["account_id", b"account_id", "symbol", b"symbol"]) -> None: ...
+
+global___GetAssetRequest = GetAssetRequest
+
+@typing.final
+class GetAssetResponse(google.protobuf.message.Message):
+    """Список информации по конкретному инструменту"""
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    BOARD_FIELD_NUMBER: builtins.int
+    ID_FIELD_NUMBER: builtins.int
+    TICKER_FIELD_NUMBER: builtins.int
+    MIC_FIELD_NUMBER: builtins.int
+    ISIN_FIELD_NUMBER: builtins.int
+    TYPE_FIELD_NUMBER: builtins.int
+    NAME_FIELD_NUMBER: builtins.int
+    DECIMALS_FIELD_NUMBER: builtins.int
+    MIN_STEP_FIELD_NUMBER: builtins.int
+    LOT_SIZE_FIELD_NUMBER: builtins.int
+    EXPIRATION_DATE_FIELD_NUMBER: builtins.int
+    board: builtins.str
+    """Код режима торгов"""
+    id: builtins.str
+    """Идентификатор инструмента"""
+    ticker: builtins.str
+    """Тикер инструмента"""
+    mic: builtins.str
+    """mic идентификатор биржи"""
+    isin: builtins.str
+    """Isin идентификатор инструмента"""
+    type: builtins.str
+    """Тип инструмента"""
+    name: builtins.str
+    """Наименование инструмента"""
+    decimals: builtins.int
+    """Кол-во десятичных знаков в цене"""
+    min_step: builtins.int
+    """Минимальный шаг цены"""
+    @property
+    def lot_size(self) -> google.type.decimal_pb2.Decimal:
+        """Кол-во штук в лоте"""
+
+    @property
+    def expiration_date(self) -> google.type.date_pb2.Date:
+        """Дата экспирации фьючерса"""
+
+    def __init__(
+        self,
+        *,
+        board: builtins.str = ...,
+        id: builtins.str = ...,
+        ticker: builtins.str = ...,
+        mic: builtins.str = ...,
+        isin: builtins.str = ...,
+        type: builtins.str = ...,
+        name: builtins.str = ...,
+        decimals: builtins.int = ...,
+        min_step: builtins.int = ...,
+        lot_size: google.type.decimal_pb2.Decimal | None = ...,
+        expiration_date: google.type.date_pb2.Date | None = ...,
+    ) -> None: ...
+    def HasField(self, field_name: typing.Literal["expiration_date", b"expiration_date", "lot_size", b"lot_size"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["board", b"board", "decimals", b"decimals", "expiration_date", b"expiration_date", "id", b"id", "isin", b"isin", "lot_size", b"lot_size", "mic", b"mic", "min_step", b"min_step", "name", b"name", "ticker", b"ticker", "type", b"type"]) -> None: ...
+
+global___GetAssetResponse = GetAssetResponse
 
 @typing.final
 class GetAssetParamsRequest(google.protobuf.message.Message):
@@ -278,6 +364,39 @@ class ScheduleResponse(google.protobuf.message.Message):
     def ClearField(self, field_name: typing.Literal["sessions", b"sessions", "symbol", b"symbol"]) -> None: ...
 
 global___ScheduleResponse = ScheduleResponse
+
+@typing.final
+class ClockRequest(google.protobuf.message.Message):
+    """Запрос получения времени на сервере"""
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    def __init__(
+        self,
+    ) -> None: ...
+
+global___ClockRequest = ClockRequest
+
+@typing.final
+class ClockResponse(google.protobuf.message.Message):
+    """Время на сервере"""
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    TIMESTAMP_FIELD_NUMBER: builtins.int
+    @property
+    def timestamp(self) -> google.protobuf.timestamp_pb2.Timestamp:
+        """Метка времени"""
+
+    def __init__(
+        self,
+        *,
+        timestamp: google.protobuf.timestamp_pb2.Timestamp | None = ...,
+    ) -> None: ...
+    def HasField(self, field_name: typing.Literal["timestamp", b"timestamp"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["timestamp", b"timestamp"]) -> None: ...
+
+global___ClockResponse = ClockResponse
 
 @typing.final
 class Exchange(google.protobuf.message.Message):
