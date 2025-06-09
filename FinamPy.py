@@ -10,6 +10,8 @@ from FinamPy import Config  # Файл конфигурации
 # Структуры
 import FinamPy.grpc.auth.auth_service_pb2 as auth_service  # Подключение https://tradeapi.finam.ru/docs/guides/grpc/auth_service
 import FinamPy.grpc.marketdata.marketdata_service_pb2 as marketdata_service  # Рыночные данные https://tradeapi.finam.ru/docs/guides/grpc/marketdata_service/
+import FinamPy.grpc.orders.orders_service_pb2 as orders_service  # Заявки https://tradeapi.finam.ru/docs/guides/grpc/orders_service/
+import FinamPy.grpc.trade_pb2 as trade  # Информация о сделке
 
 # gRPC - Сервисы
 from FinamPy.grpc.auth.auth_service_pb2_grpc import AuthServiceStub  # Подлключение https://tradeapi.finam.ru/docs/guides/grpc/auth_service
@@ -22,7 +24,7 @@ from FinamPy.grpc.marketdata.marketdata_service_pb2_grpc import MarketDataServic
 class FinamPy:
     """Работа с Finam Trade API gRPC https://tradeapi.finam.ru из Python"""
     tz_msk = timezone('Europe/Moscow')  # Время UTC будем приводить к московскому времени
-    server = 'ftrr01.finam.ru:443'  # Сервер для исполнения вызовов
+    server = 'api.finam.ru:443'  # Сервер для исполнения вызовов
     jwt_token_ttl = 15 * 60  # Время жизни токена JWT 15 минут в секундах
     logger = logging.getLogger('FinamPy')  # Будем вести лог
     metadata: tuple[str, str]  # Токен JWT в запросах
@@ -43,8 +45,11 @@ class FinamPy:
 
         # События
         self.on_quote = self.default_handler  # Котировка по инструменту
-        self.on_order_book = self.default_handler  # Стакан
-        self.on_latest_trades = self.default_handler  # Обезличенные сделки
+        self.on_order_book = self.default_handler  # Стакан по инструменту
+        self.on_latest_trades = self.default_handler  # Обезличенные сделки по инструменту
+        self.on_new_bar = self.default_handler  # Свечи по инструменту и временнОму интервалу
+        self.on_order = self.default_handler  # Свои заявки
+        self.on_trade = self.default_handler  # Свои сделки
 
         self.access_token = access_token  # Торговый токен
         self.jwt_token = ''  # Токен JWT
@@ -90,7 +95,14 @@ class FinamPy:
 
     # Подписки
 
-    def default_handler(self, event: Union[marketdata_service.Quote, marketdata_service.StreamOrderBook, marketdata_service.Trade]):
+    def default_handler(self, event: Union[
+        list[marketdata_service.Quote],
+        list[marketdata_service.StreamOrderBook],
+        marketdata_service.SubscribeLatestTradesResponse,
+        marketdata_service.SubscribeBarsResponse,
+        list[orders_service.OrderState],
+        list[trade.AccountTrade],
+    ]):
         """Пустой обработчик события по умолчанию. Его можно заменить на пользовательский"""
         pass
 
@@ -117,7 +129,28 @@ class FinamPy:
         try:
             for event in self.marketdata_stub.SubscribeLatestTrades(request=marketdata_service.SubscribeOrderBookRequest(symbol=symbol), metadata=(self.metadata,)):
                 e: marketdata_service.SubscribeLatestTradesResponse = event  # Приводим пришедшее значение к подписке
-                self.on_latest_trades(e.trades)
+                self.on_latest_trades(e)
+        except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
+            pass  # Все в порядке, ничего делать не нужно
+
+    def subscribe_bars_thread(self, symbol, timeframe: marketdata_service.TimeFrame.ValueType):
+        """Подписка на свечи по инструменту и временнОму интервалу"""
+        try:
+            for event in self.marketdata_stub.SubscribeBars(request=marketdata_service.SubscribeBarsRequest(symbol=symbol, timeframe=timeframe), metadata=(self.metadata,)):
+                e: marketdata_service.SubscribeBarsResponse = event  # Приводим пришедшее значение к подписке
+                self.on_new_bar(e)
+        except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
+            pass  # Все в порядке, ничего делать не нужно
+
+    def subscribe_order_trade(self, action: orders_service.OrderTradeRequest.Action, data_type: orders_service.OrderTradeRequest.DataType, account_id):
+        """Подписка на свои заявки и сделки"""
+        try:
+            for event in self.orders_stub.SubscribeOrderTrade(request=orders_service.OrderTradeRequest(action=action, data_type=data_type, account_id=account_id), metadata=(self.metadata,)):
+                e: orders_service.OrderTradeResponse = event  # Приводим пришедшее значение к подписке
+                if e.orders:  # Если пришли заявки
+                    self.on_order(e.orders)
+                if e.trades:  # Если пришли сделки
+                    self.on_trade(e.trades)
         except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
             pass  # Все в порядке, ничего делать не нужно
 
