@@ -666,6 +666,6 @@ class FinamPyOld:
         :param bool tzinfo: Отображать временнУю зону
         :return: Московское время
         """
-        dt_utc = utc.localize(dt)  # Задаем временнУю зону UTC
+        dt_utc = utc.localize(dt) if dt.tzinfo is None else dt  # Задаем временнУю зону UTC если не задана
         dt_msk = dt_utc.astimezone(self.tz_msk)  # Переводим в МСК
         return dt_msk if tzinfo else dt_msk.replace(tzinfo=None)
