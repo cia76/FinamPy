@@ -104,7 +104,9 @@ class FinamPy:
         list[trade.AccountTrade],
     ]):
         """Пустой обработчик события по умолчанию. Его можно заменить на пользовательский"""
-        pass
+        #print(f'Объем сделки {event['quote']['last_size']} цена {event['quote']['last']}')
+        quote = event.pop(1)
+        print(f'Объем: {quote.last_size.value}, цена : {quote.last.value}')
 
     def subscribe_quote_thread(self, symbols):
         """Подписка на котировки по инструменту"""
