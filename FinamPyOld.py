@@ -399,7 +399,8 @@ class FinamPyOld:
         while True:  # Пока не получим ответ или ошибку
             try:  # Пытаемся
                 response, call = func.with_call(request=request, metadata=self.metadata)  # вызвать функцию
-                # self.logger.debug(f'Запрос: {request} Ответ: {response}')  # Для отладки работоспособности сервера Финам
+                self.logger.debug(f'Запрос : {request}')
+                self.logger.debug(f'Ответ  : {response}')
                 return response  # и вернуть ответ
             except RpcError as ex:  # Если получили ошибку канала
                 func_name = func._method.decode('utf-8')  # Название функции
