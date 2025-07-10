@@ -4,7 +4,7 @@ from datetime import datetime, timedelta  # Дата и время
 from FinamPy import FinamPy
 from google.protobuf.timestamp_pb2 import Timestamp
 from google.type.interval_pb2 import Interval
-from FinamPy.grpc.marketdata.marketdata_service_pb2 import BarsRequest, BarsResponse  # История
+from FinamPy.grpc.marketdata.marketdata_service_pb2 import BarsRequest, BarsResponse, TimeFrame  # История
 
 
 if __name__ == '__main__':  # Точка входа при запуске этого скрипта
@@ -18,22 +18,22 @@ if __name__ == '__main__':  # Точка входа при запуске это
     logging.Formatter.converter = lambda *args: datetime.now(tz=fp_provider.tz_msk).timetuple()  # В логе время указываем по МСК
 
     symbol = 'SBER@MISX'
-    timeframe = BarsRequest.TIME_FRAME_D  # Дневной интервал
+    timeframe = TimeFrame.TIME_FRAME_D  # Дневной интервал
 
     min_date = datetime(2015, 6, 29)  # Первая дата, с которой можно получать историю
     max_date_range = {
-        BarsRequest.TIME_FRAME_M1: timedelta(days=7),  # M1
-        BarsRequest.TIME_FRAME_M5: timedelta(days=30),  # M5
-        BarsRequest.TIME_FRAME_M15: timedelta(days=30),  # M15
-        BarsRequest.TIME_FRAME_M30: timedelta(days=30),  # M30
-        BarsRequest.TIME_FRAME_H1: timedelta(days=30),  # M60
-        BarsRequest.TIME_FRAME_H2: timedelta(days=30),  # M120
-        BarsRequest.TIME_FRAME_H4: timedelta(days=30),  # M240
-        BarsRequest.TIME_FRAME_H8: timedelta(days=30),  # M480
-        BarsRequest.TIME_FRAME_D: timedelta(days=365),  # D1
-        BarsRequest.TIME_FRAME_W: timedelta(days=365*5),  # W1
-        BarsRequest.TIME_FRAME_MN: timedelta(days=365*5),  # MN1
-        BarsRequest.TIME_FRAME_QR: timedelta(days=365*5)  # MN3
+        TimeFrame.TIME_FRAME_M1: timedelta(days=7),  # M1
+        TimeFrame.TIME_FRAME_M5: timedelta(days=30),  # M5
+        TimeFrame.TIME_FRAME_M15: timedelta(days=30),  # M15
+        TimeFrame.TIME_FRAME_M30: timedelta(days=30),  # M30
+        TimeFrame.TIME_FRAME_H1: timedelta(days=30),  # M60
+        TimeFrame.TIME_FRAME_H2: timedelta(days=30),  # M120
+        TimeFrame.TIME_FRAME_H4: timedelta(days=30),  # M240
+        TimeFrame.TIME_FRAME_H8: timedelta(days=30),  # M480
+        TimeFrame.TIME_FRAME_D: timedelta(days=365),  # D1
+        TimeFrame.TIME_FRAME_W: timedelta(days=365*5),  # W1
+        TimeFrame.TIME_FRAME_MN: timedelta(days=365*5),  # MN1
+        TimeFrame.TIME_FRAME_QR: timedelta(days=365*5)  # MN3
     }  # Максимальный размер запроса в днях
     start_date = min_date  # Начинаем запрос с первой возможной даты
     while start_date <= datetime.now():  # Пока не дошли до текущей даты
