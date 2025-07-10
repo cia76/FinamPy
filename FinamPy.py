@@ -81,10 +81,11 @@ class FinamPy:
     def call_function(self, func, request):
         """Вызов функции"""
         self.auth()  # Получаем токен JWT
+        self.logger.debug(f'Запрос : {request}')
         while True:  # Пока не получим ответ или ошибку
             try:  # Пытаемся
                 response, call = func.with_call(request=request, metadata=(self.metadata,))  # вызвать функцию
-                # self.logger.debug(f'Запрос: {request} Ответ: {response}')  # Для отладки работоспособности сервера Финам
+                self.logger.debug(f'Ответ  : {response}')
                 return response  # и вернуть ответ
             except RpcError as ex:  # Если получили ошибку канала
                 # noinspection PyProtectedMember
