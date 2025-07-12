@@ -4,6 +4,7 @@ from datetime import datetime  # Дата и время
 from time import sleep  # Подписка на события по времени
 
 from FinamPy import FinamPy
+from FinamPy.grpc.orders.orders_service_pb2 import OrderTradeRequest
 
 
 if __name__ == '__main__':  # Точка входа при запуске этого скрипта
@@ -42,4 +43,21 @@ if __name__ == '__main__':  # Точка входа при запуске это
     sleep(sleep_secs)  # Ждем кол-во секунд получения сделок
     fp_provider.on_latest_trades = fp_provider.default_handler  # Возвращаем обработчик событий по умолчанию
 
+    # Свои заявки и сделки
+    sleep_secs = 5  # Кол-во секунд получения своих заявок и сделок
+    logger.info(f'{sleep_secs} секунд своих заявок и сделок')
+    fp_provider.on_order = lambda order: logger.info(order)  # Обработчик события прихода своей заявки
+    fp_provider.on_trade = lambda trade: logger.info(trade)  # Обработчик события прихода своей сделки
+    Thread(target=fp_provider.subscriptions_order_trade_handler, name='SubscriptionsOrderTradeThread').start()  # Создаем и запускаем поток обработки своих заявок и сделок
+    fp_provider.order_trade_queue.put(OrderTradeRequest(  # Ставим в буфер команд/сделок
+        action=OrderTradeRequest.Action.ACTION_SUBSCRIBE,  # Подписываемся
+        data_type=OrderTradeRequest.DataType.DATA_TYPE_ALL,  # на свои заявки и сделки
+        account_id=fp_provider.account_ids[0]))  # по первому счету
+    sleep(sleep_secs)  # Ждем кол-во секунд получения своих заявок и сделок
+    fp_provider.order_trade_queue.put(OrderTradeRequest(  # Ставим в буфер команд/сделок
+        action=OrderTradeRequest.Action.ACTION_UNSUBSCRIBE,  # Отписываемся
+        data_type=OrderTradeRequest.DataType.DATA_TYPE_ALL,  # от своих заявок и сделок
+        account_id=fp_provider.account_ids[0]))  # по первому счету
+    fp_provider.on_order = fp_provider.default_handler  # Возвращаем обработчик событий по умолчанию
+    fp_provider.on_trade = fp_provider.default_handler  # Возвращаем обработчик событий по умолчанию
     fp_provider.close_channel()  # Закрываем канал перед выходом

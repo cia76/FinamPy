@@ -1,6 +1,6 @@
 import logging  # Будем вести лог
 from datetime import datetime
-from typing import Union  # Объединение типов
+from queue import SimpleQueue  # Очередь подписок/отписок
 
 from pytz import timezone  # Работаем с временнОй зоной
 from grpc import ssl_channel_credentials, secure_channel, RpcError  # Защищенный канал
@@ -48,6 +48,7 @@ class FinamPy:
         self.on_order_book = self.default_handler  # Стакан по инструменту
         self.on_latest_trades = self.default_handler  # Обезличенные сделки по инструменту
         self.on_new_bar = self.default_handler  # Свечи по инструменту и временнОму интервалу
+        self.order_trade_queue: SimpleQueue[orders_service.OrderTradeRequest] = SimpleQueue()  # Буфер команд заявок/сделок
         self.on_order = self.default_handler  # Свои заявки
         self.on_trade = self.default_handler  # Свои сделки
 
@@ -96,14 +97,12 @@ class FinamPy:
 
     # Подписки
 
-    def default_handler(self, event: Union[
-        list[marketdata_service.Quote],
-        list[marketdata_service.StreamOrderBook],
-        marketdata_service.SubscribeLatestTradesResponse,
-        marketdata_service.SubscribeBarsResponse,
-        list[orders_service.OrderState],
-        list[trade.AccountTrade],
-    ]):
+    def default_handler(self, event: list[marketdata_service.Quote] |
+                        list[marketdata_service.StreamOrderBook] |
+                        marketdata_service.SubscribeLatestTradesResponse |
+                        marketdata_service.SubscribeBarsResponse |
+                        list[orders_service.OrderState] |
+                        list[trade.AccountTrade]):
         """Пустой обработчик события по умолчанию. Его можно заменить на пользовательский"""
         pass
 
@@ -143,15 +142,23 @@ class FinamPy:
         except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
             pass  # Все в порядке, ничего делать не нужно
 
-    def subscribe_order_trade(self, action: orders_service.OrderTradeRequest.Action, data_type: orders_service.OrderTradeRequest.DataType, account_id):
-        """Подписка на свои заявки и сделки"""
+    def request_order_trade_iterator(self):
+        """Генератор запросов на подписку/отписку своих заявок и сделок"""
+        while True:  # Будем пытаться читать из очереди до закрытия канала
+            yield self.order_trade_queue.get()  # Возврат из этой функции. При повторном ее вызове исполнение продолжится с этой строки
+
+    def subscriptions_order_trade_handler(self):
+        """Поток обработки подписок на свои заявки и сделки"""
+        events = self.orders_stub.SubscribeOrderTrade(request_iterator=self.request_order_trade_iterator(), metadata=(self.metadata,))
         try:
-            for event in self.orders_stub.SubscribeOrderTrade(request=orders_service.OrderTradeRequest(action=action, data_type=data_type, account_id=account_id), metadata=(self.metadata,)):
+            for event in events:
                 e: orders_service.OrderTradeResponse = event  # Приводим пришедшее значение к подписке
                 if e.orders:  # Если пришли заявки
-                    self.on_order(e.orders)
+                    for order in e.orders:
+                        self.on_order(order)
                 if e.trades:  # Если пришли сделки
-                    self.on_trade(e.trades)
+                    for trade in e.trades:
+                        self.on_trade(trade)
         except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
             pass  # Все в порядке, ничего делать не нужно
 
