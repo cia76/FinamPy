@@ -1,7 +1,7 @@
 requests
 pytz
-grpcio>=1.63.0
-protobuf>=5.26.0
+grpcio
+protobuf
 types-protobuf
 googleapis-common-protos
 pandas

@@ -26,6 +26,7 @@ class AccountTrade(google.protobuf.message.Message):
     SIDE_FIELD_NUMBER: builtins.int
     TIMESTAMP_FIELD_NUMBER: builtins.int
     ORDER_ID_FIELD_NUMBER: builtins.int
+    ACCOUNT_ID_FIELD_NUMBER: builtins.int
     trade_id: builtins.str
     """Идентификатор сделки"""
     symbol: builtins.str
@@ -34,6 +35,8 @@ class AccountTrade(google.protobuf.message.Message):
     """Сторона сделки (long или short)"""
     order_id: builtins.str
     """Идентификатор заявки"""
+    account_id: builtins.str
+    """Идентификатор аккаунта"""
     @property
     def price(self) -> google.type.decimal_pb2.Decimal:
         """Цена исполнения"""
@@ -56,8 +59,9 @@ class AccountTrade(google.protobuf.message.Message):
         side: FinamPy.grpc.side_pb2.Side.ValueType = ...,
         timestamp: google.protobuf.timestamp_pb2.Timestamp | None = ...,
         order_id: builtins.str = ...,
+        account_id: builtins.str = ...,
     ) -> None: ...
     def HasField(self, field_name: typing.Literal["price", b"price", "size", b"size", "timestamp", b"timestamp"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["order_id", b"order_id", "price", b"price", "side", b"side", "size", b"size", "symbol", b"symbol", "timestamp", b"timestamp", "trade_id", b"trade_id"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["account_id", b"account_id", "order_id", b"order_id", "price", b"price", "side", b"side", "size", b"size", "symbol", b"symbol", "timestamp", b"timestamp", "trade_id", b"trade_id"]) -> None: ...
 
 global___AccountTrade = AccountTrade

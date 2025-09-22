@@ -70,19 +70,19 @@ class _TimeInForceEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._En
     TIME_IN_FORCE_DAY: _TimeInForce.ValueType  # 1
     """До конца дня"""
     TIME_IN_FORCE_GOOD_TILL_CANCEL: _TimeInForce.ValueType  # 2
-    """Good till cancel"""
+    """Действителен до отмены"""
     TIME_IN_FORCE_GOOD_TILL_CROSSING: _TimeInForce.ValueType  # 3
-    """Good till crossing"""
+    """Действителен до пересечения"""
     TIME_IN_FORCE_EXT: _TimeInForce.ValueType  # 4
-    """Extended hours"""
+    """Внебиржевая торговля"""
     TIME_IN_FORCE_ON_OPEN: _TimeInForce.ValueType  # 5
     """На открытии биржи"""
     TIME_IN_FORCE_ON_CLOSE: _TimeInForce.ValueType  # 6
     """На закрытии биржи"""
     TIME_IN_FORCE_IOC: _TimeInForce.ValueType  # 7
-    """Immediate or Cancel"""
+    """Исполнить немедленно или отменить"""
     TIME_IN_FORCE_FOK: _TimeInForce.ValueType  # 8
-    """Fill or Kill"""
+    """Исполнить полностью или отменить"""
 
 class TimeInForce(_TimeInForce, metaclass=_TimeInForceEnumTypeWrapper):
     """Срок действия заявки"""
@@ -92,19 +92,19 @@ TIME_IN_FORCE_UNSPECIFIED: TimeInForce.ValueType  # 0
 TIME_IN_FORCE_DAY: TimeInForce.ValueType  # 1
 """До конца дня"""
 TIME_IN_FORCE_GOOD_TILL_CANCEL: TimeInForce.ValueType  # 2
-"""Good till cancel"""
+"""Действителен до отмены"""
 TIME_IN_FORCE_GOOD_TILL_CROSSING: TimeInForce.ValueType  # 3
-"""Good till crossing"""
+"""Действителен до пересечения"""
 TIME_IN_FORCE_EXT: TimeInForce.ValueType  # 4
-"""Extended hours"""
+"""Внебиржевая торговля"""
 TIME_IN_FORCE_ON_OPEN: TimeInForce.ValueType  # 5
 """На открытии биржи"""
 TIME_IN_FORCE_ON_CLOSE: TimeInForce.ValueType  # 6
 """На закрытии биржи"""
 TIME_IN_FORCE_IOC: TimeInForce.ValueType  # 7
-"""Immediate or Cancel"""
+"""Исполнить немедленно или отменить"""
 TIME_IN_FORCE_FOK: TimeInForce.ValueType  # 8
-"""Fill or Kill"""
+"""Исполнить полностью или отменить"""
 global___TimeInForce = TimeInForce
 
 class _StopCondition:
@@ -140,61 +140,61 @@ class _OrderStatusEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._En
     ORDER_STATUS_UNSPECIFIED: _OrderStatus.ValueType  # 0
     """Неопределенное значение"""
     ORDER_STATUS_NEW: _OrderStatus.ValueType  # 1
-    """NEW"""
+    """Новая заявка"""
     ORDER_STATUS_PARTIALLY_FILLED: _OrderStatus.ValueType  # 2
-    """PARTIALLY_FILLED"""
+    """Частично исполненная"""
     ORDER_STATUS_FILLED: _OrderStatus.ValueType  # 3
-    """FILLED"""
+    """Исполненная"""
     ORDER_STATUS_DONE_FOR_DAY: _OrderStatus.ValueType  # 4
-    """DONE_FOR_DAY"""
+    """Действует в течение дня"""
     ORDER_STATUS_CANCELED: _OrderStatus.ValueType  # 5
-    """CANCELED"""
+    """Отменена"""
     ORDER_STATUS_REPLACED: _OrderStatus.ValueType  # 6
-    """REPLACED"""
+    """Заменена на другую"""
     ORDER_STATUS_PENDING_CANCEL: _OrderStatus.ValueType  # 7
-    """PENDING_CANCEL"""
+    """Ожидает отмены"""
     ORDER_STATUS_REJECTED: _OrderStatus.ValueType  # 9
-    """REJECTED"""
+    """Отклонена"""
     ORDER_STATUS_SUSPENDED: _OrderStatus.ValueType  # 10
-    """SUSPENDED"""
+    """Приостановлена"""
     ORDER_STATUS_PENDING_NEW: _OrderStatus.ValueType  # 11
-    """PENDING_NEW"""
+    """В ожидании новой"""
     ORDER_STATUS_EXPIRED: _OrderStatus.ValueType  # 13
-    """EXPIRED"""
+    """Истекла"""
     ORDER_STATUS_FAILED: _OrderStatus.ValueType  # 16
-    """FAILED"""
+    """Ошибка"""
     ORDER_STATUS_FORWARDING: _OrderStatus.ValueType  # 17
-    """FORWARDING"""
+    """Пересылка"""
     ORDER_STATUS_WAIT: _OrderStatus.ValueType  # 18
-    """WAIT"""
+    """Ожидает"""
     ORDER_STATUS_DENIED_BY_BROKER: _OrderStatus.ValueType  # 19
-    """DENIED_BY_BROKER"""
+    """Отклонено брокером"""
     ORDER_STATUS_REJECTED_BY_EXCHANGE: _OrderStatus.ValueType  # 20
-    """REJECTED_BY_EXCHANGE"""
+    """Отклонено биржей"""
     ORDER_STATUS_WATCHING: _OrderStatus.ValueType  # 21
-    """WATCHING"""
+    """Наблюдение"""
     ORDER_STATUS_EXECUTED: _OrderStatus.ValueType  # 22
-    """EXECUTED"""
+    """Исполнена"""
     ORDER_STATUS_DISABLED: _OrderStatus.ValueType  # 23
-    """DISABLED"""
+    """Отключена"""
     ORDER_STATUS_LINK_WAIT: _OrderStatus.ValueType  # 24
-    """LINK_WAIT"""
+    """Ожидание ссылки"""
     ORDER_STATUS_SL_GUARD_TIME: _OrderStatus.ValueType  # 27
-    """SL_GUARD_TIME"""
+    """Защитное время SL"""
     ORDER_STATUS_SL_EXECUTED: _OrderStatus.ValueType  # 28
-    """SL_EXECUTED"""
+    """Исполнена по SL"""
     ORDER_STATUS_SL_FORWARDING: _OrderStatus.ValueType  # 29
-    """SL_FORWARDING"""
+    """Пересылка SL"""
     ORDER_STATUS_TP_GUARD_TIME: _OrderStatus.ValueType  # 30
-    """TP_GUARD_TIME"""
+    """Защитное время TP"""
     ORDER_STATUS_TP_EXECUTED: _OrderStatus.ValueType  # 31
-    """TP_EXECUTED"""
+    """Исполнена по TP"""
     ORDER_STATUS_TP_CORRECTION: _OrderStatus.ValueType  # 32
-    """TP_CORRECTION"""
+    """Коррекция TP"""
     ORDER_STATUS_TP_FORWARDING: _OrderStatus.ValueType  # 33
-    """TP_FORWARDING"""
+    """Пересылка TP"""
     ORDER_STATUS_TP_CORR_GUARD_TIME: _OrderStatus.ValueType  # 34
-    """TP_CORR_GUARD_TIME"""
+    """Коррекция TP в защитное время"""
 
 class OrderStatus(_OrderStatus, metaclass=_OrderStatusEnumTypeWrapper):
     """Статус заявки"""
@@ -202,61 +202,61 @@ class OrderStatus(_OrderStatus, metaclass=_OrderStatusEnumTypeWrapper):
 ORDER_STATUS_UNSPECIFIED: OrderStatus.ValueType  # 0
 """Неопределенное значение"""
 ORDER_STATUS_NEW: OrderStatus.ValueType  # 1
-"""NEW"""
+"""Новая заявка"""
 ORDER_STATUS_PARTIALLY_FILLED: OrderStatus.ValueType  # 2
-"""PARTIALLY_FILLED"""
+"""Частично исполненная"""
 ORDER_STATUS_FILLED: OrderStatus.ValueType  # 3
-"""FILLED"""
+"""Исполненная"""
 ORDER_STATUS_DONE_FOR_DAY: OrderStatus.ValueType  # 4
-"""DONE_FOR_DAY"""
+"""Действует в течение дня"""
 ORDER_STATUS_CANCELED: OrderStatus.ValueType  # 5
-"""CANCELED"""
+"""Отменена"""
 ORDER_STATUS_REPLACED: OrderStatus.ValueType  # 6
-"""REPLACED"""
+"""Заменена на другую"""
 ORDER_STATUS_PENDING_CANCEL: OrderStatus.ValueType  # 7
-"""PENDING_CANCEL"""
+"""Ожидает отмены"""
 ORDER_STATUS_REJECTED: OrderStatus.ValueType  # 9
-"""REJECTED"""
+"""Отклонена"""
 ORDER_STATUS_SUSPENDED: OrderStatus.ValueType  # 10
-"""SUSPENDED"""
+"""Приостановлена"""
 ORDER_STATUS_PENDING_NEW: OrderStatus.ValueType  # 11
-"""PENDING_NEW"""
+"""В ожидании новой"""
 ORDER_STATUS_EXPIRED: OrderStatus.ValueType  # 13
-"""EXPIRED"""
+"""Истекла"""
 ORDER_STATUS_FAILED: OrderStatus.ValueType  # 16
-"""FAILED"""
+"""Ошибка"""
 ORDER_STATUS_FORWARDING: OrderStatus.ValueType  # 17
-"""FORWARDING"""
+"""Пересылка"""
 ORDER_STATUS_WAIT: OrderStatus.ValueType  # 18
-"""WAIT"""
+"""Ожидает"""
 ORDER_STATUS_DENIED_BY_BROKER: OrderStatus.ValueType  # 19
-"""DENIED_BY_BROKER"""
+"""Отклонено брокером"""
 ORDER_STATUS_REJECTED_BY_EXCHANGE: OrderStatus.ValueType  # 20
-"""REJECTED_BY_EXCHANGE"""
+"""Отклонено биржей"""
 ORDER_STATUS_WATCHING: OrderStatus.ValueType  # 21
-"""WATCHING"""
+"""Наблюдение"""
 ORDER_STATUS_EXECUTED: OrderStatus.ValueType  # 22
-"""EXECUTED"""
+"""Исполнена"""
 ORDER_STATUS_DISABLED: OrderStatus.ValueType  # 23
-"""DISABLED"""
+"""Отключена"""
 ORDER_STATUS_LINK_WAIT: OrderStatus.ValueType  # 24
-"""LINK_WAIT"""
+"""Ожидание ссылки"""
 ORDER_STATUS_SL_GUARD_TIME: OrderStatus.ValueType  # 27
-"""SL_GUARD_TIME"""
+"""Защитное время SL"""
 ORDER_STATUS_SL_EXECUTED: OrderStatus.ValueType  # 28
-"""SL_EXECUTED"""
+"""Исполнена по SL"""
 ORDER_STATUS_SL_FORWARDING: OrderStatus.ValueType  # 29
-"""SL_FORWARDING"""
+"""Пересылка SL"""
 ORDER_STATUS_TP_GUARD_TIME: OrderStatus.ValueType  # 30
-"""TP_GUARD_TIME"""
+"""Защитное время TP"""
 ORDER_STATUS_TP_EXECUTED: OrderStatus.ValueType  # 31
-"""TP_EXECUTED"""
+"""Исполнена по TP"""
 ORDER_STATUS_TP_CORRECTION: OrderStatus.ValueType  # 32
-"""TP_CORRECTION"""
+"""Коррекция TP"""
 ORDER_STATUS_TP_FORWARDING: OrderStatus.ValueType  # 33
-"""TP_FORWARDING"""
+"""Пересылка TP"""
 ORDER_STATUS_TP_CORR_GUARD_TIME: OrderStatus.ValueType  # 34
-"""TP_CORR_GUARD_TIME"""
+"""Коррекция TP в защитное время"""
 global___OrderStatus = OrderStatus
 
 @typing.final

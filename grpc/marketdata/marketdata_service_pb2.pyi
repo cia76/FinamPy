@@ -476,7 +476,7 @@ class Quote(google.protobuf.message.Message):
 
         @property
         def implied_volatility(self) -> google.type.decimal_pb2.Decimal:
-            """Implied volatility"""
+            """Подразумеваемая волатильность"""
 
         @property
         def theoretical_price(self) -> google.type.decimal_pb2.Decimal:

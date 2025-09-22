@@ -144,7 +144,7 @@ class GetAssetResponse(google.protobuf.message.Message):
     decimals: builtins.int
     """Кол-во десятичных знаков в цене"""
     min_step: builtins.int
-    """Минимальный шаг цены"""
+    """Минимальный шаг цены. Для расчета финального ценового шага: min_step/(10ˆdecimals)"""
     @property
     def lot_size(self) -> google.type.decimal_pb2.Decimal:
         """Кол-во штук в лоте"""
@@ -285,7 +285,7 @@ class OptionsChainResponse(google.protobuf.message.Message):
     SYMBOL_FIELD_NUMBER: builtins.int
     OPTIONS_FIELD_NUMBER: builtins.int
     symbol: builtins.str
-    """Символ опциона"""
+    """Символ базового актива опциона"""
     @property
     def options(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___Option]:
         """Информация об опционе"""
@@ -498,6 +498,8 @@ class Option(google.protobuf.message.Message):
     TRADE_LAST_DAY_FIELD_NUMBER: builtins.int
     STRIKE_FIELD_NUMBER: builtins.int
     MULTIPLIER_FIELD_NUMBER: builtins.int
+    EXPIRATION_FIRST_DAY_FIELD_NUMBER: builtins.int
+    EXPIRATION_LAST_DAY_FIELD_NUMBER: builtins.int
     symbol: builtins.str
     """Символ инструмента"""
     type: global___Option.Type.ValueType
@@ -508,11 +510,11 @@ class Option(google.protobuf.message.Message):
 
     @property
     def trade_first_day(self) -> google.type.date_pb2.Date:
-        """Дата начала торговли"""
+        """Дата старта торговли"""
 
     @property
     def trade_last_day(self) -> google.type.date_pb2.Date:
-        """Дата экспирации"""
+        """Дата окончания торговли"""
 
     @property
     def strike(self) -> google.type.decimal_pb2.Decimal:
@@ -521,6 +523,14 @@ class Option(google.protobuf.message.Message):
     @property
     def multiplier(self) -> google.type.decimal_pb2.Decimal:
         """Множитель опциона"""
+
+    @property
+    def expiration_first_day(self) -> google.type.date_pb2.Date:
+        """Дата начала экспирации"""
+
+    @property
+    def expiration_last_day(self) -> google.type.date_pb2.Date:
+        """Дата окончания экспирации"""
 
     def __init__(
         self,
@@ -532,9 +542,11 @@ class Option(google.protobuf.message.Message):
         trade_last_day: google.type.date_pb2.Date | None = ...,
         strike: google.type.decimal_pb2.Decimal | None = ...,
         multiplier: google.type.decimal_pb2.Decimal | None = ...,
+        expiration_first_day: google.type.date_pb2.Date | None = ...,
+        expiration_last_day: google.type.date_pb2.Date | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["contract_size", b"contract_size", "multiplier", b"multiplier", "strike", b"strike", "trade_first_day", b"trade_first_day", "trade_last_day", b"trade_last_day"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["contract_size", b"contract_size", "multiplier", b"multiplier", "strike", b"strike", "symbol", b"symbol", "trade_first_day", b"trade_first_day", "trade_last_day", b"trade_last_day", "type", b"type"]) -> None: ...
+    def HasField(self, field_name: typing.Literal["contract_size", b"contract_size", "expiration_first_day", b"expiration_first_day", "expiration_last_day", b"expiration_last_day", "multiplier", b"multiplier", "strike", b"strike", "trade_first_day", b"trade_first_day", "trade_last_day", b"trade_last_day"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["contract_size", b"contract_size", "expiration_first_day", b"expiration_first_day", "expiration_last_day", b"expiration_last_day", "multiplier", b"multiplier", "strike", b"strike", "symbol", b"symbol", "trade_first_day", b"trade_first_day", "trade_last_day", b"trade_last_day", "type", b"type"]) -> None: ...
 
 global___Option = Option
 

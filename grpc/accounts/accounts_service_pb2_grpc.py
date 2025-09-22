@@ -5,7 +5,7 @@ import warnings
 
 from FinamPy.grpc.accounts import accounts_service_pb2 as FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2
 
-GRPC_GENERATED_VERSION = '1.71.0'
+GRPC_GENERATED_VERSION = '1.75.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 

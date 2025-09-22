@@ -8,12 +8,19 @@ import builtins
 import collections.abc
 import google.protobuf.descriptor
 import google.protobuf.internal.containers
+import google.protobuf.internal.enum_type_wrapper
 import google.protobuf.message
 import google.protobuf.timestamp_pb2
 import google.type.decimal_pb2
 import google.type.interval_pb2
 import google.type.money_pb2
+import sys
 import typing
+
+if sys.version_info >= (3, 10):
+    import typing as typing_extensions
+else:
+    import typing_extensions
 
 DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 
@@ -48,6 +55,9 @@ class GetAccountResponse(google.protobuf.message.Message):
     UNREALIZED_PROFIT_FIELD_NUMBER: builtins.int
     POSITIONS_FIELD_NUMBER: builtins.int
     CASH_FIELD_NUMBER: builtins.int
+    PORTFOLIO_MC_FIELD_NUMBER: builtins.int
+    PORTFOLIO_MCT_FIELD_NUMBER: builtins.int
+    PORTFOLIO_FORTS_FIELD_NUMBER: builtins.int
     account_id: builtins.str
     """Идентификатор аккаунта"""
     type: builtins.str
@@ -68,8 +78,14 @@ class GetAccountResponse(google.protobuf.message.Message):
 
     @property
     def cash(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[google.type.money_pb2.Money]:
-        """Доступные средства"""
+        """Сумма собственных денежных средств на счете, доступная для торговли. Не включает маржинальные средства."""
 
+    @property
+    def portfolio_mc(self) -> global___MC: ...
+    @property
+    def portfolio_mct(self) -> global___MCT: ...
+    @property
+    def portfolio_forts(self) -> global___FORTS: ...
     def __init__(
         self,
         *,
@@ -80,11 +96,90 @@ class GetAccountResponse(google.protobuf.message.Message):
         unrealized_profit: google.type.decimal_pb2.Decimal | None = ...,
         positions: collections.abc.Iterable[global___Position] | None = ...,
         cash: collections.abc.Iterable[google.type.money_pb2.Money] | None = ...,
+        portfolio_mc: global___MC | None = ...,
+        portfolio_mct: global___MCT | None = ...,
+        portfolio_forts: global___FORTS | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["equity", b"equity", "unrealized_profit", b"unrealized_profit"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["account_id", b"account_id", "cash", b"cash", "equity", b"equity", "positions", b"positions", "status", b"status", "type", b"type", "unrealized_profit", b"unrealized_profit"]) -> None: ...
+    def HasField(self, field_name: typing.Literal["equity", b"equity", "portfolio", b"portfolio", "portfolio_forts", b"portfolio_forts", "portfolio_mc", b"portfolio_mc", "portfolio_mct", b"portfolio_mct", "unrealized_profit", b"unrealized_profit"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["account_id", b"account_id", "cash", b"cash", "equity", b"equity", "portfolio", b"portfolio", "portfolio_forts", b"portfolio_forts", "portfolio_mc", b"portfolio_mc", "portfolio_mct", b"portfolio_mct", "positions", b"positions", "status", b"status", "type", b"type", "unrealized_profit", b"unrealized_profit"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing.Literal["portfolio", b"portfolio"]) -> typing.Literal["portfolio_mc", "portfolio_mct", "portfolio_forts"] | None: ...
 
 global___GetAccountResponse = GetAccountResponse
+
+@typing.final
+class MC(google.protobuf.message.Message):
+    """
+    Общий тип для счетов Московской Биржи. Включает в себя как единые, так и специализированные (моно) счета для разных секций биржи.
+    - Единый торговый счет (ЕТС): Позволяет торговать на нескольких рынках (фондовый, валютный. срочный, spb, иностранные бумаги, иностранные фьючерсы) с единой денежной позиции.
+    - Моно-счет фондового рынка MOEX: Изолированный счет для торговли акциями, облигациями и паями.
+    - Моно-счет валютного рынка MOEX: Изолированный счет для операций с валютными парами (например, CNYRUB_TOM).
+    """
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    AVAILABLE_CASH_FIELD_NUMBER: builtins.int
+    INITIAL_MARGIN_FIELD_NUMBER: builtins.int
+    MAINTENANCE_MARGIN_FIELD_NUMBER: builtins.int
+    @property
+    def available_cash(self) -> google.type.decimal_pb2.Decimal:
+        """Сумма собственных денежных средств на счете, доступная для торговли. Включает маржинальные средства."""
+
+    @property
+    def initial_margin(self) -> google.type.decimal_pb2.Decimal: ...
+    @property
+    def maintenance_margin(self) -> google.type.decimal_pb2.Decimal: ...
+    def __init__(
+        self,
+        *,
+        available_cash: google.type.decimal_pb2.Decimal | None = ...,
+        initial_margin: google.type.decimal_pb2.Decimal | None = ...,
+        maintenance_margin: google.type.decimal_pb2.Decimal | None = ...,
+    ) -> None: ...
+    def HasField(self, field_name: typing.Literal["available_cash", b"available_cash", "initial_margin", b"initial_margin", "maintenance_margin", b"maintenance_margin"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["available_cash", b"available_cash", "initial_margin", b"initial_margin", "maintenance_margin", b"maintenance_margin"]) -> None: ...
+
+global___MC = MC
+
+@typing.final
+class MCT(google.protobuf.message.Message):
+    """Тип портфеля для счетов на американских рынках.
+    Предоставляет доступ к биржам США: NYSE, NASDAQ, CBOE, CME, сделки с американскими акциями, фьючерсами и опционами.
+    """
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    def __init__(
+        self,
+    ) -> None: ...
+
+global___MCT = MCT
+
+@typing.final
+class FORTS(google.protobuf.message.Message):
+    """Тип портфеля для торговли на срочном рынке Московской Биржи.
+    Предназначен для работы с производными финансовыми инструментами: фьючерсами и опционами.
+    """
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    AVAILABLE_CASH_FIELD_NUMBER: builtins.int
+    MONEY_RESERVED_FIELD_NUMBER: builtins.int
+    @property
+    def available_cash(self) -> google.type.decimal_pb2.Decimal:
+        """Сумма собственных денежных средств на счете, доступная для торговли. Включает маржинальные средства."""
+
+    @property
+    def money_reserved(self) -> google.type.decimal_pb2.Decimal: ...
+    def __init__(
+        self,
+        *,
+        available_cash: google.type.decimal_pb2.Decimal | None = ...,
+        money_reserved: google.type.decimal_pb2.Decimal | None = ...,
+    ) -> None: ...
+    def HasField(self, field_name: typing.Literal["available_cash", b"available_cash", "money_reserved", b"money_reserved"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["available_cash", b"available_cash", "money_reserved", b"money_reserved"]) -> None: ...
+
+global___FORTS = FORTS
 
 @typing.final
 class TradesRequest(google.protobuf.message.Message):
@@ -194,6 +289,9 @@ class Position(google.protobuf.message.Message):
     QUANTITY_FIELD_NUMBER: builtins.int
     AVERAGE_PRICE_FIELD_NUMBER: builtins.int
     CURRENT_PRICE_FIELD_NUMBER: builtins.int
+    MAINTENANCE_MARGIN_FIELD_NUMBER: builtins.int
+    DAILY_PNL_FIELD_NUMBER: builtins.int
+    UNREALIZED_PNL_FIELD_NUMBER: builtins.int
     symbol: builtins.str
     """Символ инструмента"""
     @property
@@ -202,11 +300,23 @@ class Position(google.protobuf.message.Message):
 
     @property
     def average_price(self) -> google.type.decimal_pb2.Decimal:
-        """Средняя цена"""
+        """Средняя цена. Не заполняется для FORTS позиций"""
 
     @property
     def current_price(self) -> google.type.decimal_pb2.Decimal:
         """Текущая цена"""
+
+    @property
+    def maintenance_margin(self) -> google.type.decimal_pb2.Decimal:
+        """Поддерживающее гарантийное обеспечение. Заполняется только для FORTS позиций"""
+
+    @property
+    def daily_pnl(self) -> google.type.decimal_pb2.Decimal:
+        """Прибыль за текущий день. Не заполняется для FORTS позиций"""
+
+    @property
+    def unrealized_pnl(self) -> google.type.decimal_pb2.Decimal:
+        """Нереализованная прибыль текущей позиции"""
 
     def __init__(
         self,
@@ -215,9 +325,12 @@ class Position(google.protobuf.message.Message):
         quantity: google.type.decimal_pb2.Decimal | None = ...,
         average_price: google.type.decimal_pb2.Decimal | None = ...,
         current_price: google.type.decimal_pb2.Decimal | None = ...,
+        maintenance_margin: google.type.decimal_pb2.Decimal | None = ...,
+        daily_pnl: google.type.decimal_pb2.Decimal | None = ...,
+        unrealized_pnl: google.type.decimal_pb2.Decimal | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["average_price", b"average_price", "current_price", b"current_price", "quantity", b"quantity"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["average_price", b"average_price", "current_price", b"current_price", "quantity", b"quantity", "symbol", b"symbol"]) -> None: ...
+    def HasField(self, field_name: typing.Literal["average_price", b"average_price", "current_price", b"current_price", "daily_pnl", b"daily_pnl", "maintenance_margin", b"maintenance_margin", "quantity", b"quantity", "unrealized_pnl", b"unrealized_pnl"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["average_price", b"average_price", "current_price", b"current_price", "daily_pnl", b"daily_pnl", "maintenance_margin", b"maintenance_margin", "quantity", b"quantity", "symbol", b"symbol", "unrealized_pnl", b"unrealized_pnl"]) -> None: ...
 
 global___Position = Position
 
@@ -226,6 +339,65 @@ class Transaction(google.protobuf.message.Message):
     """Информация о транзакции"""
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    class _TransactionCategory:
+        ValueType = typing.NewType("ValueType", builtins.int)
+        V: typing_extensions.TypeAlias = ValueType
+
+    class _TransactionCategoryEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[Transaction._TransactionCategory.ValueType], builtins.type):
+        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+        OTHERS: Transaction._TransactionCategory.ValueType  # 0
+        """Прочее"""
+        DEPOSIT: Transaction._TransactionCategory.ValueType  # 1
+        """Ввод ДС"""
+        WITHDRAW: Transaction._TransactionCategory.ValueType  # 2
+        """Вывод ДС"""
+        INCOME: Transaction._TransactionCategory.ValueType  # 5
+        """Доход"""
+        COMMISSION: Transaction._TransactionCategory.ValueType  # 7
+        """Комиссии"""
+        TAX: Transaction._TransactionCategory.ValueType  # 8
+        """Налог"""
+        INHERITANCE: Transaction._TransactionCategory.ValueType  # 9
+        """Наследство"""
+        TRANSFER: Transaction._TransactionCategory.ValueType  # 11
+        """Перевод ДС"""
+        CONTRACT_TERMINATION: Transaction._TransactionCategory.ValueType  # 12
+        """Расторжение договора"""
+        OUTCOMES: Transaction._TransactionCategory.ValueType  # 13
+        """Расходы"""
+        FINE: Transaction._TransactionCategory.ValueType  # 15
+        """Штраф"""
+        LOAN: Transaction._TransactionCategory.ValueType  # 19
+        """Займ"""
+
+    class TransactionCategory(_TransactionCategory, metaclass=_TransactionCategoryEnumTypeWrapper):
+        """Категории транзакции."""
+
+    OTHERS: Transaction.TransactionCategory.ValueType  # 0
+    """Прочее"""
+    DEPOSIT: Transaction.TransactionCategory.ValueType  # 1
+    """Ввод ДС"""
+    WITHDRAW: Transaction.TransactionCategory.ValueType  # 2
+    """Вывод ДС"""
+    INCOME: Transaction.TransactionCategory.ValueType  # 5
+    """Доход"""
+    COMMISSION: Transaction.TransactionCategory.ValueType  # 7
+    """Комиссии"""
+    TAX: Transaction.TransactionCategory.ValueType  # 8
+    """Налог"""
+    INHERITANCE: Transaction.TransactionCategory.ValueType  # 9
+    """Наследство"""
+    TRANSFER: Transaction.TransactionCategory.ValueType  # 11
+    """Перевод ДС"""
+    CONTRACT_TERMINATION: Transaction.TransactionCategory.ValueType  # 12
+    """Расторжение договора"""
+    OUTCOMES: Transaction.TransactionCategory.ValueType  # 13
+    """Расходы"""
+    FINE: Transaction.TransactionCategory.ValueType  # 15
+    """Штраф"""
+    LOAN: Transaction.TransactionCategory.ValueType  # 19
+    """Займ"""
 
     @typing.final
     class Trade(google.protobuf.message.Message):
@@ -264,12 +436,18 @@ class Transaction(google.protobuf.message.Message):
     SYMBOL_FIELD_NUMBER: builtins.int
     CHANGE_FIELD_NUMBER: builtins.int
     TRADE_FIELD_NUMBER: builtins.int
+    TRANSACTION_CATEGORY_FIELD_NUMBER: builtins.int
+    TRANSACTION_NAME_FIELD_NUMBER: builtins.int
     id: builtins.str
     """Идентификатор транзакции"""
     category: builtins.str
     """Тип транзакции из TransactionCategory"""
     symbol: builtins.str
     """Символ инструмента"""
+    transaction_category: global___Transaction.TransactionCategory.ValueType
+    """Категория транзакции из TransactionCategory."""
+    transaction_name: builtins.str
+    """Наименование транзакции"""
     @property
     def timestamp(self) -> google.protobuf.timestamp_pb2.Timestamp:
         """Метка времени"""
@@ -291,8 +469,10 @@ class Transaction(google.protobuf.message.Message):
         symbol: builtins.str = ...,
         change: google.type.money_pb2.Money | None = ...,
         trade: global___Transaction.Trade | None = ...,
+        transaction_category: global___Transaction.TransactionCategory.ValueType = ...,
+        transaction_name: builtins.str = ...,
     ) -> None: ...
     def HasField(self, field_name: typing.Literal["change", b"change", "timestamp", b"timestamp", "trade", b"trade"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["category", b"category", "change", b"change", "id", b"id", "symbol", b"symbol", "timestamp", b"timestamp", "trade", b"trade"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["category", b"category", "change", b"change", "id", b"id", "symbol", b"symbol", "timestamp", b"timestamp", "trade", b"trade", "transaction_category", b"transaction_category", "transaction_name", b"transaction_name"]) -> None: ...
 
 global___Transaction = Transaction
