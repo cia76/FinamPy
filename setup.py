@@ -13,4 +13,5 @@ setup(name='FinamPy',
             'googleapis-common-protos'  # Google API
       ],
       python_requires='>=3.12',
+      include_package_data=True,
       )
