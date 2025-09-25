@@ -1,7 +1,0 @@
-requests
-pytz
-grpcio
-protobuf
-types-protobuf
-googleapis-common-protos
-pandas

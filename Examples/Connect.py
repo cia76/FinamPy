@@ -3,7 +3,18 @@ from threading import Thread  # Запускаем поток подписки
 from datetime import datetime  # Дата и время
 
 from FinamPy import FinamPy
-from FinamPy.grpc.assets.assets_service_pb2 import AssetsRequest, AssetsResponse  # Справочник всех тикеров
+from FinamPy.grpc.assets.assets_service_pb2 import ClockRequest, ClockResponse  # Время на сервере
+from FinamPy.grpc.marketdata.marketdata_service_pb2 import SubscribeBarsRequest, SubscribeBarsResponse, TIME_FRAME_M1, Bar  # Подписка на минутные бары тикера
+
+
+def on_new_bar(bars: SubscribeBarsResponse):  # Обработчик события прихода нового бара
+    global last_bar, dt_last_bar  # Последний полученный бар и его дата/время
+    for bar in bars.bars:  # Пробегаемся по всем полученным барам
+        dt_bar = datetime.fromtimestamp(bar.timestamp.seconds, fp_provider.tz_msk)  # Дата/время полученного бара
+        if dt_last_bar is not None and dt_last_bar < dt_bar:  # Если время бара стало больше (предыдущий бар закрыт, новый бар открыт)
+            logger.info(f'{dt_last_bar} O:{last_bar.open.value} H:{last_bar.high.value} L:{last_bar.low.value} C:{last_bar.close.value} V:{int(float(last_bar.volume.value))}')
+        last_bar = bar  # Запоминаем бар
+        dt_last_bar = dt_bar  # Запоминаем дату и время бара
 
 
 if __name__ == '__main__':  # Точка входа при запуске этого скрипта
@@ -16,20 +27,22 @@ if __name__ == '__main__':  # Точка входа при запуске это
                         handlers=[logging.FileHandler('Connect.log', encoding='utf-8'), logging.StreamHandler()])  # Лог записываем в файл и выводим на консоль
     logging.Formatter.converter = lambda *args: datetime.now(tz=fp_provider.tz_msk).timetuple()  # В логе время указываем по МСК
 
-    symbol = 'SBER@MISX'  # Символ инструмента
-
     # Проверяем работу запрос/ответ
-    # TODO Ждем от Финама получение времени на сервере
-    logger.info(f'Данные тикера {symbol}')
-    assets: AssetsResponse = fp_provider.call_function(fp_provider.assets_stub.Assets, AssetsRequest())  # Получаем справочник всех тикеров из провайдера
-    si = next((asset for asset in assets.assets if asset.symbol == symbol), None)  # Пытаемся найти тикер в справочнике
-    logger.info(f'Ответ от сервера: {si}' if si else f'Тикер {symbol} не найден')
+    dt_local = datetime.now(fp_provider.tz_msk)  # Текущее время
+    clock: ClockResponse = fp_provider.call_function(fp_provider.assets_stub.Clock, ClockRequest())  # Получаем время на сервере в виде google.protobuf.Timestamp
+    dt_server = datetime.fromtimestamp(clock.timestamp.seconds + clock.timestamp.nanos / 1e9, fp_provider.tz_msk)  # Переводим google.protobuf.Timestamp в datetime
+    td = dt_server - dt_local  # Разница во времени в виде timedelta
+    logger.info(f'Локальное время МСК : {dt_local}')
+    logger.info(f'Время на сервере    : {dt_server}')
+    logger.info(f'Разница во времени  : {td}')
 
     # Проверяем работу подписок
-    # TODO Ждем от Финама подписку на бары
-    logger.info(f'Подписка на стакан тикера: {symbol}')
-    fp_provider.on_order_book = lambda order_book: logger.info(order_book[0])  # Обработчик события прихода подписки на стакан
-    Thread(target=fp_provider.subscribe_order_book_thread, name='OrderBookThread', args=(symbol,)).start()  # Создаем и запускаем поток подписки на стакан тикера
+    symbol = 'SBER@MISX'  # Символ инструмента
+    logger.info(f'Подписка на минутные бары тикера: {symbol} с 5-и часовой историей')
+    last_bar: Bar  # Последнего полученного бара пока нет
+    dt_last_bar = None  # И даты/времени у него пока нет
+    fp_provider.on_new_bar = on_new_bar  # Обработчик события прихода нового бара
+    Thread(target=fp_provider.subscribe_bars_thread, name='BarsThread', args=(symbol, TIME_FRAME_M1)).start()  # Создаем и запускаем поток подписки на новые минутные бары
 
     # Выход
     input('Enter - выход\n')
