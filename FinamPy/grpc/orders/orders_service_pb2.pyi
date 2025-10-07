@@ -259,6 +259,34 @@ ORDER_STATUS_TP_CORR_GUARD_TIME: OrderStatus.ValueType  # 34
 """Коррекция TP в защитное время"""
 global___OrderStatus = OrderStatus
 
+class _ValidBefore:
+    ValueType = typing.NewType("ValueType", builtins.int)
+    V: typing_extensions.TypeAlias = ValueType
+
+class _ValidBeforeEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_ValidBefore.ValueType], builtins.type):
+    DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+    VALID_BEFORE_UNSPECIFIED: _ValidBefore.ValueType  # 0
+    """Значение не указано"""
+    VALID_BEFORE_END_OF_DAY: _ValidBefore.ValueType  # 1
+    """До конца торгового дня"""
+    VALID_BEFORE_GOOD_TILL_CANCEL: _ValidBefore.ValueType  # 2
+    """До отмены"""
+    VALID_BEFORE_GOOD_TILL_DATE: _ValidBefore.ValueType  # 3
+    """До указанной даты-времени. Данный тип на текущий момент не поддерживается при выставлении заявки"""
+
+class ValidBefore(_ValidBefore, metaclass=_ValidBeforeEnumTypeWrapper):
+    """Срок действия условной заявки"""
+
+VALID_BEFORE_UNSPECIFIED: ValidBefore.ValueType  # 0
+"""Значение не указано"""
+VALID_BEFORE_END_OF_DAY: ValidBefore.ValueType  # 1
+"""До конца торгового дня"""
+VALID_BEFORE_GOOD_TILL_CANCEL: ValidBefore.ValueType  # 2
+"""До отмены"""
+VALID_BEFORE_GOOD_TILL_DATE: ValidBefore.ValueType  # 3
+"""До указанной даты-времени. Данный тип на текущий момент не поддерживается при выставлении заявки"""
+global___ValidBefore = ValidBefore
+
 @typing.final
 class OrderTradeRequest(google.protobuf.message.Message):
     """Запрос подписки на собственные заявки и сделки. Стрим"""
@@ -392,6 +420,7 @@ class Order(google.protobuf.message.Message):
     STOP_CONDITION_FIELD_NUMBER: builtins.int
     LEGS_FIELD_NUMBER: builtins.int
     CLIENT_ORDER_ID_FIELD_NUMBER: builtins.int
+    VALID_BEFORE_FIELD_NUMBER: builtins.int
     account_id: builtins.str
     """Идентификатор аккаунта"""
     symbol: builtins.str
@@ -406,6 +435,8 @@ class Order(google.protobuf.message.Message):
     """Необходимо для стоп рыночной и стоп лимитной заявки"""
     client_order_id: builtins.str
     """Уникальный идентификатор заявки. Автоматически генерируется, если не отправлен. (максимум 20 символов)"""
+    valid_before: global___ValidBefore.ValueType
+    """Срок действия условной заявки. Заполняется для заявок с типом ORDER_TYPE_STOP, ORDER_TYPE_STOP_LIMIT"""
     @property
     def quantity(self) -> google.type.decimal_pb2.Decimal:
         """Количество в шт."""
@@ -436,9 +467,10 @@ class Order(google.protobuf.message.Message):
         stop_condition: global___StopCondition.ValueType = ...,
         legs: collections.abc.Iterable[global___Leg] | None = ...,
         client_order_id: builtins.str = ...,
+        valid_before: global___ValidBefore.ValueType = ...,
     ) -> None: ...
     def HasField(self, field_name: typing.Literal["limit_price", b"limit_price", "quantity", b"quantity", "stop_price", b"stop_price"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["account_id", b"account_id", "client_order_id", b"client_order_id", "legs", b"legs", "limit_price", b"limit_price", "quantity", b"quantity", "side", b"side", "stop_condition", b"stop_condition", "stop_price", b"stop_price", "symbol", b"symbol", "time_in_force", b"time_in_force", "type", b"type"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["account_id", b"account_id", "client_order_id", b"client_order_id", "legs", b"legs", "limit_price", b"limit_price", "quantity", b"quantity", "side", b"side", "stop_condition", b"stop_condition", "stop_price", b"stop_price", "symbol", b"symbol", "time_in_force", b"time_in_force", "type", b"type", "valid_before", b"valid_before"]) -> None: ...
 
 global___Order = Order
 

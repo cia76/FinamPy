@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='FinamPy',
-      version='2.7.0',
+      version='2.8.0',
       author='Чечет Игорь Александрович',
       description='Библиотека-обертка, которая позволяет работать с Finam Trade API брокера Финам из Python',
       url='https://github.com/cia76/FinamPy',

@@ -1,5 +1,5 @@
 # FinamPy
-Библиотека-обертка, которая позволяет работать с [Finam Trade API](https://tradeapi.finam.ru) версии [2.7.0](https://tradeapi.finam.ru/docs/versions/#версия-270-27082025) брокера [Финам](https://www.finam.ru/) из Python.
+Библиотека-обертка, которая позволяет работать с [Finam Trade API](https://tradeapi.finam.ru) версии [2.8.0 (25.09.2025)](https://tradeapi.finam.ru/docs/versions/#версия-280-25092025) брокера [Финам](https://www.finam.ru/) из Python.
 
 ### Что такое библиотека-обертка?
 Компактная библиотека, содержащая только самый необходимый код для работы с API брокера из Python:

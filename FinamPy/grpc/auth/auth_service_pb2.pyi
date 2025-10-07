@@ -84,6 +84,9 @@ class TokenDetailsResponse(google.protobuf.message.Message):
     EXPIRES_AT_FIELD_NUMBER: builtins.int
     MD_PERMISSIONS_FIELD_NUMBER: builtins.int
     ACCOUNT_IDS_FIELD_NUMBER: builtins.int
+    READONLY_FIELD_NUMBER: builtins.int
+    readonly: builtins.bool
+    """Сессия и торговые счета в токене будут помечены readonly"""
     @property
     def created_at(self) -> google.protobuf.timestamp_pb2.Timestamp:
         """Дата и время создания"""
@@ -107,9 +110,10 @@ class TokenDetailsResponse(google.protobuf.message.Message):
         expires_at: google.protobuf.timestamp_pb2.Timestamp | None = ...,
         md_permissions: collections.abc.Iterable[global___MDPermission] | None = ...,
         account_ids: collections.abc.Iterable[builtins.str] | None = ...,
+        readonly: builtins.bool = ...,
     ) -> None: ...
     def HasField(self, field_name: typing.Literal["created_at", b"created_at", "expires_at", b"expires_at"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["account_ids", b"account_ids", "created_at", b"created_at", "expires_at", b"expires_at", "md_permissions", b"md_permissions"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["account_ids", b"account_ids", "created_at", b"created_at", "expires_at", b"expires_at", "md_permissions", b"md_permissions", "readonly", b"readonly"]) -> None: ...
 
 global___TokenDetailsResponse = TokenDetailsResponse
 
@@ -187,3 +191,39 @@ class MDPermission(google.protobuf.message.Message):
     def WhichOneof(self, oneof_group: typing.Literal["condition", b"condition"]) -> typing.Literal["mic", "country", "continent", "worldwide"] | None: ...
 
 global___MDPermission = MDPermission
+
+@typing.final
+class SubscribeJwtRenewalRequest(google.protobuf.message.Message):
+    """Запрос подписки на обновление JWT токена"""
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    SECRET_FIELD_NUMBER: builtins.int
+    secret: builtins.str
+    """API токен (secret key)"""
+    def __init__(
+        self,
+        *,
+        secret: builtins.str = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["secret", b"secret"]) -> None: ...
+
+global___SubscribeJwtRenewalRequest = SubscribeJwtRenewalRequest
+
+@typing.final
+class SubscribeJwtRenewalResponse(google.protobuf.message.Message):
+    """Обновленный токен. Стрим"""
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    TOKEN_FIELD_NUMBER: builtins.int
+    token: builtins.str
+    """Полученный JWT-токен"""
+    def __init__(
+        self,
+        *,
+        token: builtins.str = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["token", b"token"]) -> None: ...
+
+global___SubscribeJwtRenewalResponse = SubscribeJwtRenewalResponse

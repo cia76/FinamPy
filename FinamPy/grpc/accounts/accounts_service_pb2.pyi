@@ -81,11 +81,17 @@ class GetAccountResponse(google.protobuf.message.Message):
         """Сумма собственных денежных средств на счете, доступная для торговли. Не включает маржинальные средства."""
 
     @property
-    def portfolio_mc(self) -> global___MC: ...
+    def portfolio_mc(self) -> global___MC:
+        """Общий тип для счетов Московской Биржи. Включает в себя как единые, так и моно счета."""
+
     @property
-    def portfolio_mct(self) -> global___MCT: ...
+    def portfolio_mct(self) -> global___MCT:
+        """Тип портфеля для счетов на американских рынках."""
+
     @property
-    def portfolio_forts(self) -> global___FORTS: ...
+    def portfolio_forts(self) -> global___FORTS:
+        """Тип портфеля для торговли на срочном рынке Московской Биржи."""
+
     def __init__(
         self,
         *,
@@ -108,11 +114,10 @@ global___GetAccountResponse = GetAccountResponse
 
 @typing.final
 class MC(google.protobuf.message.Message):
-    """
-    Общий тип для счетов Московской Биржи. Включает в себя как единые, так и специализированные (моно) счета для разных секций биржи.
-    - Единый торговый счет (ЕТС): Позволяет торговать на нескольких рынках (фондовый, валютный. срочный, spb, иностранные бумаги, иностранные фьючерсы) с единой денежной позиции.
-    - Моно-счет фондового рынка MOEX: Изолированный счет для торговли акциями, облигациями и паями.
-    - Моно-счет валютного рынка MOEX: Изолированный счет для операций с валютными парами (например, CNYRUB_TOM).
+    """Общий тип для счетов Московской Биржи. Включает в себя как единые, так и специализированные (моно) счета для разных секций биржи.
+    Единый торговый счет (ЕТС): Позволяет торговать на нескольких рынках (фондовый, валютный. срочный, spb, иностранные бумаги, иностранные фьючерсы) с единой денежной позиции.
+    Моно-счет фондового рынка MOEX: Изолированный счет для торговли акциями, облигациями и паями.
+    Моно-счет валютного рынка MOEX: Изолированный счет для операций с валютными парами (например, CNYRUB_TOM).
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -125,9 +130,13 @@ class MC(google.protobuf.message.Message):
         """Сумма собственных денежных средств на счете, доступная для торговли. Включает маржинальные средства."""
 
     @property
-    def initial_margin(self) -> google.type.decimal_pb2.Decimal: ...
+    def initial_margin(self) -> google.type.decimal_pb2.Decimal:
+        """Начальная маржа"""
+
     @property
-    def maintenance_margin(self) -> google.type.decimal_pb2.Decimal: ...
+    def maintenance_margin(self) -> google.type.decimal_pb2.Decimal:
+        """Минимальная маржа"""
+
     def __init__(
         self,
         *,
@@ -169,7 +178,9 @@ class FORTS(google.protobuf.message.Message):
         """Сумма собственных денежных средств на счете, доступная для торговли. Включает маржинальные средства."""
 
     @property
-    def money_reserved(self) -> google.type.decimal_pb2.Decimal: ...
+    def money_reserved(self) -> google.type.decimal_pb2.Decimal:
+        """Минимальная маржа (необходимая сумма обеспечения под открытые позици)"""
+
     def __init__(
         self,
         *,
@@ -312,11 +323,11 @@ class Position(google.protobuf.message.Message):
 
     @property
     def daily_pnl(self) -> google.type.decimal_pb2.Decimal:
-        """Прибыль за текущий день. Не заполняется для FORTS позиций"""
+        """Прибыль или убыток за текущий день (PnL). Не заполняется для FORTS позиций"""
 
     @property
     def unrealized_pnl(self) -> google.type.decimal_pb2.Decimal:
-        """Нереализованная прибыль текущей позиции"""
+        """Суммарная нереализованная прибыль или убыток (PnL) текущей позиции"""
 
     def __init__(
         self,
@@ -355,7 +366,7 @@ class Transaction(google.protobuf.message.Message):
         INCOME: Transaction._TransactionCategory.ValueType  # 5
         """Доход"""
         COMMISSION: Transaction._TransactionCategory.ValueType  # 7
-        """Комиссии"""
+        """Комиссия"""
         TAX: Transaction._TransactionCategory.ValueType  # 8
         """Налог"""
         INHERITANCE: Transaction._TransactionCategory.ValueType  # 9
@@ -383,7 +394,7 @@ class Transaction(google.protobuf.message.Message):
     INCOME: Transaction.TransactionCategory.ValueType  # 5
     """Доход"""
     COMMISSION: Transaction.TransactionCategory.ValueType  # 7
-    """Комиссии"""
+    """Комиссия"""
     TAX: Transaction.TransactionCategory.ValueType  # 8
     """Налог"""
     INHERITANCE: Transaction.TransactionCategory.ValueType  # 9

@@ -210,6 +210,8 @@ class GetAssetParamsResponse(google.protobuf.message.Message):
     LONG_COLLATERAL_FIELD_NUMBER: builtins.int
     SHORT_RISK_RATE_FIELD_NUMBER: builtins.int
     SHORT_COLLATERAL_FIELD_NUMBER: builtins.int
+    LONG_INITIAL_MARGIN_FIELD_NUMBER: builtins.int
+    SHORT_INITIAL_MARGIN_FIELD_NUMBER: builtins.int
     symbol: builtins.str
     """Символ инструмента"""
     account_id: builtins.str
@@ -240,6 +242,14 @@ class GetAssetParamsResponse(google.protobuf.message.Message):
     def short_collateral(self) -> google.type.money_pb2.Money:
         """Сумма обеспечения для поддержания позиции Шорт"""
 
+    @property
+    def long_initial_margin(self) -> google.type.money_pb2.Money:
+        """Начальные требования, сколько на счету должно быть свободных денежных средств, чтобы открыть лонг позицию, для FORTS счетов равен биржевому ГО"""
+
+    @property
+    def short_initial_margin(self) -> google.type.money_pb2.Money:
+        """Начальные требования, сколько на счету должно быть свободных денежных средств, чтобы открыть шорт позицию, для FORTS счетов равен биржевому ГО"""
+
     def __init__(
         self,
         *,
@@ -252,9 +262,11 @@ class GetAssetParamsResponse(google.protobuf.message.Message):
         long_collateral: google.type.money_pb2.Money | None = ...,
         short_risk_rate: google.type.decimal_pb2.Decimal | None = ...,
         short_collateral: google.type.money_pb2.Money | None = ...,
+        long_initial_margin: google.type.money_pb2.Money | None = ...,
+        short_initial_margin: google.type.money_pb2.Money | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["long_collateral", b"long_collateral", "long_risk_rate", b"long_risk_rate", "longable", b"longable", "short_collateral", b"short_collateral", "short_risk_rate", b"short_risk_rate", "shortable", b"shortable"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["account_id", b"account_id", "long_collateral", b"long_collateral", "long_risk_rate", b"long_risk_rate", "longable", b"longable", "short_collateral", b"short_collateral", "short_risk_rate", b"short_risk_rate", "shortable", b"shortable", "symbol", b"symbol", "tradeable", b"tradeable"]) -> None: ...
+    def HasField(self, field_name: typing.Literal["long_collateral", b"long_collateral", "long_initial_margin", b"long_initial_margin", "long_risk_rate", b"long_risk_rate", "longable", b"longable", "short_collateral", b"short_collateral", "short_initial_margin", b"short_initial_margin", "short_risk_rate", b"short_risk_rate", "shortable", b"shortable"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["account_id", b"account_id", "long_collateral", b"long_collateral", "long_initial_margin", b"long_initial_margin", "long_risk_rate", b"long_risk_rate", "longable", b"longable", "short_collateral", b"short_collateral", "short_initial_margin", b"short_initial_margin", "short_risk_rate", b"short_risk_rate", "shortable", b"shortable", "symbol", b"symbol", "tradeable", b"tradeable"]) -> None: ...
 
 global___GetAssetParamsResponse = GetAssetParamsResponse
 
