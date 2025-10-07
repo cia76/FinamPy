@@ -10,7 +10,8 @@ setup(name='FinamPy',
             'pytz',  # ВременнЫе зоны
             'grpcio',  # gRPC
             'protobuf',  # proto
-            'googleapis-common-protos'  # Google API
+            'googleapis-common-protos',  # Google API
+            'types-protobuf',  # Timestamp
       ],
       python_requires='>=3.12',
       package_data={'FinamPy': ['grpc/**/*']},  # Дополнительно копируем скрипты из папки grpc и вложенных в нее папок
