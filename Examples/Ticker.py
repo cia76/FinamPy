@@ -2,7 +2,7 @@ import logging  # Выводим лог на консоль и в файл
 from datetime import datetime  # Дата и время
 
 from FinamPy import FinamPy
-from FinamPy.grpc.assets.assets_service_pb2 import AssetsRequest, AssetsResponse  # Справочник всех тикеров
+from FinamPy.grpc.assets.assets_service_pb2 import GetAssetRequest, GetAssetResponse  # Информация по тикеру
 
 
 if __name__ == '__main__':  # Точка входа при запуске этого скрипта
@@ -15,15 +15,13 @@ if __name__ == '__main__':  # Точка входа при запуске это
                         handlers=[logging.FileHandler('Ticker.log', encoding='utf-8'), logging.StreamHandler()])  # Лог записываем в файл и выводим на консоль
     logging.Formatter.converter = lambda *args: datetime.now(tz=fp_provider.tz_msk).timetuple()  # В логе время указываем по МСК
 
-    symbols = ('SBER@MISX', 'VTBR@MISX', 'SIM5@RTSX', 'RIM5@RTSX', 'USDRUBF@RTSX', 'CNYRUBF@RTSX')  # Кортеж тикеров
+    symbols = ('SBER@MISX', 'VTBR@MISX', 'SIZ5@RTSX', 'RIZ5@RTSX', 'USDRUBF@RTSX', 'CNYRUBF@RTSX')  # Кортеж тикеров формата ticker@mic
 
-    assets: AssetsResponse = fp_provider.call_function(fp_provider.assets_stub.Assets, AssetsRequest())  # Получаем справочник всех тикеров из провайдера
     for symbol in symbols:  # Пробегаемся по всем тикерам
-        si = next((asset for asset in assets.assets if asset.symbol == symbol), None)  # Пытаемся найти тикер в справочнике
-        if not si:  # Если тикер не найден
-            logger.warning(f'Тикер {symbol} не найден')
-            continue  # то переходим к следующему тикеру, дальше не продолжаем
+        si: GetAssetResponse = fp_provider.call_function(fp_provider.assets_stub.GetAsset, GetAssetRequest(symbol=symbol, account_id=fp_provider.account_ids[0]))
         logger.info(f'Ответ от сервера: {si}')
-        logger.info(f'Информация о тикере {si.symbol} ({si.name}, {si.type})')
-        # TODO Ждем от Финама Лот, Кол-во десятичных знаков, Шаг цены
+        logger.info(f'Информация о тикере {si.board}.{si.ticker} ({si.name}, {si.type}) на бирже {si.mic}')
+        logger.info(f'- Лот: {si.lot_size.value}')
+        logger.info(f'- Шаг цены: {si.min_step}')
+        logger.info(f'- Кол-во десятичных знаков: {si.decimals}')
     fp_provider.close_channel()  # Закрываем канал перед выходом
