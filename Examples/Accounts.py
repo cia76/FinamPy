@@ -2,7 +2,7 @@ import logging  # Выводим лог на консоль и в файл
 from datetime import datetime  # Дата и время
 
 from FinamPy import FinamPy
-from FinamPy.grpc.assets.assets_service_pb2 import AssetsRequest, AssetsResponse  # Справочник всех тикеров
+from FinamPy.grpc.assets.assets_service_pb2 import GetAssetRequest, GetAssetResponse  # Информация по тикеру
 from FinamPy.grpc.accounts.accounts_service_pb2 import GetAccountRequest, GetAccountResponse  # Счет
 from FinamPy.grpc.orders.orders_service_pb2 import OrdersRequest, OrdersResponse, ORDER_STATUS_NEW, ORDER_TYPE_LIMIT  # Заявки
 from FinamPy.grpc.side_pb2 import SIDE_BUY  # Направление заявки
@@ -18,17 +18,13 @@ if __name__ == '__main__':  # Точка входа при запуске это
                         handlers=[logging.FileHandler('Accounts.log', encoding='utf-8'), logging.StreamHandler()])  # Лог записываем в файл и выводим на консоль
     logging.Formatter.converter = lambda *args: datetime.now(tz=fp_provider.tz_msk).timetuple()  # В логе время указываем по МСК
 
-    assets: AssetsResponse = fp_provider.call_function(fp_provider.assets_stub.Assets, AssetsRequest())  # Получаем справочник всех тикеров из провайдера
     for account_id in fp_provider.account_ids:  # Пробегаемся по всем счетам
         logger.info(f'Номер счета {account_id}')
         account: GetAccountResponse = fp_provider.call_function(fp_provider.accounts_stub.GetAccount, GetAccountRequest(account_id=account_id))  # Получаем счет
 
         for position in account.positions:  # Пробегаемся по всем позициям
-            asset = next((asset for asset in assets.assets if asset.symbol == position.symbol), None)  # Пытаемся найти тикер в справочнике
-            if not asset:  # Если тикер не найден
-                logger.warning(f'Тикер {position.symbol} не найден')
-                continue  # то переходим к следующей позиции, дальше не продолжаем
-            logger.info(f'- Позиция {position.symbol} ({asset.name}) {int(float(position.quantity.value))} @ {float(position.average_price.value)} / {float(position.current_price.value)}')
+            si: GetAssetResponse = fp_provider.call_function(fp_provider.assets_stub.GetAsset, GetAssetRequest(symbol=position.symbol, account_id=fp_provider.account_ids[0]))
+            logger.info(f'- Позиция {position.symbol} ({si.name}) {int(float(position.quantity.value))} @ {float(position.average_price.value)} / {float(position.current_price.value)}')
 
         logger.info('- Свободные средства:')
         for cash in account.cash:
