@@ -13,7 +13,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
 
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',  # Формат сообщения
                         datefmt='%d.%m.%Y %H:%M:%S',  # Формат даты
-                        level=logging.DEBUG,  # Уровень логируемых событий NOTSET/DEBUG/INFO/WARNING/ERROR/CRITICAL
+                        level=logging.INFO,  # Уровень логируемых событий NOTSET/DEBUG/INFO/WARNING/ERROR/CRITICAL
                         handlers=[logging.FileHandler('Bars.log', encoding='utf-8'), logging.StreamHandler()])  # Лог записываем в файл и выводим на консоль
     logging.Formatter.converter = lambda *args: datetime.now(tz=fp_provider.tz_msk).timetuple()  # В логе время указываем по МСК
 
@@ -48,8 +48,11 @@ if __name__ == '__main__':  # Точка входа при запуске это
         if len(bars_response.bars) == 0:  # Если за период бар нет
             logger.info('Бары не получены')
         else:
-            logger.info(f'Первый бар    : {bars_response.bars[0]}')
-            logger.info(f'Последний бар : {bars_response.bars[-1]}')
             logger.info(f'Получено бар  : {len(bars_response.bars)}')
+            for bar in bars_response.bars:
+                dt_bar = datetime.fromtimestamp(bar.timestamp.seconds, fp_provider.tz_msk)  # Дата/время полученного бара
+                if timeframe in (TimeFrame.TIME_FRAME_D, TimeFrame.TIME_FRAME_W, TimeFrame.TIME_FRAME_MN, TimeFrame.TIME_FRAME_QR):  # Для дневных временнЫх интервалов и выше
+                    dt_bar = dt_bar.date()  # убираем время, оставляем только дату
+                logger.info(f'{dt_bar} O:{bar.open.value} H:{bar.high.value} L:{bar.low.value} C:{bar.close.value} V:{int(float(bar.volume.value))}')
         start_date = end_date  # Дату начала переносим на дату окончания
     fp_provider.close_channel()  # Закрываем канал перед выходом
