@@ -107,7 +107,8 @@ class FinamPy:
                 # noinspection PyProtectedMember
                 func_name = func._method.decode('utf-8')  # Название функции
                 details = ex.args[0].details  # Сообщение об ошибке
-                self.logger.error(f'Ошибка {details} при вызове функции {func_name} с параметрами {request}')
+                if 'GetAsset' not in func_name:  # При переводе канонического названия тикера в вид Финама приходится подбирать биржу. Поэтому, ошибки ф-ии GetAsset игнорируем
+                    self.logger.error(f'Ошибка {details} при вызове функции {func_name} с параметрами {request}')
                 return None  # Возвращаем пустое значение
 
     # Подписки
