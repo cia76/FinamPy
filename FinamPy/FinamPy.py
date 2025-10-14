@@ -9,6 +9,7 @@ from grpc import ssl_channel_credentials, secure_channel, RpcError  # Защищ
 
 # Структуры
 from .grpc.auth import auth_service_pb2 as auth_service  # Подключение https://tradeapi.finam.ru/docs/guides/grpc/auth_service
+from .grpc.assets.assets_service_pb2 import ExchangesRequest, ExchangesResponse, AssetsRequest, AssetsResponse, GetAssetResponse, GetAssetRequest  # Информация о биржах и тикерах
 from .grpc.marketdata import marketdata_service_pb2 as marketdata_service  # Рыночные данные https://tradeapi.finam.ru/docs/guides/grpc/marketdata_service/
 from .grpc.orders import orders_service_pb2 as orders_service  # Заявки https://tradeapi.finam.ru/docs/guides/grpc/orders_service/
 from .grpc import trade_pb2 as trade  # Информация о сделке
@@ -68,6 +69,9 @@ class FinamPy:
         self.jwt_token_issued = 0  # UNIX время в секундах выдачи токена JWT
         self.auth()  # Получаем токен JWT
         self.account_ids = list(self.token_details().account_ids)  # Из инфрмации о токене получаем список счетов
+
+        self.exchanges: ExchangesResponse = self.call_function(self.assets_stub.Exchanges, ExchangesRequest())  # Список всех бирж
+        self.assets: AssetsResponse = self.call_function(self.assets_stub.Assets, AssetsRequest())  # Список всех доступных инструментов
 
     # Подключение
 
@@ -184,3 +188,72 @@ class FinamPy:
     def close_channel(self):
         """Закрытие канала"""
         self.channel.close()  # Закрываем канал
+
+    # Функции конвертации
+
+    @staticmethod
+    def finam_board_to_board(finam_board):
+        """Канонический код режима торгов из кода режима торгов Финама
+
+        :param str finam_board: Код режима торгов Финама
+        :return: Канонический код режима торгов
+        """
+        if finam_board == 'FUT':  # Для фьючерсов
+            return 'SPBFUT'
+        if finam_board == 'OPT':  # Для опционов
+            return 'SPBOPT'
+        return finam_board
+
+    @staticmethod
+    def board_to_finam_board(board):
+        """Код режима торгов Финама из канонического кода режима торгов
+
+        :param str board: Канонический код режима торгов
+        :return: Код режима торгов Финама
+        """
+        if board == 'SPBFUT':  # Для фьючерсов
+            return 'FUT'
+        if board == 'SPBOPT':  # Для опционов
+            return 'OPT'
+        return board
+
+    def dataname_to_finam_board_ticker(self, dataname) -> tuple[str | None, str]:
+        """Код режима торгов Финама и тикер из названия тикера
+
+        :param str dataname: Название тикера
+        :return: Код режима торгов и тикер
+        """
+        symbol_parts = dataname.split('.')  # По разделителю пытаемся разбить тикер на части
+        if len(symbol_parts) >= 2:  # Если тикер задан в формате <Код режима торгов>.<Код тикера>
+            finam_board = symbol_parts[0]  # Код режима торгов
+            ticker = '.'.join(symbol_parts[1:])  # Код тикера
+        else:  # Если тикер задан без кода режима торгов
+            ticker = dataname  # Код тикера
+            mic = next((asset.mic for asset in self.assets.assets if asset.ticker == ticker), None)  # Биржа тикера из справочника
+            if mic is None:  # Если биржа не найдена
+                return None, ticker  # то возвращаем без кода режима торгов
+            si: GetAssetResponse = self.call_function(self.assets_stub.GetAsset, GetAssetRequest(symbol=f'{ticker}@{mic}', account_id=self.account_ids[0]))
+            finam_board = si.board  # Код режима торгов
+        return finam_board, ticker
+
+    def finam_board_ticker_to_dataname(self, finam_board, ticker) -> str:
+        """Название тикера из кода режима торгов Финама и тикера
+
+        :param str finam_board: Код режима торгов Финама
+        :param str ticker: Тикер
+        :return: Название тикера
+        """
+        return f'{self.finam_board_to_board(finam_board)}.{ticker}'
+
+    def get_mic(self, finam_board, ticker):
+        """Биржа тикера из кода режима торгов Финама и тикера
+
+        :param str finam_board: Код режима торгов
+        :param str ticker: Тикер
+        :return: Код биржи
+        """
+        for exchange in self.exchanges.exchanges:  # Пробегаемся по всем биржам
+            si: GetAssetResponse = self.call_function(self.assets_stub.GetAsset, GetAssetRequest(symbol=f'{ticker}@{exchange.mic}', account_id=self.account_ids[0]))
+            if si and si.board == finam_board:  # Если информация о тикере найдена, и режим торгов есть на бирже
+                return exchange.mic  # то биржа найдена
+        return None  # Если биржа не была найдена, то возвращаем пустое значение
