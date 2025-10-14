@@ -226,7 +226,7 @@ class FinamPy:
         """
         symbol_parts = dataname.split('.')  # По разделителю пытаемся разбить тикер на части
         if len(symbol_parts) >= 2:  # Если тикер задан в формате <Код режима торгов>.<Код тикера>
-            finam_board = symbol_parts[0]  # Код режима торгов
+            finam_board = self.finam_board_to_board(symbol_parts[0])  # Код режима торгов
             ticker = '.'.join(symbol_parts[1:])  # Код тикера
         else:  # Если тикер задан без кода режима торгов
             ticker = dataname  # Код тикера
