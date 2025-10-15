@@ -247,11 +247,11 @@ class FinamPy:
         return f'{self.finam_board_to_board(finam_board)}.{ticker}'
 
     def get_mic(self, finam_board, ticker):
-        """Биржа тикера из кода режима торгов Финама и тикера
+        """Биржа тикера по ISO 10383 Market Identifier Codes из кода режима торгов Финама и тикера
 
         :param str finam_board: Код режима торгов
         :param str ticker: Тикер
-        :return: Код биржи
+        :return: Код биржи. MISX - МосБиржа - все основные рынки, RTSX - МосБиржа - рынок деривативов
         """
         for exchange in self.exchanges.exchanges:  # Пробегаемся по всем биржам
             si: GetAssetResponse = self.call_function(self.assets_stub.GetAsset, GetAssetRequest(symbol=f'{ticker}@{exchange.mic}', account_id=self.account_ids[0]))
