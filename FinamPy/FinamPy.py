@@ -251,10 +251,19 @@ class FinamPy:
 
         :param str finam_board: Код режима торгов
         :param str ticker: Тикер
-        :return: Код биржи. MISX - МосБиржа - все основные рынки, RTSX - МосБиржа - рынок деривативов
+        :return: Код биржи по ISO 10383 Market Identifier Codes. MISX - МосБиржа - все основные рынки, RTSX - МосБиржа - рынок деривативов
         """
         for exchange in self.exchanges.exchanges:  # Пробегаемся по всем биржам
-            si: GetAssetResponse = self.call_function(self.assets_stub.GetAsset, GetAssetRequest(symbol=f'{ticker}@{exchange.mic}', account_id=self.account_ids[0]))
+            si = self.get_symbol_info(ticker, exchange.mic)
             if si and si.board == finam_board:  # Если информация о тикере найдена, и режим торгов есть на бирже
                 return exchange.mic  # то биржа найдена
         return None  # Если биржа не была найдена, то возвращаем пустое значение
+
+    def get_symbol_info(self, ticker: str, mic: str) -> GetAssetResponse:
+        """Спецификация тикера
+
+        :param str ticker: Тикер
+        :param str mic: Код биржи по ISO 10383 Market Identifier Codes. MISX - МосБиржа - все основные рынки, RTSX - МосБиржа - рынок деривативов
+        :return: Спецификация тикера или None, если тикер не найден
+        """
+        return self.call_function(self.assets_stub.GetAsset, GetAssetRequest(symbol=f'{ticker}@{mic}', account_id=self.account_ids[0]))
