@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging  # Будем вести лог
 import os
 import pickle  # Хранение торгового токена
@@ -267,3 +267,73 @@ class FinamPy:
         :return: Спецификация тикера или None, если тикер не найден
         """
         return self.call_function(self.assets_stub.GetAsset, GetAssetRequest(symbol=f'{ticker}@{mic}', account_id=self.account_ids[0]))
+
+    @staticmethod
+    def timeframe_to_finam_timeframe(tf) -> tuple[marketdata_service.TimeFrame.ValueType, timedelta, bool]:
+        """Перевод временнОго интервала во временной интервал Финама
+
+        :param str tf: Временной интервал https://ru.wikipedia.org/wiki/Таймфрейм
+        :return: Временной интервал Финама, максимальный размер запроса в днях, внутридневной бар
+        """
+        if 'MN3' in tf:  # 1 квартал
+            return marketdata_service.TimeFrame.TIME_FRAME_QR, timedelta(days=365*5), False
+        if 'MN' in tf:  # 1 месяц
+            return marketdata_service.TimeFrame.TIME_FRAME_MN, timedelta(days=365*5), False
+        if tf[0:1] == 'W':  # 1 неделя
+            return marketdata_service.TimeFrame.TIME_FRAME_W, timedelta(days=365*5), False
+        if tf[0:1] == 'D':  # 1 день
+            return marketdata_service.TimeFrame.TIME_FRAME_D, timedelta(days=365), False
+        if tf[0:1] == 'M':  # Минуты
+            if not tf[1:].isdigit():  # Если после минут не стоит число
+                raise NotImplementedError  # то с такими временнЫми интервалами не работаем
+            interval = int(tf[1:])  # Временной интервал
+            if interval == 480:  # 8 часов
+                return marketdata_service.TimeFrame.TIME_FRAME_H8, timedelta(days=30), True
+            if interval == 240:  # 4 часа
+                return marketdata_service.TimeFrame.TIME_FRAME_H4, timedelta(days=30), True
+            if interval == 120:  # 2 часа
+                return marketdata_service.TimeFrame.TIME_FRAME_H2, timedelta(days=30), True
+            if interval == 60:  # 1 час
+                return marketdata_service.TimeFrame.TIME_FRAME_H1, timedelta(days=30), True
+            if interval == 30:  # 30 минут
+                return marketdata_service.TimeFrame.TIME_FRAME_M30, timedelta(days=30), True
+            if interval == 15:  # 15 минут
+                return marketdata_service.TimeFrame.TIME_FRAME_M15, timedelta(days=30), True
+            if interval == 5:  # 5 минут
+                return marketdata_service.TimeFrame.TIME_FRAME_M5, timedelta(days=30), True
+            if interval == 1:  # 1 минута
+                return marketdata_service.TimeFrame.TIME_FRAME_M1, timedelta(days=7), True
+        raise NotImplementedError  # С остальными временнЫми интервалами не работаем
+
+    @staticmethod
+    def finam_timeframe_to_timeframe(tf) -> tuple[str, timedelta, bool]:
+        """Перевод временнОго интервала Финама во временной интервал
+
+        :param marketdata_service.TimeFrame.ValueType tf: Временной интервал Финама
+        :return: Временной интервал https://ru.wikipedia.org/wiki/Таймфрейм, максимальный размер запроса в днях, внутридневной бар
+        """
+        if tf == marketdata_service.TimeFrame.TIME_FRAME_M1:  # 1 минута
+            return 'M1', timedelta(days=7), True
+        if tf == marketdata_service.TimeFrame.TIME_FRAME_M5:  # 5 минут
+            return 'M5', timedelta(days=30), True
+        if tf == marketdata_service.TimeFrame.TIME_FRAME_M15:  # 15 минут
+            return 'M15', timedelta(days=30), True
+        if tf == marketdata_service.TimeFrame.TIME_FRAME_M30:  # 30 минут
+            return 'M30', timedelta(days=30), True
+        if tf == marketdata_service.TimeFrame.TIME_FRAME_H1:  # 1 час
+            return 'M60', timedelta(days=30), True
+        if tf == marketdata_service.TimeFrame.TIME_FRAME_H2:  # 2 часа
+            return 'M120', timedelta(days=30), True
+        if tf == marketdata_service.TimeFrame.TIME_FRAME_H4:  # 4 часа
+            return 'M240', timedelta(days=30), True
+        if tf == marketdata_service.TimeFrame.TIME_FRAME_H8:  # 8 часов
+            return 'M480', timedelta(days=30), True
+        if tf == marketdata_service.TimeFrame.TIME_FRAME_D:  # 1 день
+            return 'D1', timedelta(days=365), False
+        if tf == marketdata_service.TimeFrame.TIME_FRAME_W:  # 1 неделя
+            return 'W1', timedelta(days=365 * 5), False
+        if tf == marketdata_service.TimeFrame.TIME_FRAME_MN:  # 1 месяц
+            return 'MN1', timedelta(days=365 * 5), False
+        if tf == marketdata_service.TimeFrame.TIME_FRAME_QR:  # 1 квартал
+            return 'MN3', timedelta(days=365 * 5), False
+        raise NotImplementedError  # С остальными временнЫми интервалами не работаем
