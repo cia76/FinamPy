@@ -22,16 +22,16 @@ if __name__ == '__main__':  # Точка входа при запуске это
 
     finam_board, ticker = fp_provider.dataname_to_finam_board_ticker(dataname)  # Код режима торгов Финама и тикер
     mic = fp_provider.get_mic(finam_board, ticker)  # Код биржи по ISO 10383
-    finam_tf = fp_provider.timeframe_to_finam_timeframe(tf)  # Временной интервал Финам
-    start_date = fp_provider.min_history_date   # Начинаем запрос с первой возможной даты
-    while start_date <= datetime.now():  # Пока не дошли до текущей даты
-        end_date = start_date + finam_tf[1]  # Конечную дату запроса ставим на максимальный размер от даты начала
-        logger.info(f'Запрос бар с {start_date} до {end_date}')
-        start_time = Timestamp(seconds=int(datetime.timestamp(start_date)))  # Дату начала запроса переводим в Google Timestamp
-        end_time = Timestamp(seconds=int(datetime.timestamp(end_date)))  # Дату окончания запроса переводим в Google Timestamp
+    finam_tf, tf_range, intraday = fp_provider.timeframe_to_finam_timeframe(tf)  # Временной интервал Финам
+    start_dt = fp_provider.min_history_date   # Начинаем запрос с первой возможной даты
+    while start_dt <= datetime.now():  # Пока не дошли до текущей даты
+        end_dt = start_dt + tf_range  # Конечную дату запроса ставим на максимальный размер от даты начала
+        logger.info(f'Запрос бар с {start_dt} до {end_dt}')
+        start_time = Timestamp(seconds=int(datetime.timestamp(start_dt)))  # Дату начала запроса переводим в Google Timestamp
+        end_time = Timestamp(seconds=int(datetime.timestamp(end_dt)))  # Дату окончания запроса переводим в Google Timestamp
         bars_response: BarsResponse = fp_provider.call_function(
             fp_provider.marketdata_stub.Bars,
-            BarsRequest(symbol=f'{ticker}@{mic}', timeframe=finam_tf[0], interval=Interval(start_time=start_time, end_time=end_time))
+            BarsRequest(symbol=f'{ticker}@{mic}', timeframe=finam_tf, interval=Interval(start_time=start_time, end_time=end_time))
         )  # Получаем историю тикера за период
         if len(bars_response.bars) == 0:  # Если за период бар нет
             logger.info('Бары не получены')
@@ -39,8 +39,8 @@ if __name__ == '__main__':  # Точка входа при запуске это
             logger.info(f'Получено бар  : {len(bars_response.bars)}')
             for bar in bars_response.bars:
                 dt_bar = datetime.fromtimestamp(bar.timestamp.seconds, fp_provider.tz_msk)  # Дата/время полученного бара
-                if not finam_tf[2]:  # Для дневных временнЫх интервалов и выше
+                if not intraday:  # Для дневных временнЫх интервалов и выше
                     dt_bar = dt_bar.date()  # убираем время, оставляем только дату
                 logger.info(f'{dt_bar} O:{bar.open.value} H:{bar.high.value} L:{bar.low.value} C:{bar.close.value} V:{int(float(bar.volume.value))}')
-        start_date = end_date  # Дату начала переносим на дату окончания
+        start_dt = end_dt  # Дату начала переносим на дату окончания
     fp_provider.close_channel()  # Закрываем канал перед выходом
