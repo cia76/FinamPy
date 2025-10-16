@@ -4,7 +4,7 @@ import os
 import pickle  # Хранение торгового токена
 from queue import SimpleQueue  # Очередь подписок/отписок
 
-from pytz import timezone  # Работаем с временнОй зоной
+from pytz import timezone, utc  # Работаем с временнОй зоной и UTC
 from grpc import ssl_channel_credentials, secure_channel, RpcError  # Защищенный канал
 
 # Структуры
@@ -338,3 +338,25 @@ class FinamPy:
         if tf == marketdata_service.TimeFrame.TIME_FRAME_QR:  # 1 квартал
             return 'MN3', timedelta(days=365 * 5), False
         raise NotImplementedError  # С остальными временнЫми интервалами не работаем
+
+    def msk_to_utc_datetime(self, dt, tzinfo=False) -> datetime:
+        """Перевод времени из московского в UTC
+
+        :param datetime dt: Московское время
+        :param bool tzinfo: Отображать временнУю зону
+        :return: Время UTC
+        """
+        dt_msk = self.tz_msk.localize(dt)  # Задаем временнУю зону МСК
+        dt_utc = dt_msk.astimezone(utc)  # Переводим в UTC
+        return dt_utc if tzinfo else dt_utc.replace(tzinfo=None)
+
+    def utc_to_msk_datetime(self, dt, tzinfo=False) -> datetime:
+        """Перевод времени из UTC в московское
+
+        :param datetime dt: Время UTC
+        :param bool tzinfo: Отображать временнУю зону
+        :return: Московское время
+        """
+        dt_utc = utc.localize(dt) if dt.tzinfo is None else dt  # Задаем временнУю зону UTC если не задана
+        dt_msk = dt_utc.astimezone(self.tz_msk)  # Переводим в МСК
+        return dt_msk if tzinfo else dt_msk.replace(tzinfo=None)
