@@ -18,7 +18,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
     logging.Formatter.converter = lambda *args: datetime.now(tz=fp_provider.tz_msk).timetuple()  # В логе время указываем по МСК
 
     dataname = 'TQBR.SBER'  # Тикер
-    tf = 'M1'  # Временной интервал
+    tf = 'D1'  # Временной интервал
 
     finam_board, ticker = fp_provider.dataname_to_finam_board_ticker(dataname)  # Код режима торгов Финама и тикер
     mic = fp_provider.get_mic(finam_board, ticker)  # Код биржи по ISO 10383
