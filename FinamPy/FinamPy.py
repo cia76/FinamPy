@@ -25,6 +25,7 @@ from .grpc.marketdata.marketdata_service_pb2_grpc import MarketDataServiceStub  
 class FinamPy:
     """Работа с Finam Trade API gRPC https://tradeapi.finam.ru из Python"""
     tz_msk = timezone('Europe/Moscow')  # Время UTC будем приводить к московскому времени
+    min_history_date = datetime(2015, 6, 29)  # Первая дата, с которой можно получать историю
     server = 'api.finam.ru:443'  # Сервер для исполнения вызовов
     jwt_token_ttl = 15 * 60  # Время жизни токена JWT 15 минут в секундах
     logger = logging.getLogger('FinamPy')  # Будем вести лог
