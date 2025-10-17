@@ -37,13 +37,17 @@ if __name__ == '__main__':  # Точка входа при запуске это
     logger.info(f'Разница во времени  : {td}')
 
     # Проверяем работу подписок
-    symbol = 'SBER@MISX'  # Символ инструмента
-    tf = TIME_FRAME_M1  # 1 минута
-    logger.info(f'Подписка на {tf} бары тикера: {symbol} с историей в часах: 5')
+    dataname = 'TQBR.SBER'  # Тикер
+    tf = 'M1'  # Временной интервал
+
+    logger.info(f'Подписка на {tf} бары тикера {dataname} с последней историей')
+    finam_board, ticker = fp_provider.dataname_to_finam_board_ticker(dataname)  # Код режима торгов Финама и тикер
+    mic = fp_provider.get_mic(finam_board, ticker)  # Биржа тикера
+    finam_tf, _, _ = fp_provider.timeframe_to_finam_timeframe(tf)  # Временной интервал Финам
     last_bar: Bar  # Последнего полученного бара пока нет
     dt_last_bar = None  # И даты/времени у него пока нет
     fp_provider.on_new_bar = on_new_bar  # Обработчик события прихода нового бара
-    Thread(target=fp_provider.subscribe_bars_thread, name='BarsThread', args=(symbol, tf)).start()  # Создаем и запускаем поток подписки на новые минутные бары
+    Thread(target=fp_provider.subscribe_bars_thread, name='BarsThread', args=(f'{ticker}@{mic}', finam_tf)).start()  # Создаем и запускаем поток подписки на новые минутные бары
 
     # Выход
     input('Enter - выход\n')
