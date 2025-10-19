@@ -49,7 +49,7 @@ class FinamPy:
         self.on_quote = self.default_handler  # Котировка по инструменту
         self.on_order_book = self.default_handler  # Стакан по инструменту
         self.on_latest_trades = self.default_handler  # Обезличенные сделки по инструменту
-        self.on_new_bar = self.default_handler  # Свечи по инструменту и временнОму интервалу
+        self.on_new_bar = self.default_bars_handler  # Свечи по инструменту и временнОму интервалу
         self.order_trade_queue: SimpleQueue[orders_service.OrderTradeRequest] = SimpleQueue()  # Буфер команд заявок/сделок
         self.on_order = self.default_handler  # Свои заявки
         self.on_trade = self.default_handler  # Свои сделки
@@ -117,10 +117,13 @@ class FinamPy:
     def default_handler(self, event: list[marketdata_service.Quote] |
                         list[marketdata_service.StreamOrderBook] |
                         marketdata_service.SubscribeLatestTradesResponse |
-                        marketdata_service.SubscribeBarsResponse |
                         list[orders_service.OrderState] |
                         list[trade.AccountTrade]):
         """Пустой обработчик события по умолчанию. Его можно заменить на пользовательский"""
+        pass
+
+    def default_bars_handler(self, event: marketdata_service.SubscribeBarsResponse, timeframe: marketdata_service.TimeFrame.ValueType):
+        """Пустой обработчик события получения бар по умолчанию. Его можно заменить на пользовательский"""
         pass
 
     def subscribe_quote_thread(self, symbols):
@@ -155,7 +158,7 @@ class FinamPy:
         try:
             for event in self.marketdata_stub.SubscribeBars(request=marketdata_service.SubscribeBarsRequest(symbol=symbol, timeframe=timeframe), metadata=(self.metadata,)):
                 e: marketdata_service.SubscribeBarsResponse = event  # Приводим пришедшее значение к подписке
-                self.on_new_bar(e)
+                self.on_new_bar(e, timeframe)
         except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
             pass  # Все в порядке, ничего делать не нужно
 
