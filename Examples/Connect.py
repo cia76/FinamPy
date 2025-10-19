@@ -5,15 +5,17 @@ from datetime import datetime  # Дата и время
 from FinamPy import FinamPy
 from FinamPy.grpc.assets.assets_service_pb2 import ClockRequest, ClockResponse  # Время на сервере
 from FinamPy.grpc.marketdata.marketdata_service_pb2 import SubscribeBarsResponse, Bar  # Подписка на минутные бары тикера
-from FinamPy.grpc.marketdata.marketdata_service_pb2 import TimeFrame
+from FinamPy.grpc.marketdata.marketdata_service_pb2 import TimeFrame  # Временной интервал Финама
 
 
-def on_new_bar(bars: SubscribeBarsResponse, timeframe: TimeFrame.ValueType):  # Обработчик события прихода нового бара
+def on_new_bar(bars: SubscribeBarsResponse, finam_timeframe: TimeFrame.ValueType):  # Обработчик события прихода нового бара
     global last_bar, dt_last_bar  # Последний полученный бар и его дата/время
+    timeframe, _, _ = fp_provider.finam_timeframe_to_timeframe(finam_timeframe)  # Временной интервал пришедших баров
     for bar in bars.bars:  # Пробегаемся по всем полученным барам
         dt_bar = datetime.fromtimestamp(bar.timestamp.seconds, fp_provider.tz_msk)  # Дата/время полученного бара
         if dt_last_bar is not None and dt_last_bar < dt_bar:  # Если время бара стало больше (предыдущий бар закрыт, новый бар открыт)
-            logger.info(f'{dataname} {fp_provider.finam_timeframe_to_timeframe(timeframe)} {dt_last_bar:%d.%m.%Y %H:%M:%S} O:{last_bar.open.value} H:{last_bar.high.value} L:{last_bar.low.value} C:{last_bar.close.value} V:{int(float(last_bar.volume.value))}')
+            volume = int(float(last_bar.volume.value))  # Объем в шт. всегда целое число
+            logger.info(f'{dataname} {timeframe} {dt_last_bar:%d.%m.%Y %H:%M:%S} O:{last_bar.open.value} H:{last_bar.high.value} L:{last_bar.low.value} C:{last_bar.close.value} V:{volume}')
         last_bar = bar  # Запоминаем бар
         dt_last_bar = dt_bar  # Запоминаем дату и время бара
 

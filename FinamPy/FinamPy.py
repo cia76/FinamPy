@@ -153,12 +153,12 @@ class FinamPy:
         except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
             pass  # Все в порядке, ничего делать не нужно
 
-    def subscribe_bars_thread(self, symbol, timeframe: marketdata_service.TimeFrame.ValueType):
+    def subscribe_bars_thread(self, symbol, finam_timeframe: marketdata_service.TimeFrame.ValueType):
         """Подписка на свечи по инструменту и временнОму интервалу"""
         try:
-            for event in self.marketdata_stub.SubscribeBars(request=marketdata_service.SubscribeBarsRequest(symbol=symbol, timeframe=timeframe), metadata=(self.metadata,)):
+            for event in self.marketdata_stub.SubscribeBars(request=marketdata_service.SubscribeBarsRequest(symbol=symbol, timeframe=finam_timeframe), metadata=(self.metadata,)):
                 e: marketdata_service.SubscribeBarsResponse = event  # Приводим пришедшее значение к подписке
-                self.on_new_bar(e, timeframe)
+                self.on_new_bar(e, finam_timeframe)
         except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
             pass  # Все в порядке, ничего делать не нужно
 
