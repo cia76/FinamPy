@@ -98,18 +98,18 @@ class FinamPy:
     def call_function(self, func, request):
         """Вызов функции"""
         self.auth()  # Получаем токен JWT
-        self.logger.debug(f'Запрос : {request}')
+        # noinspection PyProtectedMember
+        func_name = func._method.decode('utf-8')  # Название функции
+        self.logger.debug(f'Запрос : {func_name}({request})')
         while True:  # Пока не получим ответ или ошибку
             try:  # Пытаемся
                 response, call = func.with_call(request=request, metadata=(self.metadata,))  # вызвать функцию
                 self.logger.debug(f'Ответ  : {response}')
                 return response  # и вернуть ответ
             except RpcError as ex:  # Если получили ошибку канала
-                # noinspection PyProtectedMember
-                func_name = func._method.decode('utf-8')  # Название функции
                 details = ex.args[0].details  # Сообщение об ошибке
                 if 'GetAsset' not in func_name:  # При переводе канонического названия тикера в вид Финама приходится подбирать биржу. Поэтому, ошибки ф-ии GetAsset игнорируем
-                    self.logger.error(f'Ошибка {details} при вызове функции {func_name} с параметрами {request}')
+                    self.logger.error(f'Ошибка {details} при вызове функции {func_name}({request})')
                 return None  # Возвращаем пустое значение
 
     # Подписки
