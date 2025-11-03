@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 import logging  # Будем вести лог
 import os
 import pickle  # Хранение торгового токена
@@ -350,6 +350,15 @@ class FinamPy:
         """
         dt_msk = self.tz_msk.localize(dt)  # Заданное время ставим в зону МСК
         return int(dt_msk.timestamp())  # Переводим в кол-во секунд, прошедших с 01.01.1970 в UTC
+
+    def timestamp_to_msk_datetime(self, seconds) -> datetime:
+        """Перевод кол-ва секунд, прошедших с 01.01.1970 00:00 UTC в московское время
+
+        :param int seconds: Кол-во секунд, прошедших с 01.01.1970 00:00 UTC
+        :return: Московское время без временнОй зоны
+        """
+        dt_utc = datetime.fromtimestamp(seconds, UTC)  # Переводим кол-во секунд, прошедших с 01.01.1970 в UTC
+        return self.utc_to_msk_datetime(dt_utc)  # Переводим время из UTC в московское
 
     def msk_to_utc_datetime(self, dt, tzinfo=False) -> datetime:
         """Перевод времени из московского в UTC
