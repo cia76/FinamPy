@@ -342,6 +342,15 @@ class FinamPy:
             return 'MN3', timedelta(days=365 * 5), False
         raise NotImplementedError  # С остальными временнЫми интервалами не работаем
 
+    def msk_datetime_to_timestamp(self, dt) -> int:
+        """Перевод московского времени в кол-во секунд, прошедших с 01.01.1970 00:00 UTC
+
+        :param datetime dt: Московское время
+        :return: Кол-во секунд, прошедших с 01.01.1970 00:00 UTC
+        """
+        dt_msk = self.tz_msk.localize(dt)  # Заданное время ставим в зону МСК
+        return int(dt_msk.timestamp())  # Переводим в кол-во секунд, прошедших с 01.01.1970 в UTC
+
     def msk_to_utc_datetime(self, dt, tzinfo=False) -> datetime:
         """Перевод времени из московского в UTC
 
