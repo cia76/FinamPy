@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, UTC
 import logging  # Будем вести лог
 import os
 import pickle  # Хранение торгового токена
+from typing import Any  # Любой тип
 from queue import SimpleQueue  # Очередь подписок/отписок
 
 from pytz import timezone, utc  # Работаем с временнОй зоной и UTC
@@ -12,7 +13,6 @@ from .grpc.auth import auth_service_pb2 as auth_service  # Подключени�
 from .grpc.assets.assets_service_pb2 import ExchangesRequest, ExchangesResponse, AssetsRequest, AssetsResponse, GetAssetResponse, GetAssetRequest  # Информация о биржах и тикерах
 from .grpc.marketdata import marketdata_service_pb2 as marketdata_service  # Рыночные данные https://tradeapi.finam.ru/docs/guides/grpc/marketdata_service/
 from .grpc.orders import orders_service_pb2 as orders_service  # Заявки https://tradeapi.finam.ru/docs/guides/grpc/orders_service/
-from .grpc import trade_pb2 as trade  # Информация о сделке
 
 # gRPC - Сервисы
 from .grpc.auth.auth_service_pb2_grpc import AuthServiceStub  # Подлключение https://tradeapi.finam.ru/docs/guides/grpc/auth_service
@@ -37,6 +37,7 @@ class FinamPy:
         :param str access_token: Торговый токен
         """
         self.channel = secure_channel(self.server, ssl_channel_credentials())  # Защищенный канал
+        self.order_trade_queue: SimpleQueue[orders_service.OrderTradeRequest] = SimpleQueue()  # Буфер команд заявок/сделок
 
         # Сервисы
         self.auth_stub = AuthServiceStub(self.channel)
@@ -46,13 +47,12 @@ class FinamPy:
         self.marketdata_stub = MarketDataServiceStub(self.channel)
 
         # События
-        self.on_quote = self.default_handler  # Котировка по инструменту
-        self.on_order_book = self.default_handler  # Стакан по инструменту
-        self.on_latest_trades = self.default_handler  # Обезличенные сделки по инструменту
-        self.on_new_bar = self.default_bars_handler  # Свечи по инструменту и временнОму интервалу
-        self.order_trade_queue: SimpleQueue[orders_service.OrderTradeRequest] = SimpleQueue()  # Буфер команд заявок/сделок
-        self.on_order = self.default_handler  # Свои заявки
-        self.on_trade = self.default_handler  # Свои сделки
+        self.on_quote = Event()  # Котировка по инструменту
+        self.on_order_book = Event()  # Стакан по инструменту
+        self.on_latest_trades = Event()  # Обезличенные сделки по инструменту
+        self.on_new_bar = Event()  # Свечи по инструменту и временнОму интервалу
+        self.on_order = Event()  # Свои заявки
+        self.on_trade = Event()  # Свои сделки
 
         config_filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.pkl')  # Полный путь к файлу конфигурации
         if access_token is None:  # Если торговый токен не указан
@@ -114,24 +114,12 @@ class FinamPy:
 
     # Подписки
 
-    def default_handler(self, event: list[marketdata_service.Quote] |
-                        list[marketdata_service.StreamOrderBook] |
-                        marketdata_service.SubscribeLatestTradesResponse |
-                        list[orders_service.OrderState] |
-                        list[trade.AccountTrade]):
-        """Пустой обработчик события по умолчанию. Его можно заменить на пользовательский"""
-        pass
-
-    def default_bars_handler(self, event: marketdata_service.SubscribeBarsResponse, timeframe: marketdata_service.TimeFrame.ValueType):
-        """Пустой обработчик события получения бар по умолчанию. Его можно заменить на пользовательский"""
-        pass
-
     def subscribe_quote_thread(self, symbols):
         """Подписка на котировки по инструменту"""
         try:
             for event in self.marketdata_stub.SubscribeQuote(request=marketdata_service.SubscribeQuoteRequest(symbols=symbols), metadata=(self.metadata,)):
                 e: marketdata_service.SubscribeQuoteResponse = event  # Приводим пришедшее значение к подписке
-                self.on_quote(e.quote)
+                self.on_quote.trigger(e.quote)
         except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
             pass  # Все в порядке, ничего делать не нужно
 
@@ -140,16 +128,16 @@ class FinamPy:
         try:
             for event in self.marketdata_stub.SubscribeOrderBook(request=marketdata_service.SubscribeOrderBookRequest(symbol=symbol), metadata=(self.metadata,)):
                 e: marketdata_service.SubscribeOrderBookResponse = event  # Приводим пришедшее значение к подписке
-                self.on_order_book(e.order_book)
+                self.on_order_book.trigger(e.order_book)
         except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
             pass  # Все в порядке, ничего делать не нужно
 
     def subscribe_latest_trades_thread(self, symbol):
         """Подписка на сделки по инструменту"""
         try:
-            for event in self.marketdata_stub.SubscribeLatestTrades(request=marketdata_service.SubscribeOrderBookRequest(symbol=symbol), metadata=(self.metadata,)):
+            for event in self.marketdata_stub.SubscribeLatestTrades(request=marketdata_service.SubscribeLatestTradesRequest(symbol=symbol), metadata=(self.metadata,)):
                 e: marketdata_service.SubscribeLatestTradesResponse = event  # Приводим пришедшее значение к подписке
-                self.on_latest_trades(e)
+                self.on_latest_trades.trigger(e)
         except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
             pass  # Все в порядке, ничего делать не нужно
 
@@ -158,7 +146,7 @@ class FinamPy:
         try:
             for event in self.marketdata_stub.SubscribeBars(request=marketdata_service.SubscribeBarsRequest(symbol=symbol, timeframe=finam_timeframe), metadata=(self.metadata,)):
                 e: marketdata_service.SubscribeBarsResponse = event  # Приводим пришедшее значение к подписке
-                self.on_new_bar(e, finam_timeframe)
+                self.on_new_bar.trigger(e, finam_timeframe)
         except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
             pass  # Все в порядке, ничего делать не нужно
 
@@ -175,10 +163,10 @@ class FinamPy:
                 e: orders_service.OrderTradeResponse = event  # Приводим пришедшее значение к подписке
                 if e.orders:  # Если пришли заявки
                     for order in e.orders:
-                        self.on_order(order)
+                        self.on_order.trigger(order)
                 if e.trades:  # Если пришли сделки
                     for t in e.trades:
-                        self.on_trade(t)
+                        self.on_trade.trigger(t)
         except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
             pass  # Все в порядке, ничего делать не нужно
 
@@ -279,68 +267,48 @@ class FinamPy:
         :param str tf: Временной интервал https://ru.wikipedia.org/wiki/Таймфрейм
         :return: Временной интервал Финама, максимальный размер запроса в днях, внутридневной бар
         """
-        if 'MN3' in tf:  # 1 квартал
-            return marketdata_service.TimeFrame.TIME_FRAME_QR, timedelta(days=365*5), False
-        if 'MN' in tf:  # 1 месяц
-            return marketdata_service.TimeFrame.TIME_FRAME_MN, timedelta(days=365*5), False
-        if tf[0:1] == 'W':  # 1 неделя
-            return marketdata_service.TimeFrame.TIME_FRAME_W, timedelta(days=365*5), False
-        if tf[0:1] == 'D':  # 1 день
-            return marketdata_service.TimeFrame.TIME_FRAME_D, timedelta(days=365), False
-        if tf[0:1] == 'M':  # Минуты
-            if not tf[1:].isdigit():  # Если после минут не стоит число
-                raise NotImplementedError  # то с такими временнЫми интервалами не работаем
-            interval = int(tf[1:])  # Временной интервал
-            if interval == 480:  # 8 часов
-                return marketdata_service.TimeFrame.TIME_FRAME_H8, timedelta(days=30), True
-            if interval == 240:  # 4 часа
-                return marketdata_service.TimeFrame.TIME_FRAME_H4, timedelta(days=30), True
-            if interval == 120:  # 2 часа
-                return marketdata_service.TimeFrame.TIME_FRAME_H2, timedelta(days=30), True
-            if interval == 60:  # 1 час
-                return marketdata_service.TimeFrame.TIME_FRAME_H1, timedelta(days=30), True
-            if interval == 30:  # 30 минут
-                return marketdata_service.TimeFrame.TIME_FRAME_M30, timedelta(days=30), True
-            if interval == 15:  # 15 минут
-                return marketdata_service.TimeFrame.TIME_FRAME_M15, timedelta(days=30), True
-            if interval == 5:  # 5 минут
-                return marketdata_service.TimeFrame.TIME_FRAME_M5, timedelta(days=30), True
-            if interval == 1:  # 1 минута
-                return marketdata_service.TimeFrame.TIME_FRAME_M1, timedelta(days=7), True
-        raise NotImplementedError  # С остальными временнЫми интервалами не работаем
+        tf_map = {
+            'M1': (marketdata_service.TimeFrame.TIME_FRAME_M1, timedelta(days=7), True),
+            'M5': (marketdata_service.TimeFrame.TIME_FRAME_M5, timedelta(days=30), True),
+            'M15': (marketdata_service.TimeFrame.TIME_FRAME_M15, timedelta(days=30), True),
+            'M30': (marketdata_service.TimeFrame.TIME_FRAME_M30, timedelta(days=30), True),
+            'M60': (marketdata_service.TimeFrame.TIME_FRAME_H1, timedelta(days=30), True),
+            'M120': (marketdata_service.TimeFrame.TIME_FRAME_H2, timedelta(days=30), True),
+            'M240': (marketdata_service.TimeFrame.TIME_FRAME_H4, timedelta(days=30), True),
+            'M480': (marketdata_service.TimeFrame.TIME_FRAME_H8, timedelta(days=30), True),
+            'D': (marketdata_service.TimeFrame.TIME_FRAME_D, timedelta(days=365), False),
+            'W': (marketdata_service.TimeFrame.TIME_FRAME_W, timedelta(days=365 * 5), False),
+            'MN': (marketdata_service.TimeFrame.TIME_FRAME_MN, timedelta(days=365 * 5), False),
+            'MN3': (marketdata_service.TimeFrame.TIME_FRAME_QR, timedelta(days=365 * 5), False),
+        }  # Справочник временнЫх интервалов
+        if tf in tf_map:  # Если временной интервал есть в справочнике
+            return tf_map[tf]  # то возвращаем временной интервал Финама
+        raise NotImplementedError(f'Временной интервал {tf} не поддерживается')  # С остальными временнЫми интервалами не работаем
 
     @staticmethod
-    def finam_timeframe_to_timeframe(tf) -> tuple[str, timedelta, bool]:
+    def finam_timeframe_to_timeframe(finam_tf) -> tuple[str, timedelta, bool]:
         """Перевод временнОго интервала Финама во временной интервал
 
-        :param marketdata_service.TimeFrame.ValueType tf: Временной интервал Финама
+        :param marketdata_service.TimeFrame.ValueType finam_tf: Временной интервал Финама
         :return: Временной интервал https://ru.wikipedia.org/wiki/Таймфрейм, максимальный размер запроса в днях, внутридневной бар
         """
-        if tf == marketdata_service.TimeFrame.TIME_FRAME_M1:  # 1 минута
-            return 'M1', timedelta(days=7), True
-        if tf == marketdata_service.TimeFrame.TIME_FRAME_M5:  # 5 минут
-            return 'M5', timedelta(days=30), True
-        if tf == marketdata_service.TimeFrame.TIME_FRAME_M15:  # 15 минут
-            return 'M15', timedelta(days=30), True
-        if tf == marketdata_service.TimeFrame.TIME_FRAME_M30:  # 30 минут
-            return 'M30', timedelta(days=30), True
-        if tf == marketdata_service.TimeFrame.TIME_FRAME_H1:  # 1 час
-            return 'M60', timedelta(days=30), True
-        if tf == marketdata_service.TimeFrame.TIME_FRAME_H2:  # 2 часа
-            return 'M120', timedelta(days=30), True
-        if tf == marketdata_service.TimeFrame.TIME_FRAME_H4:  # 4 часа
-            return 'M240', timedelta(days=30), True
-        if tf == marketdata_service.TimeFrame.TIME_FRAME_H8:  # 8 часов
-            return 'M480', timedelta(days=30), True
-        if tf == marketdata_service.TimeFrame.TIME_FRAME_D:  # 1 день
-            return 'D1', timedelta(days=365), False
-        if tf == marketdata_service.TimeFrame.TIME_FRAME_W:  # 1 неделя
-            return 'W1', timedelta(days=365 * 5), False
-        if tf == marketdata_service.TimeFrame.TIME_FRAME_MN:  # 1 месяц
-            return 'MN1', timedelta(days=365 * 5), False
-        if tf == marketdata_service.TimeFrame.TIME_FRAME_QR:  # 1 квартал
-            return 'MN3', timedelta(days=365 * 5), False
-        raise NotImplementedError  # С остальными временнЫми интервалами не работаем
+        finam_tf_map = {
+            marketdata_service.TimeFrame.TIME_FRAME_M1: ('M1', timedelta(days=7), True),
+            marketdata_service.TimeFrame.TIME_FRAME_M5: ('M5', timedelta(days=30), True),
+            marketdata_service.TimeFrame.TIME_FRAME_M15: ('M15', timedelta(days=30), True),
+            marketdata_service.TimeFrame.TIME_FRAME_M30: ('M30', timedelta(days=30), True),
+            marketdata_service.TimeFrame.TIME_FRAME_H1: ('M60', timedelta(days=30), True),
+            marketdata_service.TimeFrame.TIME_FRAME_H2: ('M120', timedelta(days=30), True),
+            marketdata_service.TimeFrame.TIME_FRAME_H4: ('M240', timedelta(days=30), True),
+            marketdata_service.TimeFrame.TIME_FRAME_H8: ('M480', timedelta(days=30), True),
+            marketdata_service.TimeFrame.TIME_FRAME_D: ('D1', timedelta(days=365), False),
+            marketdata_service.TimeFrame.TIME_FRAME_W: ('W1', timedelta(days=365 * 5), False),
+            marketdata_service.TimeFrame.TIME_FRAME_MN: ('MN1', timedelta(days=365 * 5), False),
+            marketdata_service.TimeFrame.TIME_FRAME_QR: ('MN3', timedelta(days=365 * 5), False),
+        }  # Справочник временнЫх интервалов Финама
+        if finam_tf in finam_tf_map:  # Если временной интервал Финама есть в справочнике
+            return finam_tf_map[finam_tf]  # то возвращаем временной интервал
+        raise NotImplementedError(f'Временной интервал Финама {finam_tf} не поддерживается')  # С остальными временнЫми интервалами Финима не работаем
 
     def msk_datetime_to_timestamp(self, dt) -> int:
         """Перевод московского времени в кол-во секунд, прошедших с 01.01.1970 00:00 UTC
@@ -381,3 +349,22 @@ class FinamPy:
         dt_utc = utc.localize(dt) if dt.tzinfo is None else dt  # Задаем временнУю зону UTC если не задана
         dt_msk = dt_utc.astimezone(self.tz_msk)  # Переводим в МСК
         return dt_msk if tzinfo else dt_msk.replace(tzinfo=None)
+
+
+class Event:
+    """Событие с подпиской / отменой подписки"""
+    def __init__(self):
+        self._callbacks: set[Any] = set()  # Избегаем дубликатов функций при помощи set
+
+    def subscribe(self, callback) -> None:
+        """Подписаться на событие"""
+        self._callbacks.add(callback)  # Добавляем функцию в список
+
+    def unsubscribe(self, callback) -> None:
+        """Отписаться от события"""
+        self._callbacks.discard(callback)  # Удаляем функцию из списка. Если функции нет в списке, то не будет ошибки
+
+    def trigger(self, *args, **kwargs) -> None:
+        """Вызвать событие"""
+        for callback in list(self._callbacks):  # Пробегаемся по копии списка, чтобы избежать исключения при удалении
+            callback(*args, **kwargs)  # Вызываем функцию
