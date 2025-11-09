@@ -1,6 +1,6 @@
 import logging  # Выводим лог на консоль и в файл
-from threading import Thread  # Запускаем поток подписки
 from datetime import datetime  # Дата и время
+from threading import Thread  # Запускаем поток подписки
 
 from FinamPy import FinamPy
 from FinamPy.grpc.assets.assets_service_pb2 import ClockRequest, ClockResponse  # Время на сервере
@@ -14,8 +14,12 @@ def on_new_bar(bars: SubscribeBarsResponse, finam_timeframe: TimeFrame.ValueType
     for bar in bars.bars:  # Пробегаемся по всем полученным барам
         dt_bar = datetime.fromtimestamp(bar.timestamp.seconds, fp_provider.tz_msk)  # Дата/время полученного бара
         if dt_last_bar is not None and dt_last_bar < dt_bar:  # Если время бара стало больше (предыдущий бар закрыт, новый бар открыт)
-            volume = int(float(last_bar.volume.value))  # Объем в шт. всегда целое число
-            logger.info(f'{dataname} {timeframe} {dt_last_bar:%d.%m.%Y %H:%M:%S} O:{last_bar.open.value} H:{last_bar.high.value} L:{last_bar.low.value} C:{last_bar.close.value} V:{volume}')
+            logger.info(f'{dt_last_bar:%d.%m.%Y %H:%M:%S} '
+                        f'O:{last_bar.open.value} '
+                        f'H:{last_bar.high.value} '
+                        f'L:{last_bar.low.value} '
+                        f'C:{last_bar.close.value} '
+                        f'V:{int(float(last_bar.volume.value))}')
         last_bar = bar  # Запоминаем бар
         dt_last_bar = dt_bar  # Запоминаем дату и время бара
 
@@ -43,15 +47,16 @@ if __name__ == '__main__':  # Точка входа при запуске это
     dataname = 'TQBR.SBER'  # Тикер
     tf = 'M1'  # Временной интервал
 
-    logger.info(f'Подписка на {tf} бары тикера {dataname} с последней историей')
+    logger.info(f'Подписка на {tf} бары тикера {dataname}')
+    fp_provider.on_new_bar.subscribe(on_new_bar)  # Подписываемся на новые бары
     finam_board, ticker = fp_provider.dataname_to_finam_board_ticker(dataname)  # Код режима торгов Финама и тикер
     mic = fp_provider.get_mic(finam_board, ticker)  # Биржа тикера
     finam_tf, _, _ = fp_provider.timeframe_to_finam_timeframe(tf)  # Временной интервал Финам
     last_bar: Bar  # Последнего полученного бара пока нет
     dt_last_bar = None  # И даты/времени у него пока нет
-    fp_provider.on_new_bar = on_new_bar  # Обработчик события прихода нового бара
-    Thread(target=fp_provider.subscribe_bars_thread, name='BarsThread', args=(f'{ticker}@{mic}', finam_tf)).start()  # Создаем и запускаем поток подписки на новые минутные бары
+    Thread(target=fp_provider.subscribe_bars_thread, name='BarsThread', args=(f'{ticker}@{mic}', finam_tf)).start()  # Создаем и запускаем поток подписки на новые бары
 
     # Выход
     input('Enter - выход\n')
+    fp_provider.on_new_bar.unsubscribe(on_new_bar)  # Отменяем подписку на новые бары
     fp_provider.close_channel()  # Закрываем канал перед выходом
