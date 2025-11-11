@@ -310,6 +310,18 @@ class FinamPy:
             return finam_tf_map[finam_tf]  # то возвращаем временной интервал
         raise NotImplementedError(f'Временной интервал Финама {finam_tf} не поддерживается')  # С остальными временнЫми интервалами Финима не работаем
 
+    @staticmethod
+    def price_to_finam_price(finam_board: str, price: float) -> float:
+        if finam_board in ('TQOB', 'TQCB', 'TQRD', 'TQIR'):  # Для облигаций (Т+ Гособлигации, Т+ Облигации, Т+ Облигации Д, Т+ Облигации ПИР)
+            return price / 10  # Делим цену на 10
+        return price  # В остальных случаях возвращаем цену без изменений
+
+    @staticmethod
+    def finam_price_to_price(finam_board: str, finam_price: float) -> float:
+        if finam_board in ('TQOB', 'TQCB', 'TQRD', 'TQIR'):  # Для облигаций (Т+ Гособлигации, Т+ Облигации, Т+ Облигации Д, Т+ Облигации ПИР)
+            return finam_price * 10  # Умножаем цену на 10
+        return finam_price  # В остальных случаях возвращаем цену без изменений
+
     def msk_datetime_to_timestamp(self, dt) -> int:
         """Перевод московского времени в кол-во секунд, прошедших с 01.01.1970 00:00 UTC
 
