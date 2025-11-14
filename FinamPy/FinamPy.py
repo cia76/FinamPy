@@ -180,35 +180,45 @@ class FinamPy:
 
     def close_channel(self):
         """Закрытие канала"""
-        self.channel.close()  # Закрываем канал
+        if self.channel is not None:  # Если канал открыт
+            self.channel.close()  # то закрываем канал
+            self.channel = None  # Помечаем канал как закрытый
 
     # Функции конвертации
 
     @staticmethod
-    def finam_board_to_board(finam_board):
-        """Канонический код режима торгов из кода режима торгов Финама
-
-        :param str finam_board: Код режима торгов Финама
-        :return: Канонический код режима торгов
+    def finam_board_to_board(finam_board: str) -> str:
         """
-        if finam_board == 'FUT':  # Для фьючерсов
-            return 'SPBFUT'
-        if finam_board == 'OPT':  # Для опционов
-            return 'SPBOPT'
-        return finam_board
+        Канонический код режима торгов из кода режима торгов Финама
+
+        Args:
+            finam_board (str): Код режима торгов Финама
+
+        Returns:
+            str: Канонический код режима торгов
+        """
+        board_map = {
+            'FUT': 'SPBFUT',  # Фьючерсы
+            'OPT': 'SPBOPT',  # Опционы
+        }
+        return board_map.get(finam_board, finam_board)
 
     @staticmethod
-    def board_to_finam_board(board):
-        """Код режима торгов Финама из канонического кода режима торгов
-
-        :param str board: Канонический код режима торгов
-        :return: Код режима торгов Финама
+    def board_to_finam_board(board: str) -> str:
         """
-        if board == 'SPBFUT':  # Для фьючерсов
-            return 'FUT'
-        if board == 'SPBOPT':  # Для опционов
-            return 'OPT'
-        return board
+        Код режима торгов Финама из канонического кода режима торгов
+
+        Args:
+            board (str): Канонический код режима торгов
+
+        Returns:
+            str: Код режима торгов Финама
+        """
+        finam_board_map = {
+            'SPBFUT': 'FUT',  # Фьючерсы
+            'SPBOPT': 'OPT',  # Опционы
+        }
+        return finam_board_map.get(board, board)
 
     def dataname_to_finam_board_ticker(self, dataname) -> tuple[str | None, str]:
         """Код режима торгов Финама и тикер из названия тикера
@@ -276,9 +286,9 @@ class FinamPy:
             'M120': (marketdata_service.TimeFrame.TIME_FRAME_H2, timedelta(days=30), True),
             'M240': (marketdata_service.TimeFrame.TIME_FRAME_H4, timedelta(days=30), True),
             'M480': (marketdata_service.TimeFrame.TIME_FRAME_H8, timedelta(days=30), True),
-            'D': (marketdata_service.TimeFrame.TIME_FRAME_D, timedelta(days=365), False),
-            'W': (marketdata_service.TimeFrame.TIME_FRAME_W, timedelta(days=365 * 5), False),
-            'MN': (marketdata_service.TimeFrame.TIME_FRAME_MN, timedelta(days=365 * 5), False),
+            'D1': (marketdata_service.TimeFrame.TIME_FRAME_D, timedelta(days=365), False),
+            'W1': (marketdata_service.TimeFrame.TIME_FRAME_W, timedelta(days=365 * 5), False),
+            'MN1': (marketdata_service.TimeFrame.TIME_FRAME_MN, timedelta(days=365 * 5), False),
             'MN3': (marketdata_service.TimeFrame.TIME_FRAME_QR, timedelta(days=365 * 5), False),
         }  # Справочник временнЫх интервалов
         if tf in tf_map:  # Если временной интервал есть в справочнике
