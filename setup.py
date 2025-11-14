@@ -14,4 +14,6 @@ setup(name='FinamPy',
             'types-protobuf',  # Timestamp
       ],
       python_requires='>=3.12',
+      package_data={'FinamPy': ['grpc/**/*']},  # Дополнительно копируем скрипты из папки grpc и вложенных в нее папок
+      include_package_data=True,  # Включаем дополнительные скрипты
       )
