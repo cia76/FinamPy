@@ -3,13 +3,13 @@ from time import sleep  # Задержка в секундах перед вып
 import logging  # Выводим лог на консоль и в файл
 from threading import Thread  # Запускаем поток подписки
 
-from FinamPy import FinamPy
+from FinamPy.FinamPy import FinamPy
 from google.type.decimal_pb2 import Decimal
-from FinamPy.grpc.assets.assets_service_pb2 import GetAssetRequest, GetAssetResponse  # Информация по тикеру
-from FinamPy.grpc.orders.orders_service_pb2 import OrderTradeRequest
-from FinamPy.grpc.orders.orders_service_pb2 import Order, OrderState, OrderType, CancelOrderRequest, StopCondition  # Заявки
-import FinamPy.grpc.side_pb2 as side  # Направление заявки
-from FinamPy.grpc.marketdata.marketdata_service_pb2 import QuoteRequest, QuoteResponse  # Последняя цена сделки
+from FinamPy.FinamPy.grpc.assets.assets_service_pb2 import GetAssetRequest, GetAssetResponse  # Информация по тикеру
+from FinamPy.FinamPy.grpc.orders.orders_service_pb2 import OrderTradeRequest
+from FinamPy.FinamPy.grpc.orders.orders_service_pb2 import Order, OrderState, OrderType, CancelOrderRequest, StopCondition  # Заявки
+import FinamPy.FinamPy.grpc.side_pb2 as side  # Направление заявки
+from FinamPy.FinamPy.grpc.marketdata.marketdata_service_pb2 import QuoteRequest, QuoteResponse  # Последняя цена сделки
 
 
 def _on_order(order): logger.info(f'Заявка - {order}')

@@ -3,7 +3,7 @@ from threading import Thread  # Запускаем поток подписки
 from datetime import datetime  # Дата и время
 from time import sleep  # Подписка на события по времени
 
-from FinamPy import FinamPy
+from FinamPy.FinamPy import FinamPy
 
 
 def _on_quote(quote): logger.info(f'Котировка - {quote[0]}')

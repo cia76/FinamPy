@@ -1,11 +1,11 @@
 import logging  # Выводим лог на консоль и в файл
 from datetime import datetime  # Дата и время
 
-from FinamPy import FinamPy
-from FinamPy.grpc.assets.assets_service_pb2 import GetAssetRequest, GetAssetResponse  # Информация по тикеру
-from FinamPy.grpc.accounts.accounts_service_pb2 import GetAccountRequest, GetAccountResponse  # Счет
-from FinamPy.grpc.orders.orders_service_pb2 import OrdersRequest, OrdersResponse, ORDER_STATUS_NEW, ORDER_TYPE_LIMIT  # Заявки
-from FinamPy.grpc.side_pb2 import SIDE_BUY  # Направление заявки
+from FinamPy.FinamPy import FinamPy
+from FinamPy.FinamPy.grpc.assets.assets_service_pb2 import GetAssetRequest, GetAssetResponse  # Информация по тикеру
+from FinamPy.FinamPy.grpc.accounts.accounts_service_pb2 import GetAccountRequest, GetAccountResponse  # Счет
+from FinamPy.FinamPy.grpc.orders.orders_service_pb2 import OrdersRequest, OrdersResponse, ORDER_STATUS_NEW, ORDER_TYPE_LIMIT  # Заявки
+from FinamPy.FinamPy.grpc.side_pb2 import SIDE_BUY  # Направление заявки
 
 
 if __name__ == '__main__':  # Точка входа при запуске этого скрипта
