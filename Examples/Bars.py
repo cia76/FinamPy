@@ -4,7 +4,7 @@ from datetime import datetime, timedelta  # Дата и время
 from google.protobuf.timestamp_pb2 import Timestamp
 from google.type.interval_pb2 import Interval
 
-from FinamPy.FinamPy import FinamPy
+from FinamPy import FinamPy
 from FinamPy.grpc.marketdata.marketdata_service_pb2 import BarsRequest, BarsResponse  # История
 
 

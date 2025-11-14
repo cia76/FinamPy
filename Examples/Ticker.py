@@ -1,7 +1,7 @@
 import logging  # Выводим лог на консоль и в файл
 from datetime import datetime  # Дата и время
 
-from FinamPy.FinamPy import FinamPy
+from FinamPy import FinamPy
 
 
 if __name__ == '__main__':  # Точка входа при запуске этого скрипта

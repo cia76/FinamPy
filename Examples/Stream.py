@@ -3,7 +3,7 @@ from threading import Thread  # Запускаем поток подписки
 from datetime import datetime  # Дата и время
 from time import sleep  # Подписка на события по времени
 
-from FinamPy.FinamPy import FinamPy
+from FinamPy import FinamPy
 from FinamPy.grpc.marketdata.marketdata_service_pb2 import SubscribeQuoteResponse  # Котировки
 from FinamPy.grpc.marketdata.marketdata_service_pb2 import SubscribeOrderBookResponse  # Стакан
 from FinamPy.grpc.marketdata.marketdata_service_pb2 import SubscribeLatestTradesResponse  # Сделки

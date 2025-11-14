@@ -3,7 +3,7 @@ from time import sleep  # Задержка в секундах перед вып
 import logging  # Выводим лог на консоль и в файл
 from threading import Thread  # Запускаем поток подписки
 
-from FinamPy.FinamPy import FinamPy
+from FinamPy import FinamPy
 from FinamPy.grpc.assets.assets_service_pb2 import GetAssetRequest, GetAssetResponse  # Информация по тикеру
 from FinamPy.grpc.orders.orders_service_pb2 import Order, OrderState, OrderType, OrderTradeRequest, CancelOrderRequest, StopCondition  # Заявки
 import FinamPy.grpc.side_pb2 as side  # Направление заявки

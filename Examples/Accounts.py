@@ -1,7 +1,7 @@
 import logging  # Выводим лог на консоль и в файл
 from datetime import datetime  # Дата и время
 
-from FinamPy.FinamPy import FinamPy
+from FinamPy import FinamPy
 from FinamPy.grpc.assets.assets_service_pb2 import GetAssetRequest, GetAssetResponse  # Информация по тикеру
 from FinamPy.grpc.accounts.accounts_service_pb2 import GetAccountRequest, GetAccountResponse  # Счет
 from FinamPy.grpc.orders.orders_service_pb2 import OrdersRequest, OrdersResponse, ORDER_STATUS_NEW, ORDER_TYPE_LIMIT  # Заявки
