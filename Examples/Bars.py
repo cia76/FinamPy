@@ -5,7 +5,7 @@ from google.protobuf.timestamp_pb2 import Timestamp
 from google.type.interval_pb2 import Interval
 
 from FinamPy.FinamPy import FinamPy
-from FinamPy.FinamPy.grpc.marketdata.marketdata_service_pb2 import BarsRequest, BarsResponse  # История
+from FinamPy.grpc.marketdata.marketdata_service_pb2 import BarsRequest, BarsResponse  # История
 
 
 if __name__ == '__main__':  # Точка входа при запуске этого скрипта

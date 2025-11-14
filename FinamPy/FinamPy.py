@@ -9,17 +9,17 @@ from pytz import timezone, utc  # Работаем с временнОй зон�
 from grpc import ssl_channel_credentials, secure_channel, RpcError  # Защищенный канал
 
 # Структуры
-from .grpc.auth import auth_service_pb2 as auth_service  # Подключение https://tradeapi.finam.ru/docs/guides/grpc/auth_service
-from .grpc.assets.assets_service_pb2 import ExchangesRequest, ExchangesResponse, AssetsRequest, AssetsResponse, GetAssetResponse, GetAssetRequest  # Информация о биржах и тикерах
-from .grpc.marketdata import marketdata_service_pb2 as marketdata_service  # Рыночные данные https://tradeapi.finam.ru/docs/guides/grpc/marketdata_service/
-from .grpc.orders import orders_service_pb2 as orders_service  # Заявки https://tradeapi.finam.ru/docs/guides/grpc/orders_service/
+from FinamPy.grpc.auth import auth_service_pb2 as auth_service  # Подключение https://tradeapi.finam.ru/docs/guides/grpc/auth_service
+from FinamPy.grpc.assets.assets_service_pb2 import ExchangesRequest, ExchangesResponse, AssetsRequest, AssetsResponse, GetAssetResponse, GetAssetRequest  # Информация о биржах и тикерах
+from FinamPy.grpc.marketdata import marketdata_service_pb2 as marketdata_service  # Рыночные данные https://tradeapi.finam.ru/docs/guides/grpc/marketdata_service/
+from FinamPy.grpc.orders import orders_service_pb2 as orders_service  # Заявки https://tradeapi.finam.ru/docs/guides/grpc/orders_service/
 
 # gRPC - Сервисы
-from .grpc.auth.auth_service_pb2_grpc import AuthServiceStub  # Подлключение https://tradeapi.finam.ru/docs/guides/grpc/auth_service
-from .grpc.accounts.accounts_service_pb2_grpc import AccountsServiceStub  # Счета https://tradeapi.finam.ru/docs/guides/grpc/accounts_service/
-from .grpc.assets.assets_service_pb2_grpc import AssetsServiceStub  # Инструменты https://tradeapi.finam.ru/docs/guides/grpc/assets_service/
-from .grpc.orders.orders_service_pb2_grpc import OrdersServiceStub  # Заявки https://tradeapi.finam.ru/docs/guides/grpc/orders_service/
-from .grpc.marketdata.marketdata_service_pb2_grpc import MarketDataServiceStub  # Рыночные данные https://tradeapi.finam.ru/docs/guides/grpc/marketdata_service/
+from FinamPy.grpc.auth.auth_service_pb2_grpc import AuthServiceStub  # Подлключение https://tradeapi.finam.ru/docs/guides/grpc/auth_service
+from FinamPy.grpc.accounts.accounts_service_pb2_grpc import AccountsServiceStub  # Счета https://tradeapi.finam.ru/docs/guides/grpc/accounts_service/
+from FinamPy.grpc.assets.assets_service_pb2_grpc import AssetsServiceStub  # Инструменты https://tradeapi.finam.ru/docs/guides/grpc/assets_service/
+from FinamPy.grpc.orders.orders_service_pb2_grpc import OrdersServiceStub  # Заявки https://tradeapi.finam.ru/docs/guides/grpc/orders_service/
+from FinamPy.grpc.marketdata.marketdata_service_pb2_grpc import MarketDataServiceStub  # Рыночные данные https://tradeapi.finam.ru/docs/guides/grpc/marketdata_service/
 
 
 class FinamPy:
@@ -119,7 +119,7 @@ class FinamPy:
         try:
             for event in self.marketdata_stub.SubscribeQuote(request=marketdata_service.SubscribeQuoteRequest(symbols=symbols), metadata=(self.metadata,)):
                 e: marketdata_service.SubscribeQuoteResponse = event  # Приводим пришедшее значение к подписке
-                self.on_quote.trigger(e.quote)
+                self.on_quote.trigger(e)
         except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
             pass  # Все в порядке, ничего делать не нужно
 
@@ -128,7 +128,7 @@ class FinamPy:
         try:
             for event in self.marketdata_stub.SubscribeOrderBook(request=marketdata_service.SubscribeOrderBookRequest(symbol=symbol), metadata=(self.metadata,)):
                 e: marketdata_service.SubscribeOrderBookResponse = event  # Приводим пришедшее значение к подписке
-                self.on_order_book.trigger(e.order_book)
+                self.on_order_book.trigger(e)
         except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
             pass  # Все в порядке, ничего делать не нужно
 

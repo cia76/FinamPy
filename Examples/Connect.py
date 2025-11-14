@@ -3,9 +3,9 @@ from datetime import datetime  # Дата и время
 from threading import Thread  # Запускаем поток подписки
 
 from FinamPy.FinamPy import FinamPy
-from FinamPy.FinamPy.grpc.assets.assets_service_pb2 import ClockRequest, ClockResponse  # Время на сервере
-from FinamPy.FinamPy.grpc.marketdata.marketdata_service_pb2 import SubscribeBarsResponse, Bar  # Подписка на минутные бары тикера
-from FinamPy.FinamPy.grpc.marketdata.marketdata_service_pb2 import TimeFrame  # Временной интервал Финама
+from FinamPy.grpc.assets.assets_service_pb2 import ClockRequest, ClockResponse  # Время на сервере
+from FinamPy.grpc.marketdata.marketdata_service_pb2 import SubscribeBarsResponse, Bar  # Подписка на минутные бары тикера
+from FinamPy.grpc.marketdata.marketdata_service_pb2 import TimeFrame  # Временной интервал Финама
 
 
 def on_new_bar(bars: SubscribeBarsResponse, finam_timeframe: TimeFrame.ValueType):  # Обработчик события прихода нового бара
