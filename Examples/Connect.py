@@ -26,6 +26,7 @@ def on_new_bar(bars: SubscribeBarsResponse, finam_timeframe: TimeFrame.ValueType
 
 if __name__ == '__main__':  # Точка входа при запуске этого скрипта
     logger = logging.getLogger('FinamPy.Connect')  # Будем вести лог
+    # fp_provider = FinamPy('<Токен>')  # При первом подключении нужно передать токен
     fp_provider = FinamPy()  # Подключаемся ко всем торговым счетам
 
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',  # Формат сообщения
