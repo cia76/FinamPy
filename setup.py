@@ -7,7 +7,7 @@ setup(name='FinamPy',
       url='https://github.com/cia76/FinamPy',
       packages=find_packages(),
       install_requires=[
-            'pytz',  # ВременнЫе зоны
+            'keyring',  # Безопасное хранение торгового токена
             'grpcio',  # gRPC
             'protobuf',  # proto
             'googleapis-common-protos',  # Google API
