@@ -1,11 +1,11 @@
-from datetime import datetime, timedelta, UTC
 import logging  # Будем вести лог
 import os
 import pickle  # Хранение торгового токена
+from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo  # ВременнАя зона
 from typing import Any  # Любой тип
 from queue import SimpleQueue  # Очередь подписок/отписок
 
-from pytz import timezone, utc  # Работаем с временнОй зоной и UTC
 from grpc import ssl_channel_credentials, secure_channel, RpcError  # Защищенный канал
 
 # Структуры
@@ -24,7 +24,7 @@ from .grpc.marketdata.marketdata_service_pb2_grpc import MarketDataServiceStub  
 
 class FinamPy:
     """Работа с Finam Trade API gRPC https://tradeapi.finam.ru из Python"""
-    tz_msk = timezone('Europe/Moscow')  # Время UTC будем приводить к московскому времени
+    tz_msk = ZoneInfo('Europe/Moscow')  # Время UTC будем приводить к московскому времени
     min_history_date = datetime(2015, 6, 29)  # Первая дата, с которой можно получать историю
     server = 'api.finam.ru:443'  # Сервер для исполнения вызовов
     jwt_token_ttl = 15 * 60  # Время жизни токена JWT 15 минут в секундах
@@ -60,7 +60,7 @@ class FinamPy:
                 with open(config_filename, 'rb') as file:  # Пытаемся открыть файл конфигурации
                     self.access_token = pickle.load(file)
             except IOError:
-                self.logger.fatal('Торговый токен не найден')
+                self.logger.fatal('Торговый токен не найден в pkl файле. Вызовите fp_provider = FinamPy(''<Токен>'')')
         else:  # Если указан торговый токен
             self.access_token = access_token  # Торговый токен
             with open(config_filename, 'wb') as file:  # Создаем файл конфигурации
@@ -188,14 +188,11 @@ class FinamPy:
 
     @staticmethod
     def finam_board_to_board(finam_board: str) -> str:
-        """
-        Канонический код режима торгов из кода режима торгов Финама
+        """Канонический код режима торгов из кода режима торгов Финама
 
-        Args:
-            finam_board (str): Код режима торгов Финама
-
-        Returns:
-            str: Канонический код режима торгов
+        :param str finam_board: Код режима торгов Финама
+        :return: Канонический код режима торгов
+        :rtype: str
         """
         board_map = {
             'FUT': 'SPBFUT',  # Фьючерсы
@@ -205,14 +202,11 @@ class FinamPy:
 
     @staticmethod
     def board_to_finam_board(board: str) -> str:
-        """
-        Код режима торгов Финама из канонического кода режима торгов
+        """Код режима торгов Финама из канонического кода режима торгов
 
-        Args:
-            board (str): Канонический код режима торгов
-
-        Returns:
-            str: Код режима торгов Финама
+        :param str board: Канонический код режима торгов
+        :return: Код режима торгов Финама
+        :rtype: str
         """
         finam_board_map = {
             'SPBFUT': 'FUT',  # Фьючерсы
@@ -337,18 +331,20 @@ class FinamPy:
 
         :param datetime dt: Московское время
         :return: Кол-во секунд, прошедших с 01.01.1970 00:00 UTC
+        :rtype: int
         """
-        dt_msk = self.tz_msk.localize(dt)  # Заданное время ставим в зону МСК
+        dt_msk = dt.replace(tzinfo=self.tz_msk)  # Заданное время ставим в зону МСК
         return int(dt_msk.timestamp())  # Переводим в кол-во секунд, прошедших с 01.01.1970 в UTC
 
     def timestamp_to_msk_datetime(self, seconds) -> datetime:
-        """Перевод кол-ва секунд, прошедших с 01.01.1970 00:00 UTC в московское время
+        """Перевод кол-ва секунд, прошедших с 01.01.1970 00:00 UTC, в московское время
 
         :param int seconds: Кол-во секунд, прошедших с 01.01.1970 00:00 UTC
         :return: Московское время без временнОй зоны
+        :rtype: datetime
         """
-        dt_utc = datetime.fromtimestamp(seconds, UTC)  # Переводим кол-во секунд, прошедших с 01.01.1970 в UTC
-        return self.utc_to_msk_datetime(dt_utc)  # Переводим время из UTC в московское
+        dt_utc = datetime.fromtimestamp(seconds, timezone.utc)  # Переводим кол-во секунд, прошедших с 01.01.1970 в UTC
+        return dt_utc.astimezone(self.tz_msk).replace(tzinfo=None)  # Заданное время ставим в зону МСК. Убираем временнУю зону
 
     def msk_to_utc_datetime(self, dt, tzinfo=False) -> datetime:
         """Перевод времени из московского в UTC
@@ -356,9 +352,10 @@ class FinamPy:
         :param datetime dt: Московское время
         :param bool tzinfo: Отображать временнУю зону
         :return: Время UTC
+        :rtype: datetime
         """
-        dt_msk = self.tz_msk.localize(dt)  # Задаем временнУю зону МСК
-        dt_utc = dt_msk.astimezone(utc)  # Переводим в UTC
+        dt_msk = dt.replace(tzinfo=self.tz_msk)  # Заданное время ставим в зону МСК
+        dt_utc = dt_msk.astimezone(timezone.utc)  # Переводим в зону UTC
         return dt_utc if tzinfo else dt_utc.replace(tzinfo=None)
 
     def utc_to_msk_datetime(self, dt, tzinfo=False) -> datetime:
@@ -367,9 +364,10 @@ class FinamPy:
         :param datetime dt: Время UTC
         :param bool tzinfo: Отображать временнУю зону
         :return: Московское время
+        :rtype: datetime
         """
-        dt_utc = utc.localize(dt) if dt.tzinfo is None else dt  # Задаем временнУю зону UTC если не задана
-        dt_msk = dt_utc.astimezone(self.tz_msk)  # Переводим в МСК
+        dt_utc = dt.replace(tzinfo=timezone.utc)  # Заданное время ставим в зону UTC
+        dt_msk = dt_utc.astimezone(self.tz_msk)  # Переводим в зону МСК
         return dt_msk if tzinfo else dt_msk.replace(tzinfo=None)
 
 
