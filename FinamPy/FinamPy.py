@@ -395,9 +395,9 @@ class FinamPy:
                 keyring.set_password(service, f'{username}{index}', token_part)  # Сохраняем часть токена
             self.logger.debug(f'Частой сохраненного токена в хранилище: {len(token_parts)}')
         except keyring.errors.KeyringError as e:
-            self.logger.critical(f'Ошибка сохранения в системное хранилище: {e}')
+            self.logger.fatal(f'Ошибка сохранения в системное хранилище: {e}')
         except Exception as e:
-            self.logger.critical(f'Неожиданная ошибка при сохранении токена: {e}')
+            self.logger.fatal(f'Ошибка при сохранении токена: {e}')
 
     def clear_long_token_from_keyring(self, service: str, username: str) -> None:
         """Удаление всех частей токена из системного хранилища keyring"""
