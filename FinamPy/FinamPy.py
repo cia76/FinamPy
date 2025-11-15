@@ -376,7 +376,7 @@ class FinamPy:
                 token_parts.append(token_part)  # Добавляем часть токена
                 index += 1  # Переходим к следующей части токена
             if not token_parts:  # Если токен не найден
-                self.logger.error(f'Токен не найден в системном хранилище. Передайте токен при создании объекта: FinamPy("<Токен>")')
+                self.logger.error(f'Токен не найден в системном хранилище. Вызовите fp_provider = FinamPy("<Токен>")')
                 return None
             token = ''.join(token_parts)  # Собираем токен из частей
             self.logger.debug('Токен успешно загружен из системного хранилища')
@@ -385,6 +385,19 @@ class FinamPy:
             self.logger.fatal(f'Ошибка доступа к системному хранилищу: {e}')
         except Exception as e:
             self.logger.fatal(f'Ошибка при загрузке токена: {e}')
+
+    def set_long_token_to_keyring(self, service: str, username: str, token: str, password_split_size: int = 500) -> None:
+        """Установка токена в системное хранилище keyring по частям"""
+        try:
+            self.clear_long_token_from_keyring(service, username)  # Очищаем предыдущие части токена
+            token_parts = [token[i:i + password_split_size] for i in range(0, len(token), password_split_size)]  # Разбиваем токен на части заданного размера
+            for index, token_part in enumerate(token_parts):  # Пробегаемся по частям токена
+                keyring.set_password(service, f'{username}{index}', token_part)  # Сохраняем часть токена
+            self.logger.debug(f'Частой сохраненного токена в хранилище: {len(token_parts)}')
+        except keyring.errors.KeyringError as e:
+            self.logger.critical(f'Ошибка сохранения в системное хранилище: {e}')
+        except Exception as e:
+            self.logger.critical(f'Неожиданная ошибка при сохранении токена: {e}')
 
     def clear_long_token_from_keyring(self, service: str, username: str) -> None:
         """Удаление всех частей токена из системного хранилища keyring"""
@@ -397,19 +410,6 @@ class FinamPy:
                 index += 1  # Переходим к следующей части токена
         except keyring.errors.KeyringError as e:
             self.logger.fatal(f'Ошибка доступа к системному хранилищу: {e}')
-
-    def set_long_token_to_keyring(self, service: str, username: str, token: str, password_split_size: int = 500) -> None:
-        """Установка токена в системное хранилище keyring по частям"""
-        try:
-            self.clear_long_token_from_keyring(service, username)  # Очищаем предыдущие части токена
-            token_parts = [token[i:i + password_split_size] for i in range(0, len(token), password_split_size)]  # Разбиваем токен на части заданного размера
-            for index, token_part in enumerate(token_parts):  # Пробегаемся по частям токена
-                keyring.set_password(service, f'{username}{index}', token_part)
-            self.logger.info(f'Токен сохранён в системном хранилище ({len(token_parts)} частей)')
-        except keyring.errors.KeyringError as e:
-            self.logger.critical(f'Ошибка сохранения в системное хранилище: {e}')
-        except Exception as e:
-            self.logger.critical(f'Неожиданная ошибка при сохранении токена: {e}')
 
 
 class Event:
