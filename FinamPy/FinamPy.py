@@ -1,11 +1,11 @@
 import logging  # Будем вести лог
-import os
-import pickle  # Хранение торгового токена
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo  # ВременнАя зона
 from typing import Any  # Любой тип
 from queue import SimpleQueue  # Очередь подписок/отписок
 
+import keyring  # Безопасное хранение торгового токена
+import keyring.errors  # Ошибки хранилища
 from grpc import ssl_channel_credentials, secure_channel, RpcError  # Защищенный канал
 
 # Структуры
@@ -54,17 +54,11 @@ class FinamPy:
         self.on_order = Event()  # Свои заявки
         self.on_trade = Event()  # Свои сделки
 
-        config_filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.pkl')  # Полный путь к файлу конфигурации
         if access_token is None:  # Если торговый токен не указан
-            try:
-                with open(config_filename, 'rb') as file:  # Пытаемся открыть файл конфигурации
-                    self.access_token = pickle.load(file)
-            except IOError:
-                self.logger.fatal('Торговый токен не найден в pkl файле. Вызовите fp_provider = FinamPy(''<Токен>'')')
+            self.access_token = self.get_long_token_from_keyring('FinamPy', 'access_token')  # то получаем его из защищенного хранилища по частям
         else:  # Если указан торговый токен
             self.access_token = access_token  # Торговый токен
-            with open(config_filename, 'wb') as file:  # Создаем файл конфигурации
-                pickle.dump(self.access_token, file)
+            self.set_long_token_to_keyring('FinamPy', 'access_token', self.access_token)  # Сохраняем его в защищенное хранилище
 
         self.jwt_token = ''  # Токен JWT
         self.jwt_token_issued = 0  # UNIX время в секундах выдачи токена JWT
@@ -369,6 +363,53 @@ class FinamPy:
         dt_utc = dt.replace(tzinfo=timezone.utc)  # Заданное время ставим в зону UTC
         dt_msk = dt_utc.astimezone(self.tz_msk)  # Переводим в зону МСК
         return dt_msk if tzinfo else dt_msk.replace(tzinfo=None)
+
+    def get_long_token_from_keyring(self, service: str, username: str) -> str | None:
+        """Получение токена из системного хранилища keyring по частям"""
+        try:
+            index = 0  # Номер части токена
+            token_parts = []  # Части токена
+            while True:  # Пока есть части токена
+                token_part = keyring.get_password(service, f'{username}{index}')  # Получаем часть токена
+                if token_part is None:  # Если части токена нет
+                    break  # то выходим, дальше не продолжаем
+                token_parts.append(token_part)  # Добавляем часть токена
+                index += 1  # Переходим к следующей части токена
+            if not token_parts:  # Если токен не найден
+                self.logger.error(f'Токен не найден в системном хранилище. Передайте токен при создании объекта: FinamPy("<Токен>")')
+                return None
+            token = ''.join(token_parts)  # Собираем токен из частей
+            self.logger.debug('Токен успешно загружен из системного хранилища')
+            return token
+        except keyring.errors.KeyringError as e:
+            self.logger.fatal(f'Ошибка доступа к системному хранилищу: {e}')
+        except Exception as e:
+            self.logger.fatal(f'Ошибка при загрузке токена: {e}')
+
+    def clear_long_token_from_keyring(self, service: str, username: str) -> None:
+        """Удаление всех частей токена из системного хранилища keyring"""
+        try:
+            index = 0  # Номер части токена
+            while True:  # Пока есть части токена
+                if keyring.get_password(service, f'{username}{index}') is None:  # Если части токена нет
+                    break  # то выходим, дальше не продолжаем
+                keyring.delete_password(service, f'{username}{index}')  # Удаляем часть токена
+                index += 1  # Переходим к следующей части токена
+        except keyring.errors.KeyringError as e:
+            self.logger.fatal(f'Ошибка доступа к системному хранилищу: {e}')
+
+    def set_long_token_to_keyring(self, service: str, username: str, token: str, password_split_size: int = 500) -> None:
+        """Установка токена в системное хранилище keyring по частям"""
+        try:
+            self.clear_long_token_from_keyring(service, username)  # Очищаем предыдущие части токена
+            token_parts = [token[i:i + password_split_size] for i in range(0, len(token), password_split_size)]  # Разбиваем токен на части заданного размера
+            for index, token_part in enumerate(token_parts):  # Пробегаемся по частям токена
+                keyring.set_password(service, f'{username}{index}', token_part)
+            self.logger.info(f'Токен сохранён в системном хранилище ({len(token_parts)} частей)')
+        except keyring.errors.KeyringError as e:
+            self.logger.critical(f'Ошибка сохранения в системное хранилище: {e}')
+        except Exception as e:
+            self.logger.critical(f'Неожиданная ошибка при сохранении токена: {e}')
 
 
 class Event:
