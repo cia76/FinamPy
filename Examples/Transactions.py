@@ -30,8 +30,9 @@ if __name__ == '__main__':  # Точка входа при запуске это
 
     dataname = 'TQBR.SBER'  # Тикер
 
-    finam_board, symbol = fp_provider.dataname_to_finam_board_ticker(dataname)  # Код режима торгов Финама и тикер
-    mic = fp_provider.get_mic(finam_board, symbol)  # Биржа тикера
+    finam_board, ticker = fp_provider.dataname_to_finam_board_ticker(dataname)  # Код режима торгов Финама и тикер
+    mic = fp_provider.get_mic(finam_board, ticker)  # Биржа тикера
+    symbol = f'{ticker}@{mic}'  # Тикер Финама
     account_id = fp_provider.account_ids[0]  # Торговый счет, где будут выставляться заявки
     si: GetAssetResponse = fp_provider.call_function(fp_provider.assets_stub.GetAsset, GetAssetRequest(symbol=symbol, account_id=account_id))
     quantity = Decimal(value=str(int(float(si.lot_size.value))))  # Количество в шт
@@ -46,32 +47,32 @@ if __name__ == '__main__':  # Точка входа при запуске это
         account_id=account_id))  # по торговому счету
 
     # Новая рыночная заявка на покупку (открытие позиции)
-    logger.info(f'Заявка {symbol} на покупку минимального лота {quantity} шт. по рыночной цене')
-    order_state: OrderState = fp_provider.call_function(
-        fp_provider.orders_stub.PlaceOrder,
-        Order(account_id=account_id, symbol=symbol, quantity=quantity, side=side.SIDE_BUY, type=OrderType.ORDER_TYPE_MARKET,
-              client_order_id=f'MarketBuy {int(datetime.now().timestamp())}')
-    )  # Выставление заявки
-    logger.debug(order_state)
-    logger.info(f'Номер заявки: {order_state.order_id}')
-    logger.info(f'Номер исполнения заявки: {order_state.exec_id}')
-    logger.info(f'Статус заявки: {order_state.status}')
-
-    sleep(10)  # Ждем 10 секунд
+    # logger.info(f'Заявка {symbol} на покупку минимального лота {quantity} шт. по рыночной цене')
+    # order_state: OrderState = fp_provider.call_function(
+    #     fp_provider.orders_stub.PlaceOrder,
+    #     Order(account_id=account_id, symbol=symbol, quantity=quantity, side=side.SIDE_BUY, type=OrderType.ORDER_TYPE_MARKET,
+    #           client_order_id=f'MarketBuy {int(datetime.now().timestamp())}')
+    # )  # Выставление заявки
+    # logger.debug(order_state)
+    # logger.info(f'Номер заявки: {order_state.order_id}')
+    # logger.info(f'Номер исполнения заявки: {order_state.exec_id}')
+    # logger.info(f'Статус заявки: {order_state.status}')
+    #
+    # sleep(10)  # Ждем 10 секунд
 
     # Новая рыночная заявка на продажу (закрытие позиции)
-    logger.info(f'Заявка {symbol} на продажу минимального лота {quantity} шт. по рыночной цене')
-    order_state: OrderState = fp_provider.call_function(
-        fp_provider.orders_stub.PlaceOrder,
-        Order(account_id=account_id, symbol=symbol, quantity=quantity, side=side.SIDE_SELL, type=OrderType.ORDER_TYPE_MARKET,
-              client_order_id=f'MarketSell {int(datetime.now().timestamp())}')
-    )  # Выставление заявки
-    logger.debug(order_state)
-    logger.info(f'Номер заявки: {order_state.order_id}')
-    logger.info(f'Номер исполнения заявки: {order_state.exec_id}')
-    logger.info(f'Статус заявки: {order_state.status}')
-
-    sleep(10)  # Ждем 10 секунд
+    # logger.info(f'Заявка {symbol} на продажу минимального лота {quantity} шт. по рыночной цене')
+    # order_state: OrderState = fp_provider.call_function(
+    #     fp_provider.orders_stub.PlaceOrder,
+    #     Order(account_id=account_id, symbol=symbol, quantity=quantity, side=side.SIDE_SELL, type=OrderType.ORDER_TYPE_MARKET,
+    #           client_order_id=f'MarketSell {int(datetime.now().timestamp())}')
+    # )  # Выставление заявки
+    # logger.debug(order_state)
+    # logger.info(f'Номер заявки: {order_state.order_id}')
+    # logger.info(f'Номер исполнения заявки: {order_state.exec_id}')
+    # logger.info(f'Статус заявки: {order_state.status}')
+    #
+    # sleep(10)  # Ждем 10 секунд
 
     quote_response: QuoteResponse = fp_provider.call_function(fp_provider.marketdata_stub.LastQuote, QuoteRequest(symbol=symbol))  # Получение последней котировки по инструменту
     last_price = float(quote_response.quote.last.value)  # Последняя цена сделки
