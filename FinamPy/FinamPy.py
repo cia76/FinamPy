@@ -66,6 +66,8 @@ class FinamPy:
         self.account_ids = list(self.token_details().account_ids)  # Из инфрмации о токене получаем список счетов
 
         self.exchanges: ExchangesResponse = self.call_function(self.assets_stub.Exchanges, ExchangesRequest())  # Список всех бирж
+        # TODO: При запуске не берем справочник. Как он нам потребуется, то делаем запрос. Результаты храним внутри FinamPy.
+        #  Если сегодня уже получали данные, то берем локально. Иначе, снова делаем запрос, сохраняем данные, и далее берем локально.
         self.assets: AssetsResponse = self.call_function(self.assets_stub.Assets, AssetsRequest())  # Список всех доступных инструментов
 
     # Подключение
@@ -107,6 +109,7 @@ class FinamPy:
                 return None  # Возвращаем пустое значение
 
     # Подписки
+    # TODO: Финам отменяет подписку через 24 часа после оформления. Поэтому, нужно заранее переоформлять каждую подписку.
 
     def subscribe_quote_thread(self, symbols):
         """Подписка на котировки по инструменту"""
