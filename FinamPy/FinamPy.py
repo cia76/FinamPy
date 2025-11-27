@@ -9,10 +9,10 @@ import keyring.errors  # Ошибки хранилища
 from grpc import ssl_channel_credentials, secure_channel, RpcError  # Защищенный канал
 
 # Структуры
-from FinamPy.grpc.auth import auth_service_pb2 as auth_service  # Подключение https://tradeapi.finam.ru/docs/guides/grpc/auth_service
+from FinamPy.grpc.auth import auth_service_pb2 as auth_service  # Подключение
 from FinamPy.grpc.assets.assets_service_pb2 import ExchangesRequest, ExchangesResponse, AssetsRequest, AssetsResponse, GetAssetResponse, GetAssetRequest  # Информация о биржах и тикерах
-from FinamPy.grpc.marketdata import marketdata_service_pb2 as marketdata_service  # Рыночные данные https://tradeapi.finam.ru/docs/guides/grpc/marketdata_service/
-from FinamPy.grpc.orders import orders_service_pb2 as orders_service  # Заявки https://tradeapi.finam.ru/docs/guides/grpc/orders_service/
+from FinamPy.grpc.marketdata import marketdata_service_pb2 as marketdata_service  # Рыночные данные
+from FinamPy.grpc.orders import orders_service_pb2 as orders_service  # Заявки
 
 # gRPC - Сервисы
 from FinamPy.grpc.auth.auth_service_pb2_grpc import AuthServiceStub  # Подлключение https://tradeapi.finam.ru/docs/guides/grpc/auth_service
@@ -66,9 +66,8 @@ class FinamPy:
         self.account_ids = list(self.token_details().account_ids)  # Из инфрмации о токене получаем список счетов
 
         self.exchanges: ExchangesResponse = self.call_function(self.assets_stub.Exchanges, ExchangesRequest())  # Список всех бирж
-        # TODO: При запуске не берем справочник. Как он нам потребуется, то делаем запрос. Результаты храним внутри FinamPy.
-        #  Если сегодня уже получали данные, то берем локально. Иначе, снова делаем запрос, сохраняем данные, и далее берем локально.
-        self.assets: AssetsResponse = self.call_function(self.assets_stub.Assets, AssetsRequest())  # Список всех доступных инструментов
+        self.assets = None  # Справочник всех доступных инструментов
+        self.symbols = {}  # Справочник тикеров
 
     # Подключение
 
@@ -223,6 +222,8 @@ class FinamPy:
             ticker = '.'.join(symbol_parts[1:])  # Код тикера
         else:  # Если тикер задан без кода режима торгов
             ticker = dataname  # Код тикера
+            if self.assets is None:  # Если нет справочника инструментов
+                self.assets: AssetsResponse = self.call_function(self.assets_stub.Assets, AssetsRequest())  # то получаем его из Финама
             mic = next((asset.mic for asset in self.assets.assets if asset.ticker == ticker), None)  # Биржа тикера из справочника
             if mic is None:  # Если биржа не найдена
                 return None, ticker  # то возвращаем без кода режима торгов
@@ -252,14 +253,20 @@ class FinamPy:
                 return exchange.mic  # то биржа найдена
         return None  # Если биржа не была найдена, то возвращаем пустое значение
 
-    def get_symbol_info(self, ticker: str, mic: str) -> GetAssetResponse:
+    def get_symbol_info(self, ticker: str, mic: str, reload=False) -> GetAssetResponse | None:
         """Спецификация тикера
 
         :param str ticker: Тикер
         :param str mic: Код биржи по ISO 10383 Market Identifier Codes. MISX - МосБиржа - все основные рынки, RTSX - МосБиржа - рынок деривативов
-        :return: Спецификация тикера или None, если тикер не найден
+        :param bool reload: Получить информацию из Финам
+        :return: Спецификация тикера из кэша/Финам или None, если тикер не найден
         """
-        return self.call_function(self.assets_stub.GetAsset, GetAssetRequest(symbol=f'{ticker}@{mic}', account_id=self.account_ids[0]))
+        if reload or (ticker, mic) not in self.symbols:  # Если нужно получить информацию из Финам или нет информации о тикере в справочнике
+            si = self.call_function(self.assets_stub.GetAsset, GetAssetRequest(symbol=f'{ticker}@{mic}', account_id=self.account_ids[0]))  # Получаем информацию о тикере из Финам
+            if si is None:  # Если тикер не найден
+                return None  # то возвращаем пустое значение
+            self.symbols[(ticker, mic)] = si  # Заносим информацию о тикере в справочник
+        return self.symbols[(ticker, mic)]  # Возвращаем значение из справочника
 
     @staticmethod
     def timeframe_to_finam_timeframe(tf) -> tuple[marketdata_service.TimeFrame.ValueType, timedelta, bool]:
