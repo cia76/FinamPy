@@ -327,19 +327,20 @@ class FinamPy:
         :return: Цена в Финам
         """
         si = self.get_symbol_info(ticker, mic)  # Спецификация тикера
-        decimals = si.decimals  # Кол-во десятичных знаков
         board = si.board  # Режим торгов
         if board in ('TQOB', 'TQCB', 'TQRD', 'TQIR'):  # Для облигаций (Т+ Гособлигации, Т+ Облигации, Т+ Облигации Д, Т+ Облигации ПИР)
             finam_price = price / 10  # Цена -> % от номинала облигации (* 100 / 1000 = / 10)
         elif board == 'FUT':  # Для рынка фьючерсов
-            min_price_step = si.min_step / (10 ** si.decimals)  # Шаг цены
+            # TODO: Выделить фьючерсы на сырье. У них тоже лот = 1
             lot_size = 1 if si.expiration_date.year == 0 else int(float(si.lot_size.value))  # Рамер лота в штуках. Для вечных фьючерсов (нет даты экспирации) не используется
-            finam_price = price * lot_size // min_price_step * min_price_step
+            finam_price = price * lot_size
         elif board == 'CETS':  # Для валют
             finam_price = price
         else:  # Для акций
             finam_price = price
-        finam_price = round(finam_price, decimals)  # Проверяем цену в Алор на корректность. Округляем по кол-ву десятичных знаков тикера
+        decimals = si.decimals  # Кол-во десятичных знаков
+        min_price_step = si.min_step / (10 ** si.decimals)  # Шаг цены
+        finam_price = round(finam_price // min_price_step * min_price_step, decimals)  # Проверяем цену в Алор на корректность. Округляем по кол-ву десятичных знаков тикера
         return int(finam_price) if finam_price.is_integer() else finam_price
 
     def finam_price_to_price(self, ticker, mic, finam_price) -> float:
@@ -352,14 +353,15 @@ class FinamPy:
         """
         si = self.get_symbol_info(ticker, mic)  # Спецификация тикера
         decimals = si.decimals  # Кол-во десятичных знаков
-        finam_price = round(finam_price, decimals)  # Проверяем цену в Алор на корректность. Округляем по кол-ву десятичных знаков тикера
+        min_price_step = si.min_step / (10 ** si.decimals)  # Шаг цены
+        finam_price = round(finam_price // min_price_step * min_price_step, decimals)  # Проверяем цену в Алор на корректность. Округляем по кол-ву десятичных знаков тикера
         board = si.board  # Режим торгов
         if board in ('TQOB', 'TQCB', 'TQRD', 'TQIR'):  # Для облигаций (Т+ Гособлигации, Т+ Облигации, Т+ Облигации Д, Т+ Облигации ПИР)
             price = finam_price * 10  # % от номинала облигации -> Цена (/ 100 * 1000 = * 10)
         elif board == 'FUT':  # Для рынка фьючерсов
-            min_price_step = si.min_step / (10 ** si.decimals)  # Шаг цены
+            # TODO: Выделить фьючерсы на сырье. У них тоже лот = 1
             lot_size = 1 if si.expiration_date.year == 0 else int(float(si.lot_size.value))  # Рамер лота в штуках. Для вечных фьючерсов (нет даты экспирации) не используется
-            price = finam_price // min_price_step * min_price_step / lot_size
+            price = finam_price / lot_size
         elif board == 'CETS':  # Для валют
             price = finam_price
         else:  # Для акций
