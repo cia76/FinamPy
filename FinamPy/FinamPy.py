@@ -253,7 +253,7 @@ class FinamPy:
                 return exchange.mic  # то биржа найдена
         return None  # Если биржа не была найдена, то возвращаем пустое значение
 
-    def get_symbol_info(self, ticker: str, mic: str, reload=False) -> GetAssetResponse | None:
+    def get_symbol_info(self, ticker, mic, reload=False) -> GetAssetResponse | None:
         """Спецификация тикера
 
         :param str ticker: Тикер
@@ -269,7 +269,7 @@ class FinamPy:
         return self.symbols[(ticker, mic)]  # Возвращаем значение из справочника
 
     @staticmethod
-    def timeframe_to_finam_timeframe(tf) -> tuple[marketdata_service.TimeFrame.ValueType, timedelta, bool]:
+    def timeframe_to_finam_timeframe(tf: str) -> tuple[marketdata_service.TimeFrame.ValueType, timedelta, bool]:
         """Перевод временнОго интервала во временной интервал Финама
 
         :param str tf: Временной интервал https://ru.wikipedia.org/wiki/Таймфрейм
@@ -318,17 +318,53 @@ class FinamPy:
             return finam_tf_map[finam_tf]  # то возвращаем временной интервал
         raise NotImplementedError(f'Временной интервал Финама {finam_tf} не поддерживается')  # С остальными временнЫми интервалами Финима не работаем
 
-    @staticmethod
-    def price_to_finam_price(board: str, price: float) -> float:
-        if board in ('TQOB', 'TQCB', 'TQRD', 'TQIR'):  # Для облигаций (Т+ Гособлигации, Т+ Облигации, Т+ Облигации Д, Т+ Облигации ПИР)
-            return price / 10  # Делим цену на 10
-        return price  # В остальных случаях возвращаем цену без изменений
+    def price_to_finam_price(self, ticker, mic, price) -> int | float:
+        """Перевод цены в рублях за штуку в цену Финам
 
-    @staticmethod
-    def finam_price_to_price(board: str, finam_price: float) -> float:
+        :param str ticker: Тикер
+        :param str mic: Код биржи по ISO 10383 Market Identifier Codes. MISX - МосБиржа - все основные рынки, RTSX - МосБиржа - рынок деривативов
+        :param float price: Цена в рублях за штуку
+        :return: Цена в Финам
+        """
+        si = self.get_symbol_info(ticker, mic)  # Спецификация тикера
+        decimals = si.decimals  # Кол-во десятичных знаков
+        board = si.board  # Режим торгов
         if board in ('TQOB', 'TQCB', 'TQRD', 'TQIR'):  # Для облигаций (Т+ Гособлигации, Т+ Облигации, Т+ Облигации Д, Т+ Облигации ПИР)
-            return finam_price * 10  # Умножаем цену на 10
-        return finam_price  # В остальных случаях возвращаем цену без изменений
+            finam_price = price / 10  # Цена -> % от номинала облигации (* 100 / 1000 = / 10)
+        elif board == 'FUT':  # Для рынка фьючерсов
+            min_price_step = si.min_step / (10 ** si.decimals)  # Шаг цены
+            lot_size = 1 if si.expiration_date.year == 0 else int(float(si.lot_size.value))  # Рамер лота в штуках. Для вечных фьючерсов (нет даты экспирации) не используется
+            finam_price = price * lot_size // min_price_step * min_price_step
+        elif board == 'CETS':  # Для валют
+            finam_price = price
+        else:  # Для акций
+            finam_price = price
+        finam_price = round(finam_price, decimals)  # Проверяем цену в Алор на корректность. Округляем по кол-ву десятичных знаков тикера
+        return int(finam_price) if finam_price.is_integer() else finam_price
+
+    def finam_price_to_price(self, ticker, mic, finam_price) -> float:
+        """Перевод цены Финам в цену в рублях за штуку
+
+        :param str ticker: Тикер
+        :param str mic: Код биржи по ISO 10383 Market Identifier Codes. MISX - МосБиржа - все основные рынки, RTSX - МосБиржа - рынок деривативов
+        :param float finam_price: Цена в Финам
+        :return: Цена в рублях за штуку
+        """
+        si = self.get_symbol_info(ticker, mic)  # Спецификация тикера
+        decimals = si.decimals  # Кол-во десятичных знаков
+        finam_price = round(finam_price, decimals)  # Проверяем цену в Алор на корректность. Округляем по кол-ву десятичных знаков тикера
+        board = si.board  # Режим торгов
+        if board in ('TQOB', 'TQCB', 'TQRD', 'TQIR'):  # Для облигаций (Т+ Гособлигации, Т+ Облигации, Т+ Облигации Д, Т+ Облигации ПИР)
+            price = finam_price * 10  # % от номинала облигации -> Цена (/ 100 * 1000 = * 10)
+        elif board == 'FUT':  # Для рынка фьючерсов
+            min_price_step = si.min_step / (10 ** si.decimals)  # Шаг цены
+            lot_size = 1 if si.expiration_date.year == 0 else int(float(si.lot_size.value))  # Рамер лота в штуках. Для вечных фьючерсов (нет даты экспирации) не используется
+            price = finam_price // min_price_step * min_price_step / lot_size
+        elif board == 'CETS':  # Для валют
+            price = finam_price
+        else:  # Для акций
+            price = finam_price
+        return price  # Цена в рублях за штуку
 
     def msk_datetime_to_timestamp(self, dt) -> int:
         """Перевод московского времени в кол-во секунд, прошедших с 01.01.1970 00:00 UTC
