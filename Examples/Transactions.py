@@ -40,11 +40,8 @@ if __name__ == '__main__':  # Точка входа при запуске это
     # Свои заявки и сделки
     fp_provider.on_order.subscribe(_on_order)  # Подписываемся на заявки
     fp_provider.on_trade.subscribe(_on_trade)  # Подписываемся на сделки
-    Thread(target=fp_provider.subscriptions_order_trade_handler, name='SubscriptionsOrderTradeThread').start()  # Создаем и запускаем поток обработки своих заявок и сделок
-    fp_provider.order_trade_queue.put(OrderTradeRequest(  # Ставим в буфер команд/сделок
-        action=OrderTradeRequest.Action.ACTION_SUBSCRIBE,  # Подписываемся
-        data_type=OrderTradeRequest.DataType.DATA_TYPE_ALL,  # на свои заявки и сделки
-        account_id=account_id))  # по торговому счету
+    Thread(target=fp_provider.subscribe_orders_trades_thread, name='SubscriptionsOrderTradeThread').start()  # Создаем и запускаем поток обработки своих заявок и сделок
+    fp_provider.subscribe_orders_trades(True, True, account_id)  # Подписываемся на свои заявки и сделки по торговому счету
 
     # Новая рыночная заявка на покупку (открытие позиции)
     # logger.info(f'Заявка {symbol} на покупку минимального лота {quantity} шт. по рыночной цене')
@@ -124,12 +121,9 @@ if __name__ == '__main__':  # Точка входа при запуске это
     sleep(10)  # Ждем 10 секунд
 
     # Отмена подписок
-    fp_provider.order_trade_queue.put(OrderTradeRequest(  # Ставим в буфер команд/сделок
-        action=OrderTradeRequest.Action.ACTION_UNSUBSCRIBE,  # Отписываемся
-        data_type=OrderTradeRequest.DataType.DATA_TYPE_ALL,  # от своих заявок и сделок
-        account_id=account_id))  # по торговому счету
-    fp_provider.on_order.unsubscribe(_on_order)  # Отменяем подписку на заявки
-    fp_provider.on_trade.unsubscribe(_on_trade)  # Отменяем подписку на сделки
+    fp_provider.subscribe_orders_trades(False, False, account_id)  # Отменяем подписку на свои заявки и сделки по торговому счету
+    fp_provider.on_order.unsubscribe(_on_order)  # Сбрасываем обработчик заявок
+    fp_provider.on_trade.unsubscribe(_on_trade)  # Сбрасываем обработчик сделок
 
     # Выход
     fp_provider.close_channel()  # Закрываем канал перед выходом

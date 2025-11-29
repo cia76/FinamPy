@@ -1,16 +1,17 @@
 import logging  # Будем вести лог
 from datetime import datetime, timedelta, timezone
+from time import sleep
 from zoneinfo import ZoneInfo  # ВременнАя зона
 from typing import Any  # Любой тип
 from queue import SimpleQueue  # Очередь подписок/отписок
 
 import keyring  # Безопасное хранение торгового токена
 import keyring.errors  # Ошибки хранилища
-from grpc import ssl_channel_credentials, secure_channel, RpcError  # Защищенный канал
+from grpc import ssl_channel_credentials, secure_channel, RpcError, StatusCode  # Защищенный канал
 
 # Структуры
 from FinamPy.grpc.auth import auth_service_pb2 as auth_service  # Подключение
-from FinamPy.grpc.assets.assets_service_pb2 import ExchangesRequest, ExchangesResponse, AssetsRequest, AssetsResponse, GetAssetResponse, GetAssetRequest  # Информация о биржах и тикерах
+from FinamPy.grpc.assets import assets_service_pb2 as assets_service  # Информация о биржах и тикерах
 from FinamPy.grpc.marketdata import marketdata_service_pb2 as marketdata_service  # Рыночные данные
 from FinamPy.grpc.orders import orders_service_pb2 as orders_service  # Заявки
 
@@ -65,9 +66,10 @@ class FinamPy:
         self.auth()  # Получаем токен JWT
         self.account_ids = list(self.token_details().account_ids)  # Из инфрмации о токене получаем список счетов
 
-        self.exchanges: ExchangesResponse = self.call_function(self.assets_stub.Exchanges, ExchangesRequest())  # Список всех бирж
+        self.exchanges = None  # Список всех бирж
         self.assets = None  # Справочник всех доступных инструментов
         self.symbols = {}  # Справочник тикеров
+        self.subscriptions = {}  # Список подписок на свои заявки и сделки
 
     # Подключение
 
@@ -108,63 +110,115 @@ class FinamPy:
                 return None  # Возвращаем пустое значение
 
     # Подписки
-    # TODO: Финам отменяет подписку через 24 часа после оформления. Поэтому, нужно заранее переоформлять каждую подписку.
 
     def subscribe_quote_thread(self, symbols):
         """Подписка на котировки по инструменту"""
-        try:
-            for event in self.marketdata_stub.SubscribeQuote(request=marketdata_service.SubscribeQuoteRequest(symbols=symbols), metadata=(self.metadata,)):
-                e: marketdata_service.SubscribeQuoteResponse = event  # Приводим пришедшее значение к подписке
-                self.on_quote.trigger(e)
-        except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
-            pass  # Все в порядке, ничего делать не нужно
+        while True:  # Пока мы не закрыли канал
+            try:
+                stream = self.marketdata_stub.SubscribeQuote(request=marketdata_service.SubscribeQuoteRequest(symbols=symbols), metadata=(self.metadata,))  # Поток подписки
+                while True:  # Пока можем получать данные из потока
+                    event: marketdata_service.SubscribeQuoteResponse = next(stream)  # Читаем событие из потока подписки
+                    self.on_quote.trigger(event)  # Вызываем событие
+            except RpcError as rpc_error:
+                if rpc_error.code() == StatusCode.CANCELLED:  # Если закрываем канал (grpc._channel._MultiThreadedRendezvous)
+                    break  # то выходим из потока, дальше не продолжаем
+                else:  # При другой ошибке
+                    sleep(5)  # попытаемся переподключиться через 5 секунд
 
     def subscribe_order_book_thread(self, symbol):
         """Подписка на стакан по инструменту"""
-        try:
-            for event in self.marketdata_stub.SubscribeOrderBook(request=marketdata_service.SubscribeOrderBookRequest(symbol=symbol), metadata=(self.metadata,)):
-                e: marketdata_service.SubscribeOrderBookResponse = event  # Приводим пришедшее значение к подписке
-                self.on_order_book.trigger(e)
-        except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
-            pass  # Все в порядке, ничего делать не нужно
+        while True:  # Пока мы не закрыли канал
+            try:
+                stream = self.marketdata_stub.SubscribeOrderBook(request=marketdata_service.SubscribeOrderBookRequest(symbol=symbol), metadata=(self.metadata,))  # Поток подписки
+                while True:  # Пока можем получать данные из потока
+                    event: marketdata_service.SubscribeOrderBookResponse = next(stream)  # Читаем событие из потока подписки
+                    self.on_order_book.trigger(event)  # Вызываем событие
+            except RpcError as rpc_error:
+                if rpc_error.code() == StatusCode.CANCELLED:  # Если закрываем канал (grpc._channel._MultiThreadedRendezvous)
+                    break  # то выходим из потока, дальше не продолжаем
+                else:  # При другой ошибке
+                    sleep(5)  # попытаемся переподключиться через 5 секунд
 
     def subscribe_latest_trades_thread(self, symbol):
         """Подписка на сделки по инструменту"""
-        try:
-            for event in self.marketdata_stub.SubscribeLatestTrades(request=marketdata_service.SubscribeLatestTradesRequest(symbol=symbol), metadata=(self.metadata,)):
-                e: marketdata_service.SubscribeLatestTradesResponse = event  # Приводим пришедшее значение к подписке
-                self.on_latest_trades.trigger(e)
-        except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
-            pass  # Все в порядке, ничего делать не нужно
+        while True:  # Пока мы не закрыли канал
+            try:
+                stream = self.marketdata_stub.SubscribeLatestTrades(request=marketdata_service.SubscribeLatestTradesRequest(symbol=symbol), metadata=(self.metadata,))  # Поток подписки
+                while True:  # Пока можем получать данные из потока
+                    event: marketdata_service.SubscribeLatestTradesResponse = next(stream)  # Читаем событие из потока подписки
+                    self.on_latest_trades.trigger(event)  # Вызываем событие
+            except RpcError as rpc_error:
+                if rpc_error.code() == StatusCode.CANCELLED:  # Если закрываем канал (grpc._channel._MultiThreadedRendezvous)
+                    break  # то выходим из потока, дальше не продолжаем
+                else:  # При другой ошибке
+                    sleep(5)  # попытаемся переподключиться через 5 секунд
 
     def subscribe_bars_thread(self, symbol, finam_timeframe: marketdata_service.TimeFrame.ValueType):
         """Подписка на свечи по инструменту и временнОму интервалу"""
-        try:
-            for event in self.marketdata_stub.SubscribeBars(request=marketdata_service.SubscribeBarsRequest(symbol=symbol, timeframe=finam_timeframe), metadata=(self.metadata,)):
-                e: marketdata_service.SubscribeBarsResponse = event  # Приводим пришедшее значение к подписке
-                self.on_new_bar.trigger(e, finam_timeframe)
-        except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
-            pass  # Все в порядке, ничего делать не нужно
+        while True:  # Пока мы не закрыли канал
+            try:
+                stream = self.marketdata_stub.SubscribeBars(request=marketdata_service.SubscribeBarsRequest(symbol=symbol, timeframe=finam_timeframe), metadata=(self.metadata,))  # Поток подписки
+                while True:  # Пока можем получать данные из потока
+                    event: marketdata_service.SubscribeBarsResponse = next(stream)  # Читаем событие из потока подписки
+                    self.on_new_bar.trigger(event)  # Вызываем событие
+            except RpcError as rpc_error:
+                if rpc_error.code() == StatusCode.CANCELLED:  # Если закрываем канал (grpc._channel._MultiThreadedRendezvous)
+                    break  # то выходим из потока, дальше не продолжаем
+                else:  # При другой ошибке
+                    sleep(5)  # попытаемся переподключиться через 5 секунд
 
-    def request_order_trade_iterator(self):
+    def subscribe_orders_trades_thread(self):
+        """Подписка на свои заявки и сделки"""
+        while True:  # Пока мы не закрыли канал
+            try:
+                for account_id, (orders, trades) in self.subscriptions.items():  # Для каждого счета
+                    self.subscribe_orders_trades(orders=orders, trades=trades, account_id=account_id)  # Восстанавливаем подписку
+                stream = self.orders_stub.SubscribeOrderTrade(request_iterator=self._request_order_trade_iterator(), metadata=(self.metadata,))  # Двунаправленный поток подписки
+                while True:  # Пока можем получать данные из потока
+                    event: orders_service.OrderTradeResponse = next(stream)  # Читаем событие из потока подписки
+                    if event.orders:  # Если пришли заявки
+                        for order in event.orders:
+                            self.on_order.trigger(order)
+                    if event.trades:  # Если пришли сделки
+                        for t in event.trades:
+                            self.on_trade.trigger(t)
+            except RpcError as rpc_error:
+                if rpc_error.code() == StatusCode.CANCELLED:  # Если закрываем канал (grpc._channel._MultiThreadedRendezvous)
+                    break  # то выходим из потока, дальше не продолжаем
+                else:  # При другой ошибке
+                    sleep(5)  # попытаемся переподключиться через 5 секунд
+
+    def _request_order_trade_iterator(self):
         """Генератор запросов на подписку/отписку своих заявок и сделок"""
         while True:  # Будем пытаться читать из очереди до закрытия канала
             yield self.order_trade_queue.get()  # Возврат из этой функции. При повторном ее вызове исполнение продолжится с этой строки
 
-    def subscriptions_order_trade_handler(self):
-        """Поток обработки подписок на свои заявки и сделки"""
-        events = self.orders_stub.SubscribeOrderTrade(request_iterator=self.request_order_trade_iterator(), metadata=(self.metadata,))
-        try:
-            for event in events:
-                e: orders_service.OrderTradeResponse = event  # Приводим пришедшее значение к подписке
-                if e.orders:  # Если пришли заявки
-                    for order in e.orders:
-                        self.on_order.trigger(order)
-                if e.trades:  # Если пришли сделки
-                    for t in e.trades:
-                        self.on_trade.trigger(t)
-        except RpcError:  # При закрытии канала попадем на эту ошибку (grpc._channel._MultiThreadedRendezvous)
-            pass  # Все в порядке, ничего делать не нужно
+    def subscribe_orders_trades(self, orders=True, trades=True, account_id=None):
+        if account_id is None:  # Если не указан счет
+            account_id = self.account_ids[0]  # то берем первый из списка
+        if orders and trades:  # Если подписываемся на заявки и сделки
+            data_type_subscribe = orders_service.OrderTradeRequest.DataType.DATA_TYPE_ALL
+            data_type_unsubscribe = None
+        elif orders:  # Если подписываемся на заявки
+            data_type_subscribe = orders_service.OrderTradeRequest.DataType.DATA_TYPE_ORDERS
+            data_type_unsubscribe = orders_service.OrderTradeRequest.DataType.DATA_TYPE_TRADES
+        elif trades:  # Если подписываемся на сделки
+            data_type_subscribe = orders_service.OrderTradeRequest.DataType.DATA_TYPE_TRADES
+            data_type_unsubscribe = orders_service.OrderTradeRequest.DataType.DATA_TYPE_ORDERS
+        else:  # Если не подписываемся
+            data_type_subscribe = None
+            data_type_unsubscribe = orders_service.OrderTradeRequest.DataType.DATA_TYPE_ALL
+        if data_type_subscribe is not None:  # Если подписываемся
+            self.order_trade_queue.put(orders_service.OrderTradeRequest(  # Ставим в буфер команд/сделок
+                action=orders_service.OrderTradeRequest.Action.ACTION_SUBSCRIBE,  # Подписываемся
+                data_type=data_type_subscribe,  # на свои заявки/сделки
+                account_id=account_id))  # по торговому счету
+        if data_type_unsubscribe is not None:  # Если отменяем подписку
+            self.order_trade_queue.put(orders_service.OrderTradeRequest(  # Ставим в буфер команд/сделок
+                action=orders_service.OrderTradeRequest.Action.ACTION_UNSUBSCRIBE,  # Отменяем подписку
+                data_type=data_type_unsubscribe,  # на свои заявки/сделки
+                account_id=account_id))  # по торговому счету
+        self.subscriptions[account_id] = (orders, trades)  # Запоминаем подписку
 
     # Выход и закрытие
 
@@ -223,11 +277,11 @@ class FinamPy:
         else:  # Если тикер задан без кода режима торгов
             ticker = dataname  # Код тикера
             if self.assets is None:  # Если нет справочника инструментов
-                self.assets: AssetsResponse = self.call_function(self.assets_stub.Assets, AssetsRequest())  # то получаем его из Финама
+                self.assets: assets_service.AssetsResponse = self.call_function(self.assets_stub.Assets, assets_service.AssetsRequest())  # то получаем его из Финама
             mic = next((asset.mic for asset in self.assets.assets if asset.ticker == ticker), None)  # Биржа тикера из справочника
             if mic is None:  # Если биржа не найдена
                 return None, ticker  # то возвращаем без кода режима торгов
-            si: GetAssetResponse = self.call_function(self.assets_stub.GetAsset, GetAssetRequest(symbol=f'{ticker}@{mic}', account_id=self.account_ids[0]))
+            si: assets_service.GetAssetResponse = self.call_function(self.assets_stub.GetAsset, assets_service.GetAssetRequest(symbol=f'{ticker}@{mic}', account_id=self.account_ids[0]))
             finam_board = si.board  # Код режима торгов
         return finam_board, ticker
 
@@ -247,13 +301,15 @@ class FinamPy:
         :param str ticker: Тикер
         :return: Код биржи по ISO 10383 Market Identifier Codes. MISX - МосБиржа - все основные рынки, RTSX - МосБиржа - рынок деривативов
         """
+        if self.exchanges is None:  # Если нет списка всех бирж
+            self.exchanges: assets_service.ExchangesResponse = self.call_function(self.assets_stub.Exchanges, assets_service.ExchangesRequest())  # то получаем список всех бирж
         for exchange in self.exchanges.exchanges:  # Пробегаемся по всем биржам
             si = self.get_symbol_info(ticker, exchange.mic)
             if si and si.board == finam_board:  # Если информация о тикере найдена, и режим торгов есть на бирже
                 return exchange.mic  # то биржа найдена
         return None  # Если биржа не была найдена, то возвращаем пустое значение
 
-    def get_symbol_info(self, ticker, mic, reload=False) -> GetAssetResponse | None:
+    def get_symbol_info(self, ticker, mic, reload=False) -> assets_service.GetAssetResponse | None:
         """Спецификация тикера
 
         :param str ticker: Тикер
@@ -262,7 +318,7 @@ class FinamPy:
         :return: Спецификация тикера из кэша/Финам или None, если тикер не найден
         """
         if reload or (ticker, mic) not in self.symbols:  # Если нужно получить информацию из Финам или нет информации о тикере в справочнике
-            si = self.call_function(self.assets_stub.GetAsset, GetAssetRequest(symbol=f'{ticker}@{mic}', account_id=self.account_ids[0]))  # Получаем информацию о тикере из Финам
+            si = self.call_function(self.assets_stub.GetAsset, assets_service.GetAssetRequest(symbol=f'{ticker}@{mic}', account_id=self.account_ids[0]))  # Получаем информацию о тикере из Финам
             if si is None:  # Если тикер не найден
                 return None  # то возвращаем пустое значение
             self.symbols[(ticker, mic)] = si  # Заносим информацию о тикере в справочник
