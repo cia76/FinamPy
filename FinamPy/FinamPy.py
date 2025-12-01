@@ -160,7 +160,7 @@ class FinamPy:
                 stream = self.marketdata_stub.SubscribeBars(request=marketdata_service.SubscribeBarsRequest(symbol=symbol, timeframe=finam_timeframe), metadata=(self.metadata,))  # Поток подписки
                 while True:  # Пока можем получать данные из потока
                     event: marketdata_service.SubscribeBarsResponse = next(stream)  # Читаем событие из потока подписки
-                    self.on_new_bar.trigger(event)  # Вызываем событие
+                    self.on_new_bar.trigger(event, finam_timeframe)  # Вызываем событие
             except RpcError as rpc_error:
                 if rpc_error.code() == StatusCode.CANCELLED:  # Если закрываем канал (grpc._channel._MultiThreadedRendezvous)
                     break  # то выходим из потока, дальше не продолжаем
