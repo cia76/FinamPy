@@ -497,7 +497,7 @@ class FinamPy:
             token_parts = [token[i:i + password_split_size] for i in range(0, len(token), password_split_size)]  # Разбиваем токен на части заданного размера
             for index, token_part in enumerate(token_parts):  # Пробегаемся по частям токена
                 keyring.set_password(service, f'{username}{index}', token_part)  # Сохраняем часть токена
-            self.logger.debug(f'Частой сохраненного токена в хранилище: {len(token_parts)}')
+            self.logger.debug(f'Частей сохраненного токена в хранилище: {len(token_parts)}')
         except keyring.errors.KeyringError as e:
             self.logger.fatal(f'Ошибка сохранения в системное хранилище: {e}')
         except Exception as e:

@@ -49,7 +49,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
     tf = 'M1'  # Временной интервал
 
     logger.info(f'Подписка на {tf} бары тикера {dataname}')
-    fp_provider.on_new_bar.subscribe(on_new_bar)  # Подписываемся на новые бары
+    fp_provider.on_new_bar.subscribe(on_new_bar)  # Обработчик события прихода нового бара
     finam_board, ticker = fp_provider.dataname_to_finam_board_ticker(dataname)  # Код режима торгов Финама и тикер
     mic = fp_provider.get_mic(finam_board, ticker)  # Биржа тикера
     finam_tf, _, _ = fp_provider.timeframe_to_finam_timeframe(tf)  # Временной интервал Финам
