@@ -48,7 +48,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
     # order_state: OrderState = fp_provider.call_function(
     #     fp_provider.orders_stub.PlaceOrder,
     #     Order(account_id=account_id, symbol=symbol, quantity=quantity, side=side.SIDE_BUY, type=OrderType.ORDER_TYPE_MARKET,
-    #           client_order_id=f'MarketBuy {int(datetime.now().timestamp())}')
+    #           client_order_id=str(int(datetime.now().timestamp())))
     # )  # Выставление заявки
     # logger.debug(order_state)
     # logger.info(f'Номер заявки: {order_state.order_id}')
@@ -62,7 +62,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
     # order_state: OrderState = fp_provider.call_function(
     #     fp_provider.orders_stub.PlaceOrder,
     #     Order(account_id=account_id, symbol=symbol, quantity=quantity, side=side.SIDE_SELL, type=OrderType.ORDER_TYPE_MARKET,
-    #           client_order_id=f'MarketSell {int(datetime.now().timestamp())}')
+    #           client_order_id=str(int(datetime.now().timestamp())))
     # )  # Выставление заявки
     # logger.debug(order_state)
     # logger.info(f'Номер заявки: {order_state.order_id}')
@@ -80,7 +80,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
     order_state: OrderState = fp_provider.call_function(
         fp_provider.orders_stub.PlaceOrder,
         Order(account_id=account_id, symbol=symbol, quantity=quantity, side=side.SIDE_BUY, type=OrderType.ORDER_TYPE_LIMIT,
-              limit_price=Decimal(value=str(limit_price)), client_order_id=f'LimitBuy {int(datetime.now().timestamp())}')
+              limit_price=Decimal(value=str(limit_price)), client_order_id=str(int(datetime.now().timestamp())))
     )  # Выставление заявки
     logger.debug(order_state)
     order_id = order_state.order_id  # Номер заявки
@@ -103,7 +103,7 @@ if __name__ == '__main__':  # Точка входа при запуске это
     order_state: OrderState = fp_provider.call_function(
         fp_provider.orders_stub.PlaceOrder,
         Order(account_id=account_id, symbol=symbol, quantity=quantity, side=side.SIDE_BUY, type=OrderType.ORDER_TYPE_STOP,
-              stop_price=Decimal(value=str(stop_price)), stop_condition=StopCondition.STOP_CONDITION_LAST_UP, client_order_id=f'StopBuy {int(datetime.now().timestamp())}')
+              stop_price=Decimal(value=str(stop_price)), stop_condition=StopCondition.STOP_CONDITION_LAST_UP, client_order_id=str(int(datetime.now().timestamp())))
     )  # Выставление заявки
     logger.debug(order_state)
     order_id = order_state.order_id  # Номер заявки
