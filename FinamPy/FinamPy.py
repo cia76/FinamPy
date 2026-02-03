@@ -372,7 +372,7 @@ class FinamPy:
         }  # Справочник временнЫх интервалов Финама
         if finam_tf in finam_tf_map:  # Если временной интервал Финама есть в справочнике
             return finam_tf_map[finam_tf]  # то возвращаем временной интервал
-        raise NotImplementedError(f'Временной интервал Финама {finam_tf} не поддерживается')  # С остальными временнЫми интервалами Финима не работаем
+        raise NotImplementedError(f'Временной интервал Финама {finam_tf} не поддерживается')  # С остальными временнЫми интервалами Финама не работаем
 
     def price_to_finam_price(self, ticker, mic, price) -> int | float:
         """Перевод цены в рублях за штуку в цену Финам
