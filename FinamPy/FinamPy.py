@@ -119,6 +119,8 @@ class FinamPy:
                 while True:  # Пока можем получать данные из потока
                     event: marketdata_service.SubscribeQuoteResponse = next(stream)  # Читаем событие из потока подписки
                     self.on_quote.trigger(event)  # Вызываем событие
+            except ValueError:  # Если канал уже закрыт (Cannot invoke RPC: Channel closed!)
+                break  # то выходим из потока, дальше не продолжаем
             except RpcError as rpc_error:
                 if rpc_error.code() == StatusCode.CANCELLED:  # Если закрываем канал (grpc._channel._MultiThreadedRendezvous)
                     break  # то выходим из потока, дальше не продолжаем
@@ -133,6 +135,8 @@ class FinamPy:
                 while True:  # Пока можем получать данные из потока
                     event: marketdata_service.SubscribeOrderBookResponse = next(stream)  # Читаем событие из потока подписки
                     self.on_order_book.trigger(event)  # Вызываем событие
+            except ValueError:  # Если канал уже закрыт (Cannot invoke RPC: Channel closed!)
+                break  # то выходим из потока, дальше не продолжаем
             except RpcError as rpc_error:
                 if rpc_error.code() == StatusCode.CANCELLED:  # Если закрываем канал (grpc._channel._MultiThreadedRendezvous)
                     break  # то выходим из потока, дальше не продолжаем
@@ -147,6 +151,8 @@ class FinamPy:
                 while True:  # Пока можем получать данные из потока
                     event: marketdata_service.SubscribeLatestTradesResponse = next(stream)  # Читаем событие из потока подписки
                     self.on_latest_trades.trigger(event)  # Вызываем событие
+            except ValueError:  # Если канал уже закрыт (Cannot invoke RPC: Channel closed!)
+                break  # то выходим из потока, дальше не продолжаем
             except RpcError as rpc_error:
                 if rpc_error.code() == StatusCode.CANCELLED:  # Если закрываем канал (grpc._channel._MultiThreadedRendezvous)
                     break  # то выходим из потока, дальше не продолжаем
@@ -161,6 +167,8 @@ class FinamPy:
                 while True:  # Пока можем получать данные из потока
                     event: marketdata_service.SubscribeBarsResponse = next(stream)  # Читаем событие из потока подписки
                     self.on_new_bar.trigger(event, finam_timeframe)  # Вызываем событие
+            except ValueError:  # Если канал уже закрыт (Cannot invoke RPC: Channel closed!)
+                break  # то выходим из потока, дальше не продолжаем
             except RpcError as rpc_error:
                 if rpc_error.code() == StatusCode.CANCELLED:  # Если закрываем канал (grpc._channel._MultiThreadedRendezvous)
                     break  # то выходим из потока, дальше не продолжаем
@@ -181,6 +189,8 @@ class FinamPy:
                     event: orders_service.SubscribeOrdersResponse = next(stream)  # Читаем событие из потока подписки
                     for order in event.orders:  # Пробегаемся по всем пришедшим заявкам
                         self.on_order.trigger(order)
+            except ValueError:  # Если канал уже закрыт (Cannot invoke RPC: Channel closed!)
+                break  # то выходим из потока, дальше не продолжаем
             except RpcError as rpc_error:
                 if rpc_error.code() == StatusCode.CANCELLED:  # Если закрываем канал (grpc._channel._MultiThreadedRendezvous)
                     break  # то выходим из потока, дальше не продолжаем
@@ -201,6 +211,8 @@ class FinamPy:
                     event: orders_service.SubscribeTradesResponse = next(stream)  # Читаем событие из потока подписки
                     for trade in event.trades:  # Пробегаемся по всем пришедшим сделкам
                         self.on_trade.trigger(trade)
+            except ValueError:  # Если канал уже закрыт (Cannot invoke RPC: Channel closed!)
+                break  # то выходим из потока, дальше не продолжаем
             except RpcError as rpc_error:
                 if rpc_error.code() == StatusCode.CANCELLED:  # Если закрываем канал (grpc._channel._MultiThreadedRendezvous)
                     break  # то выходим из потока, дальше не продолжаем
@@ -222,6 +234,8 @@ class FinamPy:
                     if event.trades:  # Если пришли сделки
                         for t in event.trades:
                             self.on_trade.trigger(t)
+            except ValueError:  # Если канал уже закрыт (Cannot invoke RPC: Channel closed!)
+                break  # то выходим из потока, дальше не продолжаем
             except RpcError as rpc_error:
                 if rpc_error.code() == StatusCode.CANCELLED:  # Если закрываем канал (grpc._channel._MultiThreadedRendezvous)
                     break  # то выходим из потока, дальше не продолжаем
