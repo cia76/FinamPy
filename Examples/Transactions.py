@@ -40,8 +40,8 @@ if __name__ == '__main__':  # Точка входа при запуске это
     # Свои заявки и сделки
     fp_provider.on_order.subscribe(_on_order)  # Подписываемся на заявки
     fp_provider.on_trade.subscribe(_on_trade)  # Подписываемся на сделки
-    Thread(target=fp_provider.subscribe_orders_trades_thread, name='SubscriptionsOrderTradeThread').start()  # Создаем и запускаем поток обработки своих заявок и сделок
-    fp_provider.subscribe_orders_trades(True, True, account_id)  # Подписываемся на свои заявки и сделки по торговому счету
+    Thread(target=fp_provider.subscribe_orders_thread, name='SubscriptionOrdersThread').start()  # Создаем и запускаем поток обработки своих заявок
+    Thread(target=fp_provider.subscribe_trades_thread, name='SubscriptionTradesThread').start()  # Создаем и запускаем поток обработки своих сделок
 
     # Новая рыночная заявка на покупку (открытие позиции)
     # logger.info(f'Заявка {symbol} на покупку минимального лота {quantity} шт. по рыночной цене')
@@ -121,7 +121,6 @@ if __name__ == '__main__':  # Точка входа при запуске это
     sleep(10)  # Ждем 10 секунд
 
     # Отмена подписок
-    fp_provider.subscribe_orders_trades(False, False, account_id)  # Отменяем подписку на свои заявки и сделки по торговому счету
     fp_provider.on_order.unsubscribe(_on_order)  # Сбрасываем обработчик заявок
     fp_provider.on_trade.unsubscribe(_on_trade)  # Сбрасываем обработчик сделок
 

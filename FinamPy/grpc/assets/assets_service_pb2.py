@@ -28,16 +28,19 @@ from google.type import decimal_pb2 as google_dot_type_dot_decimal__pb2
 from google.type import interval_pb2 as google_dot_type_dot_interval__pb2
 from google.type import money_pb2 as google_dot_type_dot_money__pb2
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
+from google.protobuf import wrappers_pb2 as google_dot_protobuf_dot_wrappers__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n0FinamPy/FinamPy/grpc/assets/assets_service.proto\x12\x17grpc.tradeapi.v1.assets\x1a\x1cgoogle/api/annotations.proto\x1a\x16google/type/date.proto\x1a\x19google/type/decimal.proto\x1a\x1agoogle/type/interval.proto\x1a\x17google/type/money.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x12\n\x10\x45xchangesRequest\"I\n\x11\x45xchangesResponse\x12\x34\n\texchanges\x18\x01 \x03(\x0b\x32!.grpc.tradeapi.v1.assets.Exchange\"\x0f\n\rAssetsRequest\"@\n\x0e\x41ssetsResponse\x12.\n\x06\x61ssets\x18\x01 \x03(\x0b\x32\x1e.grpc.tradeapi.v1.assets.Asset\"5\n\x0fGetAssetRequest\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x12\n\naccount_id\x18\x02 \x01(\t\"\xec\x01\n\x10GetAssetResponse\x12\r\n\x05\x62oard\x18\x01 \x01(\t\x12\n\n\x02id\x18\x02 \x01(\t\x12\x0e\n\x06ticker\x18\x03 \x01(\t\x12\x0b\n\x03mic\x18\x04 \x01(\t\x12\x0c\n\x04isin\x18\x05 \x01(\t\x12\x0c\n\x04type\x18\x06 \x01(\t\x12\x0c\n\x04name\x18\x07 \x01(\t\x12\x10\n\x08\x64\x65\x63imals\x18\n \x01(\x05\x12\x10\n\x08min_step\x18\x0b \x01(\x03\x12&\n\x08lot_size\x18\t \x01(\x0b\x32\x14.google.type.Decimal\x12*\n\x0f\x65xpiration_date\x18\x0c \x01(\x0b\x32\x11.google.type.Date\";\n\x15GetAssetParamsRequest\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x12\n\naccount_id\x18\x02 \x01(\t\"\xde\x03\n\x16GetAssetParamsResponse\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x12\n\naccount_id\x18\x02 \x01(\t\x12\x11\n\ttradeable\x18\x03 \x01(\x08\x12\x33\n\x08longable\x18\x04 \x01(\x0b\x32!.grpc.tradeapi.v1.assets.Longable\x12\x35\n\tshortable\x18\x05 \x01(\x0b\x32\".grpc.tradeapi.v1.assets.Shortable\x12,\n\x0elong_risk_rate\x18\x06 \x01(\x0b\x32\x14.google.type.Decimal\x12/\n\x0flong_collateral\x18\x07 \x01(\x0b\x32\x12.google.type.MoneyB\x02\x18\x01\x12-\n\x0fshort_risk_rate\x18\x08 \x01(\x0b\x32\x14.google.type.Decimal\x12\x30\n\x10short_collateral\x18\t \x01(\x0b\x32\x12.google.type.MoneyB\x02\x18\x01\x12/\n\x13long_initial_margin\x18\n \x01(\x0b\x32\x12.google.type.Money\x12\x30\n\x14short_initial_margin\x18\x0b \x01(\x0b\x32\x12.google.type.Money\"0\n\x13OptionsChainRequest\x12\x19\n\x11underlying_symbol\x18\x01 \x01(\t\"X\n\x14OptionsChainResponse\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x30\n\x07options\x18\x02 \x03(\x0b\x32\x1f.grpc.tradeapi.v1.assets.Option\"!\n\x0fScheduleRequest\x12\x0e\n\x06symbol\x18\x01 \x01(\t\"\xab\x01\n\x10ScheduleResponse\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x44\n\x08sessions\x18\x02 \x03(\x0b\x32\x32.grpc.tradeapi.v1.assets.ScheduleResponse.Sessions\x1a\x41\n\x08Sessions\x12\x0c\n\x04type\x18\x01 \x01(\t\x12\'\n\x08interval\x18\x02 \x01(\x0b\x32\x15.google.type.Interval\"\x0e\n\x0c\x43lockRequest\">\n\rClockResponse\x12-\n\ttimestamp\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"%\n\x08\x45xchange\x12\x0b\n\x03mic\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"j\n\x05\x41sset\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\n\n\x02id\x18\x02 \x01(\t\x12\x0e\n\x06ticker\x18\x03 \x01(\t\x12\x0b\n\x03mic\x18\x04 \x01(\t\x12\x0c\n\x04isin\x18\x05 \x01(\t\x12\x0c\n\x04type\x18\x06 \x01(\t\x12\x0c\n\x04name\x18\x07 \x01(\t\"\xbc\x03\n\x06Option\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x32\n\x04type\x18\x02 \x01(\x0e\x32$.grpc.tradeapi.v1.assets.Option.Type\x12+\n\rcontract_size\x18\x04 \x01(\x0b\x32\x14.google.type.Decimal\x12*\n\x0ftrade_first_day\x18\x05 \x01(\x0b\x32\x11.google.type.Date\x12)\n\x0etrade_last_day\x18\x06 \x01(\x0b\x32\x11.google.type.Date\x12$\n\x06strike\x18\x07 \x01(\x0b\x32\x14.google.type.Decimal\x12(\n\nmultiplier\x18\t \x01(\x0b\x32\x14.google.type.Decimal\x12/\n\x14\x65xpiration_first_day\x18\n \x01(\x0b\x32\x11.google.type.Date\x12.\n\x13\x65xpiration_last_day\x18\x0b \x01(\x0b\x32\x11.google.type.Date\"9\n\x04Type\x12\x14\n\x10TYPE_UNSPECIFIED\x10\x00\x12\r\n\tTYPE_CALL\x10\x01\x12\x0c\n\x08TYPE_PUT\x10\x02\"\x9e\x01\n\x08Longable\x12\x37\n\x05value\x18\x01 \x01(\x0e\x32(.grpc.tradeapi.v1.assets.Longable.Status\x12\x13\n\x0bhalted_days\x18\x02 \x01(\x05\"D\n\x06Status\x12\x11\n\rNOT_AVAILABLE\x10\x00\x12\r\n\tAVAILABLE\x10\x01\x12\x18\n\x14\x41\x43\x43OUNT_NOT_APPROVED\x10\x02\"\xc1\x01\n\tShortable\x12\x38\n\x05value\x18\x01 \x01(\x0e\x32).grpc.tradeapi.v1.assets.Shortable.Status\x12\x13\n\x0bhalted_days\x18\x02 \x01(\x05\"e\n\x06Status\x12\x11\n\rNOT_AVAILABLE\x10\x00\x12\r\n\tAVAILABLE\x10\x01\x12\x07\n\x03HTB\x10\x02\x12\x18\n\x14\x41\x43\x43OUNT_NOT_APPROVED\x10\x03\x12\x16\n\x12\x41VAILABLE_STRATEGY\x10\x04\x32\xa7\x07\n\rAssetsService\x12y\n\tExchanges\x12).grpc.tradeapi.v1.assets.ExchangesRequest\x1a*.grpc.tradeapi.v1.assets.ExchangesResponse\"\x15\x82\xd3\xe4\x93\x02\x0f\x12\r/v1/exchanges\x12m\n\x06\x41ssets\x12&.grpc.tradeapi.v1.assets.AssetsRequest\x1a\'.grpc.tradeapi.v1.assets.AssetsResponse\"\x12\x82\xd3\xe4\x93\x02\x0c\x12\n/v1/assets\x12|\n\x08GetAsset\x12(.grpc.tradeapi.v1.assets.GetAssetRequest\x1a).grpc.tradeapi.v1.assets.GetAssetResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/v1/assets/{symbol}\x12\x95\x01\n\x0eGetAssetParams\x12..grpc.tradeapi.v1.assets.GetAssetParamsRequest\x1a/.grpc.tradeapi.v1.assets.GetAssetParamsResponse\"\"\x82\xd3\xe4\x93\x02\x1c\x12\x1a/v1/assets/{symbol}/params\x12\x9b\x01\n\x0cOptionsChain\x12,.grpc.tradeapi.v1.assets.OptionsChainRequest\x1a-.grpc.tradeapi.v1.assets.OptionsChainResponse\".\x82\xd3\xe4\x93\x02(\x12&/v1/assets/{underlying_symbol}/options\x12\x85\x01\n\x08Schedule\x12(.grpc.tradeapi.v1.assets.ScheduleRequest\x1a).grpc.tradeapi.v1.assets.ScheduleResponse\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/v1/assets/{symbol}/schedule\x12p\n\x05\x43lock\x12%.grpc.tradeapi.v1.assets.ClockRequest\x1a&.grpc.tradeapi.v1.assets.ClockResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/v1/assets/clockB&P\x01Z\"trade_api/v1/assets/assets_serviceb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n0FinamPy/FinamPy/grpc/assets/assets_service.proto\x12\x17grpc.tradeapi.v1.assets\x1a\x1cgoogle/api/annotations.proto\x1a\x16google/type/date.proto\x1a\x19google/type/decimal.proto\x1a\x1agoogle/type/interval.proto\x1a\x17google/type/money.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\x12\n\x10\x45xchangesRequest\"I\n\x11\x45xchangesResponse\x12\x34\n\texchanges\x18\x01 \x03(\x0b\x32!.grpc.tradeapi.v1.assets.Exchange\"\x0f\n\rAssetsRequest\"@\n\x0e\x41ssetsResponse\x12.\n\x06\x61ssets\x18\x01 \x03(\x0b\x32\x1e.grpc.tradeapi.v1.assets.Asset\"5\n\x0fGetAssetRequest\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x12\n\naccount_id\x18\x02 \x01(\t\"\x84\x02\n\x10GetAssetResponse\x12\r\n\x05\x62oard\x18\x01 \x01(\t\x12\n\n\x02id\x18\x02 \x01(\t\x12\x0e\n\x06ticker\x18\x03 \x01(\t\x12\x0b\n\x03mic\x18\x04 \x01(\t\x12\x0c\n\x04isin\x18\x05 \x01(\t\x12\x0c\n\x04type\x18\x06 \x01(\t\x12\x0c\n\x04name\x18\x07 \x01(\t\x12\x10\n\x08\x64\x65\x63imals\x18\n \x01(\x05\x12\x10\n\x08min_step\x18\x0b \x01(\x03\x12&\n\x08lot_size\x18\t \x01(\x0b\x32\x14.google.type.Decimal\x12*\n\x0f\x65xpiration_date\x18\x0c \x01(\x0b\x32\x11.google.type.Date\x12\x16\n\x0equote_currency\x18\r \x01(\t\";\n\x15GetAssetParamsRequest\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x12\n\naccount_id\x18\x02 \x01(\t\"\xcb\x04\n\x16GetAssetParamsResponse\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x12\n\naccount_id\x18\x02 \x01(\t\x12\x15\n\ttradeable\x18\x03 \x01(\x08\x42\x02\x18\x01\x12\x33\n\x08longable\x18\x04 \x01(\x0b\x32!.grpc.tradeapi.v1.assets.Longable\x12\x35\n\tshortable\x18\x05 \x01(\x0b\x32\".grpc.tradeapi.v1.assets.Shortable\x12,\n\x0elong_risk_rate\x18\x06 \x01(\x0b\x32\x14.google.type.Decimal\x12/\n\x0flong_collateral\x18\x07 \x01(\x0b\x32\x12.google.type.MoneyB\x02\x18\x01\x12-\n\x0fshort_risk_rate\x18\x08 \x01(\x0b\x32\x14.google.type.Decimal\x12\x30\n\x10short_collateral\x18\t \x01(\x0b\x32\x12.google.type.MoneyB\x02\x18\x01\x12/\n\x13long_initial_margin\x18\n \x01(\x0b\x32\x12.google.type.Money\x12\x30\n\x14short_initial_margin\x18\x0b \x01(\x0b\x32\x12.google.type.Money\x12/\n\x0bis_tradable\x18\x0c \x01(\x0b\x32\x1a.google.protobuf.BoolValue\x12\x36\n\nprice_type\x18\r \x01(\x0e\x32\".grpc.tradeapi.v1.assets.PriceType\"j\n\x13OptionsChainRequest\x12\x19\n\x11underlying_symbol\x18\x01 \x01(\t\x12\x0c\n\x04root\x18\x02 \x01(\t\x12*\n\x0f\x65xpiration_date\x18\x03 \x01(\x0b\x32\x11.google.type.Date\"X\n\x14OptionsChainResponse\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x30\n\x07options\x18\x02 \x03(\x0b\x32\x1f.grpc.tradeapi.v1.assets.Option\"!\n\x0fScheduleRequest\x12\x0e\n\x06symbol\x18\x01 \x01(\t\"\xab\x01\n\x10ScheduleResponse\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x44\n\x08sessions\x18\x02 \x03(\x0b\x32\x32.grpc.tradeapi.v1.assets.ScheduleResponse.Sessions\x1a\x41\n\x08Sessions\x12\x0c\n\x04type\x18\x01 \x01(\t\x12\'\n\x08interval\x18\x02 \x01(\x0b\x32\x15.google.type.Interval\"\x0e\n\x0c\x43lockRequest\">\n\rClockResponse\x12-\n\ttimestamp\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"%\n\x08\x45xchange\x12\x0b\n\x03mic\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"j\n\x05\x41sset\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\n\n\x02id\x18\x02 \x01(\t\x12\x0e\n\x06ticker\x18\x03 \x01(\t\x12\x0b\n\x03mic\x18\x04 \x01(\t\x12\x0c\n\x04isin\x18\x05 \x01(\t\x12\x0c\n\x04type\x18\x06 \x01(\t\x12\x0c\n\x04name\x18\x07 \x01(\t\"\xbc\x03\n\x06Option\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x32\n\x04type\x18\x02 \x01(\x0e\x32$.grpc.tradeapi.v1.assets.Option.Type\x12+\n\rcontract_size\x18\x04 \x01(\x0b\x32\x14.google.type.Decimal\x12*\n\x0ftrade_first_day\x18\x05 \x01(\x0b\x32\x11.google.type.Date\x12)\n\x0etrade_last_day\x18\x06 \x01(\x0b\x32\x11.google.type.Date\x12$\n\x06strike\x18\x07 \x01(\x0b\x32\x14.google.type.Decimal\x12(\n\nmultiplier\x18\t \x01(\x0b\x32\x14.google.type.Decimal\x12/\n\x14\x65xpiration_first_day\x18\n \x01(\x0b\x32\x11.google.type.Date\x12.\n\x13\x65xpiration_last_day\x18\x0b \x01(\x0b\x32\x11.google.type.Date\"9\n\x04Type\x12\x14\n\x10TYPE_UNSPECIFIED\x10\x00\x12\r\n\tTYPE_CALL\x10\x01\x12\x0c\n\x08TYPE_PUT\x10\x02\"\x9e\x01\n\x08Longable\x12\x37\n\x05value\x18\x01 \x01(\x0e\x32(.grpc.tradeapi.v1.assets.Longable.Status\x12\x13\n\x0bhalted_days\x18\x02 \x01(\x05\"D\n\x06Status\x12\x11\n\rNOT_AVAILABLE\x10\x00\x12\r\n\tAVAILABLE\x10\x01\x12\x18\n\x14\x41\x43\x43OUNT_NOT_APPROVED\x10\x02\"\xc1\x01\n\tShortable\x12\x38\n\x05value\x18\x01 \x01(\x0e\x32).grpc.tradeapi.v1.assets.Shortable.Status\x12\x13\n\x0bhalted_days\x18\x02 \x01(\x05\"e\n\x06Status\x12\x11\n\rNOT_AVAILABLE\x10\x00\x12\r\n\tAVAILABLE\x10\x01\x12\x07\n\x03HTB\x10\x02\x12\x18\n\x14\x41\x43\x43OUNT_NOT_APPROVED\x10\x03\x12\x16\n\x12\x41VAILABLE_STRATEGY\x10\x04*A\n\tPriceType\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x0c\n\x08POSITIVE\x10\x01\x12\x10\n\x0cNON_NEGATIVE\x10\x02\x12\x07\n\x03\x41NY\x10\x03\x32\xa7\x07\n\rAssetsService\x12y\n\tExchanges\x12).grpc.tradeapi.v1.assets.ExchangesRequest\x1a*.grpc.tradeapi.v1.assets.ExchangesResponse\"\x15\x82\xd3\xe4\x93\x02\x0f\x12\r/v1/exchanges\x12m\n\x06\x41ssets\x12&.grpc.tradeapi.v1.assets.AssetsRequest\x1a\'.grpc.tradeapi.v1.assets.AssetsResponse\"\x12\x82\xd3\xe4\x93\x02\x0c\x12\n/v1/assets\x12|\n\x08GetAsset\x12(.grpc.tradeapi.v1.assets.GetAssetRequest\x1a).grpc.tradeapi.v1.assets.GetAssetResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/v1/assets/{symbol}\x12\x95\x01\n\x0eGetAssetParams\x12..grpc.tradeapi.v1.assets.GetAssetParamsRequest\x1a/.grpc.tradeapi.v1.assets.GetAssetParamsResponse\"\"\x82\xd3\xe4\x93\x02\x1c\x12\x1a/v1/assets/{symbol}/params\x12\x9b\x01\n\x0cOptionsChain\x12,.grpc.tradeapi.v1.assets.OptionsChainRequest\x1a-.grpc.tradeapi.v1.assets.OptionsChainResponse\".\x82\xd3\xe4\x93\x02(\x12&/v1/assets/{underlying_symbol}/options\x12\x85\x01\n\x08Schedule\x12(.grpc.tradeapi.v1.assets.ScheduleRequest\x1a).grpc.tradeapi.v1.assets.ScheduleResponse\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/v1/assets/{symbol}/schedule\x12p\n\x05\x43lock\x12%.grpc.tradeapi.v1.assets.ClockRequest\x1a&.grpc.tradeapi.v1.assets.ClockResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/v1/assets/clockBFP\x01ZBgithub.com/FinamWeb/finam-trade-api/go/FinamPy/FinamPy/grpc/assetsb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'FinamPy.FinamPy.grpc.assets.assets_service_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
-  _globals['DESCRIPTOR']._serialized_options = b'P\001Z\"trade_api/v1/assets/assets_service'
+  _globals['DESCRIPTOR']._serialized_options = b'P\001ZBgithub.com/FinamWeb/finam-trade-api/go/FinamPy/FinamPy/grpc/assets'
+  _globals['_GETASSETPARAMSRESPONSE'].fields_by_name['tradeable']._loaded_options = None
+  _globals['_GETASSETPARAMSRESPONSE'].fields_by_name['tradeable']._serialized_options = b'\030\001'
   _globals['_GETASSETPARAMSRESPONSE'].fields_by_name['long_collateral']._loaded_options = None
   _globals['_GETASSETPARAMSRESPONSE'].fields_by_name['long_collateral']._serialized_options = b'\030\001'
   _globals['_GETASSETPARAMSRESPONSE'].fields_by_name['short_collateral']._loaded_options = None
@@ -56,52 +59,54 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_ASSETSSERVICE'].methods_by_name['Schedule']._serialized_options = b'\202\323\344\223\002\036\022\034/v1/assets/{symbol}/schedule'
   _globals['_ASSETSSERVICE'].methods_by_name['Clock']._loaded_options = None
   _globals['_ASSETSSERVICE'].methods_by_name['Clock']._serialized_options = b'\202\323\344\223\002\022\022\020/v1/assets/clock'
-  _globals['_EXCHANGESREQUEST']._serialized_start=244
-  _globals['_EXCHANGESREQUEST']._serialized_end=262
-  _globals['_EXCHANGESRESPONSE']._serialized_start=264
-  _globals['_EXCHANGESRESPONSE']._serialized_end=337
-  _globals['_ASSETSREQUEST']._serialized_start=339
-  _globals['_ASSETSREQUEST']._serialized_end=354
-  _globals['_ASSETSRESPONSE']._serialized_start=356
-  _globals['_ASSETSRESPONSE']._serialized_end=420
-  _globals['_GETASSETREQUEST']._serialized_start=422
-  _globals['_GETASSETREQUEST']._serialized_end=475
-  _globals['_GETASSETRESPONSE']._serialized_start=478
-  _globals['_GETASSETRESPONSE']._serialized_end=714
-  _globals['_GETASSETPARAMSREQUEST']._serialized_start=716
-  _globals['_GETASSETPARAMSREQUEST']._serialized_end=775
-  _globals['_GETASSETPARAMSRESPONSE']._serialized_start=778
-  _globals['_GETASSETPARAMSRESPONSE']._serialized_end=1256
-  _globals['_OPTIONSCHAINREQUEST']._serialized_start=1258
-  _globals['_OPTIONSCHAINREQUEST']._serialized_end=1306
-  _globals['_OPTIONSCHAINRESPONSE']._serialized_start=1308
-  _globals['_OPTIONSCHAINRESPONSE']._serialized_end=1396
-  _globals['_SCHEDULEREQUEST']._serialized_start=1398
-  _globals['_SCHEDULEREQUEST']._serialized_end=1431
-  _globals['_SCHEDULERESPONSE']._serialized_start=1434
-  _globals['_SCHEDULERESPONSE']._serialized_end=1605
-  _globals['_SCHEDULERESPONSE_SESSIONS']._serialized_start=1540
-  _globals['_SCHEDULERESPONSE_SESSIONS']._serialized_end=1605
-  _globals['_CLOCKREQUEST']._serialized_start=1607
-  _globals['_CLOCKREQUEST']._serialized_end=1621
-  _globals['_CLOCKRESPONSE']._serialized_start=1623
-  _globals['_CLOCKRESPONSE']._serialized_end=1685
-  _globals['_EXCHANGE']._serialized_start=1687
-  _globals['_EXCHANGE']._serialized_end=1724
-  _globals['_ASSET']._serialized_start=1726
-  _globals['_ASSET']._serialized_end=1832
-  _globals['_OPTION']._serialized_start=1835
-  _globals['_OPTION']._serialized_end=2279
-  _globals['_OPTION_TYPE']._serialized_start=2222
-  _globals['_OPTION_TYPE']._serialized_end=2279
-  _globals['_LONGABLE']._serialized_start=2282
-  _globals['_LONGABLE']._serialized_end=2440
-  _globals['_LONGABLE_STATUS']._serialized_start=2372
-  _globals['_LONGABLE_STATUS']._serialized_end=2440
-  _globals['_SHORTABLE']._serialized_start=2443
-  _globals['_SHORTABLE']._serialized_end=2636
-  _globals['_SHORTABLE_STATUS']._serialized_start=2535
-  _globals['_SHORTABLE_STATUS']._serialized_end=2636
-  _globals['_ASSETSSERVICE']._serialized_start=2639
-  _globals['_ASSETSSERVICE']._serialized_end=3574
+  _globals['_PRICETYPE']._serialized_start=2861
+  _globals['_PRICETYPE']._serialized_end=2926
+  _globals['_EXCHANGESREQUEST']._serialized_start=276
+  _globals['_EXCHANGESREQUEST']._serialized_end=294
+  _globals['_EXCHANGESRESPONSE']._serialized_start=296
+  _globals['_EXCHANGESRESPONSE']._serialized_end=369
+  _globals['_ASSETSREQUEST']._serialized_start=371
+  _globals['_ASSETSREQUEST']._serialized_end=386
+  _globals['_ASSETSRESPONSE']._serialized_start=388
+  _globals['_ASSETSRESPONSE']._serialized_end=452
+  _globals['_GETASSETREQUEST']._serialized_start=454
+  _globals['_GETASSETREQUEST']._serialized_end=507
+  _globals['_GETASSETRESPONSE']._serialized_start=510
+  _globals['_GETASSETRESPONSE']._serialized_end=770
+  _globals['_GETASSETPARAMSREQUEST']._serialized_start=772
+  _globals['_GETASSETPARAMSREQUEST']._serialized_end=831
+  _globals['_GETASSETPARAMSRESPONSE']._serialized_start=834
+  _globals['_GETASSETPARAMSRESPONSE']._serialized_end=1421
+  _globals['_OPTIONSCHAINREQUEST']._serialized_start=1423
+  _globals['_OPTIONSCHAINREQUEST']._serialized_end=1529
+  _globals['_OPTIONSCHAINRESPONSE']._serialized_start=1531
+  _globals['_OPTIONSCHAINRESPONSE']._serialized_end=1619
+  _globals['_SCHEDULEREQUEST']._serialized_start=1621
+  _globals['_SCHEDULEREQUEST']._serialized_end=1654
+  _globals['_SCHEDULERESPONSE']._serialized_start=1657
+  _globals['_SCHEDULERESPONSE']._serialized_end=1828
+  _globals['_SCHEDULERESPONSE_SESSIONS']._serialized_start=1763
+  _globals['_SCHEDULERESPONSE_SESSIONS']._serialized_end=1828
+  _globals['_CLOCKREQUEST']._serialized_start=1830
+  _globals['_CLOCKREQUEST']._serialized_end=1844
+  _globals['_CLOCKRESPONSE']._serialized_start=1846
+  _globals['_CLOCKRESPONSE']._serialized_end=1908
+  _globals['_EXCHANGE']._serialized_start=1910
+  _globals['_EXCHANGE']._serialized_end=1947
+  _globals['_ASSET']._serialized_start=1949
+  _globals['_ASSET']._serialized_end=2055
+  _globals['_OPTION']._serialized_start=2058
+  _globals['_OPTION']._serialized_end=2502
+  _globals['_OPTION_TYPE']._serialized_start=2445
+  _globals['_OPTION_TYPE']._serialized_end=2502
+  _globals['_LONGABLE']._serialized_start=2505
+  _globals['_LONGABLE']._serialized_end=2663
+  _globals['_LONGABLE_STATUS']._serialized_start=2595
+  _globals['_LONGABLE_STATUS']._serialized_end=2663
+  _globals['_SHORTABLE']._serialized_start=2666
+  _globals['_SHORTABLE']._serialized_end=2859
+  _globals['_SHORTABLE_STATUS']._serialized_start=2758
+  _globals['_SHORTABLE_STATUS']._serialized_end=2859
+  _globals['_ASSETSSERVICE']._serialized_start=2929
+  _globals['_ASSETSSERVICE']._serialized_end=3864
 # @@protoc_insertion_point(module_scope)

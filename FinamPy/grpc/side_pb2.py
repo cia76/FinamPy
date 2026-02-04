@@ -24,14 +24,14 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1f\x46inamPy/FinamPy/grpc/side.proto\x12\x10grpc.tradeapi.v1*9\n\x04Side\x12\x14\n\x10SIDE_UNSPECIFIED\x10\x00\x12\x0c\n\x08SIDE_BUY\x10\x01\x12\r\n\tSIDE_SELL\x10\x02\x42\x15P\x01Z\x11trade_api/v1/sideb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1f\x46inamPy/FinamPy/grpc/side.proto\x12\x10grpc.tradeapi.v1*9\n\x04Side\x12\x14\n\x10SIDE_UNSPECIFIED\x10\x00\x12\x0c\n\x08SIDE_BUY\x10\x01\x12\r\n\tSIDE_SELL\x10\x02\x42?P\x01Z;github.com/FinamWeb/finam-trade-api/go/FinamPy/FinamPy/grpcb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'FinamPy.FinamPy.grpc.side_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
-  _globals['DESCRIPTOR']._serialized_options = b'P\001Z\021trade_api/v1/side'
+  _globals['DESCRIPTOR']._serialized_options = b'P\001Z;github.com/FinamWeb/finam-trade-api/go/FinamPy/FinamPy/grpc'
   _globals['_SIDE']._serialized_start=53
   _globals['_SIDE']._serialized_end=110
 # @@protoc_insertion_point(module_scope)

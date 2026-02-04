@@ -3,65 +3,77 @@
 isort:skip_file
 """
 
-import FinamPy.FinamPy.grpc.side_pb2
-import builtins
-import google.protobuf.descriptor
-import google.protobuf.message
-import google.protobuf.timestamp_pb2
-import google.type.decimal_pb2
-import typing
+from FinamPy.grpc import side_pb2 as _side_pb2
+from google.protobuf import descriptor as _descriptor
+from google.protobuf import message as _message
+from google.protobuf import timestamp_pb2 as _timestamp_pb2
+from google.type import decimal_pb2 as _decimal_pb2
+import builtins as _builtins
+import sys
+import typing as _typing
 
-DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
+if sys.version_info >= (3, 10):
+    from typing import TypeAlias as _TypeAlias
+else:
+    from typing_extensions import TypeAlias as _TypeAlias
 
-@typing.final
-class AccountTrade(google.protobuf.message.Message):
+DESCRIPTOR: _descriptor.FileDescriptor
+
+@_typing.final
+class AccountTrade(_message.Message):
     """Информация о сделке"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    TRADE_ID_FIELD_NUMBER: builtins.int
-    SYMBOL_FIELD_NUMBER: builtins.int
-    PRICE_FIELD_NUMBER: builtins.int
-    SIZE_FIELD_NUMBER: builtins.int
-    SIDE_FIELD_NUMBER: builtins.int
-    TIMESTAMP_FIELD_NUMBER: builtins.int
-    ORDER_ID_FIELD_NUMBER: builtins.int
-    ACCOUNT_ID_FIELD_NUMBER: builtins.int
-    trade_id: builtins.str
+    TRADE_ID_FIELD_NUMBER: _builtins.int
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    PRICE_FIELD_NUMBER: _builtins.int
+    SIZE_FIELD_NUMBER: _builtins.int
+    SIDE_FIELD_NUMBER: _builtins.int
+    TIMESTAMP_FIELD_NUMBER: _builtins.int
+    ORDER_ID_FIELD_NUMBER: _builtins.int
+    ACCOUNT_ID_FIELD_NUMBER: _builtins.int
+    COMMENT_FIELD_NUMBER: _builtins.int
+    trade_id: _builtins.str
     """Идентификатор сделки"""
-    symbol: builtins.str
+    symbol: _builtins.str
     """Символ инструмента"""
-    side: FinamPy.FinamPy.grpc.side_pb2.Side.ValueType
+    side: _side_pb2.Side.ValueType
     """Сторона сделки (long или short)"""
-    order_id: builtins.str
+    order_id: _builtins.str
     """Идентификатор заявки"""
-    account_id: builtins.str
+    account_id: _builtins.str
     """Идентификатор аккаунта"""
-    @property
-    def price(self) -> google.type.decimal_pb2.Decimal:
+    comment: _builtins.str
+    """Метка заявки. (максимум 128 символов)"""
+    @_builtins.property
+    def price(self) -> _decimal_pb2.Decimal:
         """Цена исполнения"""
 
-    @property
-    def size(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def size(self) -> _decimal_pb2.Decimal:
         """Размер в шт."""
 
-    @property
-    def timestamp(self) -> google.protobuf.timestamp_pb2.Timestamp:
+    @_builtins.property
+    def timestamp(self) -> _timestamp_pb2.Timestamp:
         """Метка времени"""
 
     def __init__(
         self,
         *,
-        trade_id: builtins.str = ...,
-        symbol: builtins.str = ...,
-        price: google.type.decimal_pb2.Decimal | None = ...,
-        size: google.type.decimal_pb2.Decimal | None = ...,
-        side: FinamPy.FinamPy.grpc.side_pb2.Side.ValueType = ...,
-        timestamp: google.protobuf.timestamp_pb2.Timestamp | None = ...,
-        order_id: builtins.str = ...,
-        account_id: builtins.str = ...,
+        trade_id: _builtins.str = ...,
+        symbol: _builtins.str = ...,
+        price: _decimal_pb2.Decimal | None = ...,
+        size: _decimal_pb2.Decimal | None = ...,
+        side: _side_pb2.Side.ValueType = ...,
+        timestamp: _timestamp_pb2.Timestamp | None = ...,
+        order_id: _builtins.str = ...,
+        account_id: _builtins.str = ...,
+        comment: _builtins.str = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["price", b"price", "size", b"size", "timestamp", b"timestamp"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["account_id", b"account_id", "order_id", b"order_id", "price", b"price", "side", b"side", "size", b"size", "symbol", b"symbol", "timestamp", b"timestamp", "trade_id", b"trade_id"]) -> None: ...
+    _HasFieldArgType: _TypeAlias = _typing.Literal["price", b"price", "size", b"size", "timestamp", b"timestamp"]  # noqa: Y015
+    def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["account_id", b"account_id", "comment", b"comment", "order_id", b"order_id", "price", b"price", "side", b"side", "size", b"size", "symbol", b"symbol", "timestamp", b"timestamp", "trade_id", b"trade_id"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___AccountTrade = AccountTrade
+Global___AccountTrade: _TypeAlias = AccountTrade  # noqa: Y015

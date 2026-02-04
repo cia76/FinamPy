@@ -3,132 +3,137 @@
 isort:skip_file
 """
 
-import builtins
-import collections.abc
-import google.protobuf.descriptor
-import google.protobuf.internal.containers
-import google.protobuf.internal.enum_type_wrapper
-import google.protobuf.message
-import google.protobuf.timestamp_pb2
+from collections import abc as _abc
+from google.protobuf import descriptor as _descriptor
+from google.protobuf import message as _message
+from google.protobuf import timestamp_pb2 as _timestamp_pb2
+from google.protobuf.internal import containers as _containers
+from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
+import builtins as _builtins
 import sys
-import typing
+import typing as _typing
 
 if sys.version_info >= (3, 10):
-    import typing as typing_extensions
+    from typing import TypeAlias as _TypeAlias
 else:
-    import typing_extensions
+    from typing_extensions import TypeAlias as _TypeAlias
 
-DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
+DESCRIPTOR: _descriptor.FileDescriptor
 
-@typing.final
-class AuthRequest(google.protobuf.message.Message):
+@_typing.final
+class AuthRequest(_message.Message):
     """Запрос авторизации"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    SECRET_FIELD_NUMBER: builtins.int
-    secret: builtins.str
+    SECRET_FIELD_NUMBER: _builtins.int
+    secret: _builtins.str
     """API токен (secret key)"""
     def __init__(
         self,
         *,
-        secret: builtins.str = ...,
+        secret: _builtins.str = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["secret", b"secret"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["secret", b"secret"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___AuthRequest = AuthRequest
+Global___AuthRequest: _TypeAlias = AuthRequest  # noqa: Y015
 
-@typing.final
-class AuthResponse(google.protobuf.message.Message):
+@_typing.final
+class AuthResponse(_message.Message):
     """Информация об авторизации"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    TOKEN_FIELD_NUMBER: builtins.int
-    token: builtins.str
+    TOKEN_FIELD_NUMBER: _builtins.int
+    token: _builtins.str
     """Полученный JWT-токен"""
     def __init__(
         self,
         *,
-        token: builtins.str = ...,
+        token: _builtins.str = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["token", b"token"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["token", b"token"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___AuthResponse = AuthResponse
+Global___AuthResponse: _TypeAlias = AuthResponse  # noqa: Y015
 
-@typing.final
-class TokenDetailsRequest(google.protobuf.message.Message):
+@_typing.final
+class TokenDetailsRequest(_message.Message):
     """Запрос информации о токене"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    TOKEN_FIELD_NUMBER: builtins.int
-    token: builtins.str
+    TOKEN_FIELD_NUMBER: _builtins.int
+    token: _builtins.str
     """JWT-токен"""
     def __init__(
         self,
         *,
-        token: builtins.str = ...,
+        token: _builtins.str = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["token", b"token"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["token", b"token"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___TokenDetailsRequest = TokenDetailsRequest
+Global___TokenDetailsRequest: _TypeAlias = TokenDetailsRequest  # noqa: Y015
 
-@typing.final
-class TokenDetailsResponse(google.protobuf.message.Message):
+@_typing.final
+class TokenDetailsResponse(_message.Message):
     """Информация о токене"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    CREATED_AT_FIELD_NUMBER: builtins.int
-    EXPIRES_AT_FIELD_NUMBER: builtins.int
-    MD_PERMISSIONS_FIELD_NUMBER: builtins.int
-    ACCOUNT_IDS_FIELD_NUMBER: builtins.int
-    READONLY_FIELD_NUMBER: builtins.int
-    readonly: builtins.bool
+    CREATED_AT_FIELD_NUMBER: _builtins.int
+    EXPIRES_AT_FIELD_NUMBER: _builtins.int
+    MD_PERMISSIONS_FIELD_NUMBER: _builtins.int
+    ACCOUNT_IDS_FIELD_NUMBER: _builtins.int
+    READONLY_FIELD_NUMBER: _builtins.int
+    readonly: _builtins.bool
     """Сессия и торговые счета в токене будут помечены readonly"""
-    @property
-    def created_at(self) -> google.protobuf.timestamp_pb2.Timestamp:
+    @_builtins.property
+    def created_at(self) -> _timestamp_pb2.Timestamp:
         """Дата и время создания"""
 
-    @property
-    def expires_at(self) -> google.protobuf.timestamp_pb2.Timestamp:
+    @_builtins.property
+    def expires_at(self) -> _timestamp_pb2.Timestamp:
         """Дата и время экспирации"""
 
-    @property
-    def md_permissions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___MDPermission]:
+    @_builtins.property
+    def md_permissions(self) -> _containers.RepeatedCompositeFieldContainer[Global___MDPermission]:
         """Информация о доступе к рыночным данным"""
 
-    @property
-    def account_ids(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]:
+    @_builtins.property
+    def account_ids(self) -> _containers.RepeatedScalarFieldContainer[_builtins.str]:
         """Идентификаторы аккаунтов"""
 
     def __init__(
         self,
         *,
-        created_at: google.protobuf.timestamp_pb2.Timestamp | None = ...,
-        expires_at: google.protobuf.timestamp_pb2.Timestamp | None = ...,
-        md_permissions: collections.abc.Iterable[global___MDPermission] | None = ...,
-        account_ids: collections.abc.Iterable[builtins.str] | None = ...,
-        readonly: builtins.bool = ...,
+        created_at: _timestamp_pb2.Timestamp | None = ...,
+        expires_at: _timestamp_pb2.Timestamp | None = ...,
+        md_permissions: _abc.Iterable[Global___MDPermission] | None = ...,
+        account_ids: _abc.Iterable[_builtins.str] | None = ...,
+        readonly: _builtins.bool = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["created_at", b"created_at", "expires_at", b"expires_at"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["account_ids", b"account_ids", "created_at", b"created_at", "expires_at", b"expires_at", "md_permissions", b"md_permissions", "readonly", b"readonly"]) -> None: ...
+    _HasFieldArgType: _TypeAlias = _typing.Literal["created_at", b"created_at", "expires_at", b"expires_at"]  # noqa: Y015
+    def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["account_ids", b"account_ids", "created_at", b"created_at", "expires_at", b"expires_at", "md_permissions", b"md_permissions", "readonly", b"readonly"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___TokenDetailsResponse = TokenDetailsResponse
+Global___TokenDetailsResponse: _TypeAlias = TokenDetailsResponse  # noqa: Y015
 
-@typing.final
-class MDPermission(google.protobuf.message.Message):
+@_typing.final
+class MDPermission(_message.Message):
     """Информация о доступе к рыночным данным"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
     class _QuoteLevel:
-        ValueType = typing.NewType("ValueType", builtins.int)
-        V: typing_extensions.TypeAlias = ValueType
+        ValueType = _typing.NewType("ValueType", _builtins.int)
+        V: _TypeAlias = ValueType  # noqa: Y015
 
-    class _QuoteLevelEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[MDPermission._QuoteLevel.ValueType], builtins.type):
-        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+    class _QuoteLevelEnumTypeWrapper(_enum_type_wrapper._EnumTypeWrapper[MDPermission._QuoteLevel.ValueType], _builtins.type):
+        DESCRIPTOR: _descriptor.EnumDescriptor
         QUOTE_LEVEL_UNSPECIFIED: MDPermission._QuoteLevel.ValueType  # 0
         """Значение не указано"""
         QUOTE_LEVEL_LAST_PRICE: MDPermission._QuoteLevel.ValueType  # 1
@@ -158,72 +163,78 @@ class MDPermission(google.protobuf.message.Message):
     QUOTE_LEVEL_ACCESS_FORBIDDEN: MDPermission.QuoteLevel.ValueType  # 5
     """Доступ запрещен"""
 
-    QUOTE_LEVEL_FIELD_NUMBER: builtins.int
-    DELAY_MINUTES_FIELD_NUMBER: builtins.int
-    MIC_FIELD_NUMBER: builtins.int
-    COUNTRY_FIELD_NUMBER: builtins.int
-    CONTINENT_FIELD_NUMBER: builtins.int
-    WORLDWIDE_FIELD_NUMBER: builtins.int
-    quote_level: global___MDPermission.QuoteLevel.ValueType
+    QUOTE_LEVEL_FIELD_NUMBER: _builtins.int
+    DELAY_MINUTES_FIELD_NUMBER: _builtins.int
+    MIC_FIELD_NUMBER: _builtins.int
+    COUNTRY_FIELD_NUMBER: _builtins.int
+    CONTINENT_FIELD_NUMBER: _builtins.int
+    WORLDWIDE_FIELD_NUMBER: _builtins.int
+    quote_level: Global___MDPermission.QuoteLevel.ValueType
     """Уровень котировок"""
-    delay_minutes: builtins.int
+    delay_minutes: _builtins.int
     """Задержка в минутах"""
-    mic: builtins.str
+    mic: _builtins.str
     """Идентификатор биржи mic"""
-    country: builtins.str
+    country: _builtins.str
     """Страна"""
-    continent: builtins.str
+    continent: _builtins.str
     """Континент"""
-    worldwide: builtins.bool
+    worldwide: _builtins.bool
     """Весь мир"""
     def __init__(
         self,
         *,
-        quote_level: global___MDPermission.QuoteLevel.ValueType = ...,
-        delay_minutes: builtins.int = ...,
-        mic: builtins.str = ...,
-        country: builtins.str = ...,
-        continent: builtins.str = ...,
-        worldwide: builtins.bool = ...,
+        quote_level: Global___MDPermission.QuoteLevel.ValueType = ...,
+        delay_minutes: _builtins.int = ...,
+        mic: _builtins.str = ...,
+        country: _builtins.str = ...,
+        continent: _builtins.str = ...,
+        worldwide: _builtins.bool = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["condition", b"condition", "continent", b"continent", "country", b"country", "mic", b"mic", "worldwide", b"worldwide"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["condition", b"condition", "continent", b"continent", "country", b"country", "delay_minutes", b"delay_minutes", "mic", b"mic", "quote_level", b"quote_level", "worldwide", b"worldwide"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing.Literal["condition", b"condition"]) -> typing.Literal["mic", "country", "continent", "worldwide"] | None: ...
+    _HasFieldArgType: _TypeAlias = _typing.Literal["condition", b"condition", "continent", b"continent", "country", b"country", "mic", b"mic", "worldwide", b"worldwide"]  # noqa: Y015
+    def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["condition", b"condition", "continent", b"continent", "country", b"country", "delay_minutes", b"delay_minutes", "mic", b"mic", "quote_level", b"quote_level", "worldwide", b"worldwide"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
+    _WhichOneofReturnType_condition: _TypeAlias = _typing.Literal["mic", "country", "continent", "worldwide"]  # noqa: Y015
+    _WhichOneofArgType_condition: _TypeAlias = _typing.Literal["condition", b"condition"]  # noqa: Y015
+    def WhichOneof(self, oneof_group: _WhichOneofArgType_condition) -> _WhichOneofReturnType_condition | None: ...
 
-global___MDPermission = MDPermission
+Global___MDPermission: _TypeAlias = MDPermission  # noqa: Y015
 
-@typing.final
-class SubscribeJwtRenewalRequest(google.protobuf.message.Message):
+@_typing.final
+class SubscribeJwtRenewalRequest(_message.Message):
     """Запрос подписки на обновление JWT токена"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    SECRET_FIELD_NUMBER: builtins.int
-    secret: builtins.str
+    SECRET_FIELD_NUMBER: _builtins.int
+    secret: _builtins.str
     """API токен (secret key)"""
     def __init__(
         self,
         *,
-        secret: builtins.str = ...,
+        secret: _builtins.str = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["secret", b"secret"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["secret", b"secret"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___SubscribeJwtRenewalRequest = SubscribeJwtRenewalRequest
+Global___SubscribeJwtRenewalRequest: _TypeAlias = SubscribeJwtRenewalRequest  # noqa: Y015
 
-@typing.final
-class SubscribeJwtRenewalResponse(google.protobuf.message.Message):
+@_typing.final
+class SubscribeJwtRenewalResponse(_message.Message):
     """Обновленный токен. Стрим"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    TOKEN_FIELD_NUMBER: builtins.int
-    token: builtins.str
+    TOKEN_FIELD_NUMBER: _builtins.int
+    token: _builtins.str
     """Полученный JWT-токен"""
     def __init__(
         self,
         *,
-        token: builtins.str = ...,
+        token: _builtins.str = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["token", b"token"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["token", b"token"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___SubscribeJwtRenewalResponse = SubscribeJwtRenewalResponse
+Global___SubscribeJwtRenewalResponse: _TypeAlias = SubscribeJwtRenewalResponse  # noqa: Y015

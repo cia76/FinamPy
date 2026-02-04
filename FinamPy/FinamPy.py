@@ -167,8 +167,48 @@ class FinamPy:
                 else:  # При другой ошибке
                     sleep(5)  # попытаемся переподключиться через 5 секунд
 
+    def subscribe_orders_thread(self, account_id=None):
+        """Подписка на свои заявки
+
+        param str account_id: Номер счета
+        """
+        if account_id is None:  # Если не указан счет
+            account_id = self.account_ids[0]  # то берем первый из списка
+        while True:  # Пока мы не закрыли канал
+            try:
+                stream = self.orders_stub.SubscribeOrders(request=orders_service.SubscribeOrdersRequest(account_id=account_id), metadata=(self.metadata,))  # Поток подписки
+                while True:  # Пока можем получать данные из потока
+                    event: orders_service.SubscribeOrdersResponse = next(stream)  # Читаем событие из потока подписки
+                    for order in event.orders:  # Пробегаемся по всем пришедшим заявкам
+                        self.on_order.trigger(order)
+            except RpcError as rpc_error:
+                if rpc_error.code() == StatusCode.CANCELLED:  # Если закрываем канал (grpc._channel._MultiThreadedRendezvous)
+                    break  # то выходим из потока, дальше не продолжаем
+                else:  # При другой ошибке
+                    sleep(5)  # попытаемся переподключиться через 5 секунд
+
+    def subscribe_trades_thread(self, account_id=None):
+        """Подписка на свои сделки
+
+        param str account_id: Номер счета
+        """
+        if account_id is None:  # Если не указан счет
+            account_id = self.account_ids[0]  # то берем первый из списка
+        while True:  # Пока мы не закрыли канал
+            try:
+                stream = self.orders_stub.SubscribeTrades(request=orders_service.SubscribeTradesRequest(account_id=account_id), metadata=(self.metadata,))  # Поток подписки
+                while True:  # Пока можем получать данные из потока
+                    event: orders_service.SubscribeTradesResponse = next(stream)  # Читаем событие из потока подписки
+                    for trade in event.trades:  # Пробегаемся по всем пришедшим сделкам
+                        self.on_trade.trigger(trade)
+            except RpcError as rpc_error:
+                if rpc_error.code() == StatusCode.CANCELLED:  # Если закрываем канал (grpc._channel._MultiThreadedRendezvous)
+                    break  # то выходим из потока, дальше не продолжаем
+                else:  # При другой ошибке
+                    sleep(5)  # попытаемся переподключиться через 5 секунд
+
     def subscribe_orders_trades_thread(self):
-        """Подписка на свои заявки и сделки"""
+        """Подписка на свои заявки и сделки для совместимости. В будущих версиях будет удалена Финамом"""
         while True:  # Пока мы не закрыли канал
             try:
                 for account_id, (orders, trades) in self.subscriptions.items():  # Для каждого счета

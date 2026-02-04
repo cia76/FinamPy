@@ -3,32 +3,32 @@
 isort:skip_file
 """
 
-import FinamPy.FinamPy.grpc.side_pb2
-import builtins
-import collections.abc
-import google.protobuf.descriptor
-import google.protobuf.internal.containers
-import google.protobuf.internal.enum_type_wrapper
-import google.protobuf.message
-import google.protobuf.timestamp_pb2
-import google.type.decimal_pb2
-import google.type.interval_pb2
+from FinamPy.grpc import side_pb2 as _side_pb2
+from collections import abc as _abc
+from google.protobuf import descriptor as _descriptor
+from google.protobuf import message as _message
+from google.protobuf import timestamp_pb2 as _timestamp_pb2
+from google.protobuf.internal import containers as _containers
+from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
+from google.type import decimal_pb2 as _decimal_pb2
+from google.type import interval_pb2 as _interval_pb2
+import builtins as _builtins
 import sys
-import typing
+import typing as _typing
 
 if sys.version_info >= (3, 10):
-    import typing as typing_extensions
+    from typing import TypeAlias as _TypeAlias
 else:
-    import typing_extensions
+    from typing_extensions import TypeAlias as _TypeAlias
 
-DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
+DESCRIPTOR: _descriptor.FileDescriptor
 
 class _TimeFrame:
-    ValueType = typing.NewType("ValueType", builtins.int)
-    V: typing_extensions.TypeAlias = ValueType
+    ValueType = _typing.NewType("ValueType", _builtins.int)
+    V: _TypeAlias = ValueType  # noqa: Y015
 
-class _TimeFrameEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_TimeFrame.ValueType], builtins.type):
-    DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+class _TimeFrameEnumTypeWrapper(_enum_type_wrapper._EnumTypeWrapper[_TimeFrame.ValueType], _builtins.type):
+    DESCRIPTOR: _descriptor.EnumDescriptor
     TIME_FRAME_UNSPECIFIED: _TimeFrame.ValueType  # 0
     """Таймфрейм не указан"""
     TIME_FRAME_M1: _TimeFrame.ValueType  # 1
@@ -85,560 +85,586 @@ TIME_FRAME_MN: TimeFrame.ValueType  # 21
 """Месяц. Глубина данных 365*5 дней."""
 TIME_FRAME_QR: TimeFrame.ValueType  # 22
 """Квартал. Глубина данных 365*5 дней."""
-global___TimeFrame = TimeFrame
+Global___TimeFrame: _TypeAlias = TimeFrame  # noqa: Y015
 
-@typing.final
-class BarsRequest(google.protobuf.message.Message):
+@_typing.final
+class BarsRequest(_message.Message):
     """Запрос получения исторических данных по инструменту (агрегированные свечи)"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    TIMEFRAME_FIELD_NUMBER: builtins.int
-    INTERVAL_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    TIMEFRAME_FIELD_NUMBER: _builtins.int
+    INTERVAL_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ инструмента"""
-    timeframe: global___TimeFrame.ValueType
+    timeframe: Global___TimeFrame.ValueType
     """Необходимый таймфрейм"""
-    @property
-    def interval(self) -> google.type.interval_pb2.Interval:
+    @_builtins.property
+    def interval(self) -> _interval_pb2.Interval:
         """Начало и окончание запрашиваемого периода"""
 
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
-        timeframe: global___TimeFrame.ValueType = ...,
-        interval: google.type.interval_pb2.Interval | None = ...,
+        symbol: _builtins.str = ...,
+        timeframe: Global___TimeFrame.ValueType = ...,
+        interval: _interval_pb2.Interval | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["interval", b"interval"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["interval", b"interval", "symbol", b"symbol", "timeframe", b"timeframe"]) -> None: ...
+    _HasFieldArgType: _TypeAlias = _typing.Literal["interval", b"interval"]  # noqa: Y015
+    def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["interval", b"interval", "symbol", b"symbol", "timeframe", b"timeframe"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___BarsRequest = BarsRequest
+Global___BarsRequest: _TypeAlias = BarsRequest  # noqa: Y015
 
-@typing.final
-class BarsResponse(google.protobuf.message.Message):
+@_typing.final
+class BarsResponse(_message.Message):
     """Список агрегированных свеч"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    BARS_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    BARS_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ инструмента"""
-    @property
-    def bars(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___Bar]:
+    @_builtins.property
+    def bars(self) -> _containers.RepeatedCompositeFieldContainer[Global___Bar]:
         """Агрегированная свеча"""
 
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
-        bars: collections.abc.Iterable[global___Bar] | None = ...,
+        symbol: _builtins.str = ...,
+        bars: _abc.Iterable[Global___Bar] | None = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["bars", b"bars", "symbol", b"symbol"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["bars", b"bars", "symbol", b"symbol"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___BarsResponse = BarsResponse
+Global___BarsResponse: _TypeAlias = BarsResponse  # noqa: Y015
 
-@typing.final
-class QuoteRequest(google.protobuf.message.Message):
+@_typing.final
+class QuoteRequest(_message.Message):
     """Запрос получения последней котировки по инструменту"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ инструмента"""
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
+        symbol: _builtins.str = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["symbol", b"symbol"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["symbol", b"symbol"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___QuoteRequest = QuoteRequest
+Global___QuoteRequest: _TypeAlias = QuoteRequest  # noqa: Y015
 
-@typing.final
-class QuoteResponse(google.protobuf.message.Message):
+@_typing.final
+class QuoteResponse(_message.Message):
     """Последняя котировка по инструменту"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    QUOTE_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    QUOTE_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ инструмента"""
-    @property
-    def quote(self) -> global___Quote:
+    @_builtins.property
+    def quote(self) -> Global___Quote:
         """Цена последней сделки"""
 
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
-        quote: global___Quote | None = ...,
+        symbol: _builtins.str = ...,
+        quote: Global___Quote | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["quote", b"quote"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["quote", b"quote", "symbol", b"symbol"]) -> None: ...
+    _HasFieldArgType: _TypeAlias = _typing.Literal["quote", b"quote"]  # noqa: Y015
+    def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["quote", b"quote", "symbol", b"symbol"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___QuoteResponse = QuoteResponse
+Global___QuoteResponse: _TypeAlias = QuoteResponse  # noqa: Y015
 
-@typing.final
-class OrderBookRequest(google.protobuf.message.Message):
+@_typing.final
+class OrderBookRequest(_message.Message):
     """Запрос получения текущего стакана по инструменту"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ инструмента"""
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
+        symbol: _builtins.str = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["symbol", b"symbol"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["symbol", b"symbol"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___OrderBookRequest = OrderBookRequest
+Global___OrderBookRequest: _TypeAlias = OrderBookRequest  # noqa: Y015
 
-@typing.final
-class OrderBookResponse(google.protobuf.message.Message):
+@_typing.final
+class OrderBookResponse(_message.Message):
     """Текущий стакан по инструменту"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    ORDERBOOK_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    ORDERBOOK_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ инструмента"""
-    @property
-    def orderbook(self) -> global___OrderBook:
+    @_builtins.property
+    def orderbook(self) -> Global___OrderBook:
         """Стакан"""
 
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
-        orderbook: global___OrderBook | None = ...,
+        symbol: _builtins.str = ...,
+        orderbook: Global___OrderBook | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["orderbook", b"orderbook"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["orderbook", b"orderbook", "symbol", b"symbol"]) -> None: ...
+    _HasFieldArgType: _TypeAlias = _typing.Literal["orderbook", b"orderbook"]  # noqa: Y015
+    def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["orderbook", b"orderbook", "symbol", b"symbol"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___OrderBookResponse = OrderBookResponse
+Global___OrderBookResponse: _TypeAlias = OrderBookResponse  # noqa: Y015
 
-@typing.final
-class LatestTradesRequest(google.protobuf.message.Message):
+@_typing.final
+class LatestTradesRequest(_message.Message):
     """Запрос списка последних сделок по инструменту"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ инструмента"""
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
+        symbol: _builtins.str = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["symbol", b"symbol"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["symbol", b"symbol"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___LatestTradesRequest = LatestTradesRequest
+Global___LatestTradesRequest: _TypeAlias = LatestTradesRequest  # noqa: Y015
 
-@typing.final
-class LatestTradesResponse(google.protobuf.message.Message):
+@_typing.final
+class LatestTradesResponse(_message.Message):
     """Список последних сделок по инструменту"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    TRADES_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    TRADES_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ инструмента"""
-    @property
-    def trades(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___Trade]:
+    @_builtins.property
+    def trades(self) -> _containers.RepeatedCompositeFieldContainer[Global___Trade]:
         """Список последних сделок"""
 
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
-        trades: collections.abc.Iterable[global___Trade] | None = ...,
+        symbol: _builtins.str = ...,
+        trades: _abc.Iterable[Global___Trade] | None = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["symbol", b"symbol", "trades", b"trades"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["symbol", b"symbol", "trades", b"trades"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___LatestTradesResponse = LatestTradesResponse
+Global___LatestTradesResponse: _TypeAlias = LatestTradesResponse  # noqa: Y015
 
-@typing.final
-class SubscribeQuoteRequest(google.protobuf.message.Message):
+@_typing.final
+class SubscribeQuoteRequest(_message.Message):
     """Запрос подписки на котировки по инструменту. Стрим"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    SYMBOLS_FIELD_NUMBER: builtins.int
-    @property
-    def symbols(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]:
+    SYMBOLS_FIELD_NUMBER: _builtins.int
+    @_builtins.property
+    def symbols(self) -> _containers.RepeatedScalarFieldContainer[_builtins.str]:
         """Список символов инструментов"""
 
     def __init__(
         self,
         *,
-        symbols: collections.abc.Iterable[builtins.str] | None = ...,
+        symbols: _abc.Iterable[_builtins.str] | None = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["symbols", b"symbols"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["symbols", b"symbols"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___SubscribeQuoteRequest = SubscribeQuoteRequest
+Global___SubscribeQuoteRequest: _TypeAlias = SubscribeQuoteRequest  # noqa: Y015
 
-@typing.final
-class SubscribeQuoteResponse(google.protobuf.message.Message):
+@_typing.final
+class SubscribeQuoteResponse(_message.Message):
     """Котировки по инструменту. Стрим"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    QUOTE_FIELD_NUMBER: builtins.int
-    ERROR_FIELD_NUMBER: builtins.int
-    @property
-    def quote(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___Quote]:
+    QUOTE_FIELD_NUMBER: _builtins.int
+    ERROR_FIELD_NUMBER: _builtins.int
+    @_builtins.property
+    def quote(self) -> _containers.RepeatedCompositeFieldContainer[Global___Quote]:
         """Список котировок"""
 
-    @property
-    def error(self) -> global___StreamError:
+    @_builtins.property
+    def error(self) -> Global___StreamError:
         """Ошибка стрим сервиса"""
 
     def __init__(
         self,
         *,
-        quote: collections.abc.Iterable[global___Quote] | None = ...,
-        error: global___StreamError | None = ...,
+        quote: _abc.Iterable[Global___Quote] | None = ...,
+        error: Global___StreamError | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["error", b"error"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["error", b"error", "quote", b"quote"]) -> None: ...
+    _HasFieldArgType: _TypeAlias = _typing.Literal["error", b"error"]  # noqa: Y015
+    def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["error", b"error", "quote", b"quote"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___SubscribeQuoteResponse = SubscribeQuoteResponse
+Global___SubscribeQuoteResponse: _TypeAlias = SubscribeQuoteResponse  # noqa: Y015
 
-@typing.final
-class SubscribeOrderBookRequest(google.protobuf.message.Message):
+@_typing.final
+class SubscribeOrderBookRequest(_message.Message):
     """Запрос подписки на стакан по инструменту. Стрим"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ инструмента"""
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
+        symbol: _builtins.str = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["symbol", b"symbol"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["symbol", b"symbol"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___SubscribeOrderBookRequest = SubscribeOrderBookRequest
+Global___SubscribeOrderBookRequest: _TypeAlias = SubscribeOrderBookRequest  # noqa: Y015
 
-@typing.final
-class SubscribeOrderBookResponse(google.protobuf.message.Message):
+@_typing.final
+class SubscribeOrderBookResponse(_message.Message):
     """Стакан по инструменту. Стрим"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    ORDER_BOOK_FIELD_NUMBER: builtins.int
-    @property
-    def order_book(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___StreamOrderBook]:
+    ORDER_BOOK_FIELD_NUMBER: _builtins.int
+    @_builtins.property
+    def order_book(self) -> _containers.RepeatedCompositeFieldContainer[Global___StreamOrderBook]:
         """Список стакан стримов"""
 
     def __init__(
         self,
         *,
-        order_book: collections.abc.Iterable[global___StreamOrderBook] | None = ...,
+        order_book: _abc.Iterable[Global___StreamOrderBook] | None = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["order_book", b"order_book"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["order_book", b"order_book"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___SubscribeOrderBookResponse = SubscribeOrderBookResponse
+Global___SubscribeOrderBookResponse: _TypeAlias = SubscribeOrderBookResponse  # noqa: Y015
 
-@typing.final
-class SubscribeBarsRequest(google.protobuf.message.Message):
+@_typing.final
+class SubscribeBarsRequest(_message.Message):
     """Запрос подписки на агрегированные свечи. Стрим"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    TIMEFRAME_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    TIMEFRAME_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ инструмента"""
-    timeframe: global___TimeFrame.ValueType
+    timeframe: Global___TimeFrame.ValueType
     """Необходимый таймфрейм"""
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
-        timeframe: global___TimeFrame.ValueType = ...,
+        symbol: _builtins.str = ...,
+        timeframe: Global___TimeFrame.ValueType = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["symbol", b"symbol", "timeframe", b"timeframe"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["symbol", b"symbol", "timeframe", b"timeframe"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___SubscribeBarsRequest = SubscribeBarsRequest
+Global___SubscribeBarsRequest: _TypeAlias = SubscribeBarsRequest  # noqa: Y015
 
-@typing.final
-class SubscribeBarsResponse(google.protobuf.message.Message):
+@_typing.final
+class SubscribeBarsResponse(_message.Message):
     """Список агрегированных свеч. Стрим"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    BARS_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    BARS_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ инструмента"""
-    @property
-    def bars(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___Bar]:
+    @_builtins.property
+    def bars(self) -> _containers.RepeatedCompositeFieldContainer[Global___Bar]:
         """Агрегированная свеча"""
 
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
-        bars: collections.abc.Iterable[global___Bar] | None = ...,
+        symbol: _builtins.str = ...,
+        bars: _abc.Iterable[Global___Bar] | None = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["bars", b"bars", "symbol", b"symbol"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["bars", b"bars", "symbol", b"symbol"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___SubscribeBarsResponse = SubscribeBarsResponse
+Global___SubscribeBarsResponse: _TypeAlias = SubscribeBarsResponse  # noqa: Y015
 
-@typing.final
-class Bar(google.protobuf.message.Message):
+@_typing.final
+class Bar(_message.Message):
     """Информация об агрегированной свече"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    TIMESTAMP_FIELD_NUMBER: builtins.int
-    OPEN_FIELD_NUMBER: builtins.int
-    HIGH_FIELD_NUMBER: builtins.int
-    LOW_FIELD_NUMBER: builtins.int
-    CLOSE_FIELD_NUMBER: builtins.int
-    VOLUME_FIELD_NUMBER: builtins.int
-    @property
-    def timestamp(self) -> google.protobuf.timestamp_pb2.Timestamp:
+    TIMESTAMP_FIELD_NUMBER: _builtins.int
+    OPEN_FIELD_NUMBER: _builtins.int
+    HIGH_FIELD_NUMBER: _builtins.int
+    LOW_FIELD_NUMBER: _builtins.int
+    CLOSE_FIELD_NUMBER: _builtins.int
+    VOLUME_FIELD_NUMBER: _builtins.int
+    @_builtins.property
+    def timestamp(self) -> _timestamp_pb2.Timestamp:
         """Метка времени"""
 
-    @property
-    def open(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def open(self) -> _decimal_pb2.Decimal:
         """Цена открытия свечи"""
 
-    @property
-    def high(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def high(self) -> _decimal_pb2.Decimal:
         """Максимальная цена свечи"""
 
-    @property
-    def low(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def low(self) -> _decimal_pb2.Decimal:
         """Минимальная цена свечи"""
 
-    @property
-    def close(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def close(self) -> _decimal_pb2.Decimal:
         """Цена закрытия свечи"""
 
-    @property
-    def volume(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def volume(self) -> _decimal_pb2.Decimal:
         """Объём торгов за свечу в шт."""
 
     def __init__(
         self,
         *,
-        timestamp: google.protobuf.timestamp_pb2.Timestamp | None = ...,
-        open: google.type.decimal_pb2.Decimal | None = ...,
-        high: google.type.decimal_pb2.Decimal | None = ...,
-        low: google.type.decimal_pb2.Decimal | None = ...,
-        close: google.type.decimal_pb2.Decimal | None = ...,
-        volume: google.type.decimal_pb2.Decimal | None = ...,
+        timestamp: _timestamp_pb2.Timestamp | None = ...,
+        open: _decimal_pb2.Decimal | None = ...,
+        high: _decimal_pb2.Decimal | None = ...,
+        low: _decimal_pb2.Decimal | None = ...,
+        close: _decimal_pb2.Decimal | None = ...,
+        volume: _decimal_pb2.Decimal | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["close", b"close", "high", b"high", "low", b"low", "open", b"open", "timestamp", b"timestamp", "volume", b"volume"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["close", b"close", "high", b"high", "low", b"low", "open", b"open", "timestamp", b"timestamp", "volume", b"volume"]) -> None: ...
+    _HasFieldArgType: _TypeAlias = _typing.Literal["close", b"close", "high", b"high", "low", b"low", "open", b"open", "timestamp", b"timestamp", "volume", b"volume"]  # noqa: Y015
+    def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["close", b"close", "high", b"high", "low", b"low", "open", b"open", "timestamp", b"timestamp", "volume", b"volume"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___Bar = Bar
+Global___Bar: _TypeAlias = Bar  # noqa: Y015
 
-@typing.final
-class Quote(google.protobuf.message.Message):
+@_typing.final
+class Quote(_message.Message):
     """Информация о котировке"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    @typing.final
-    class Option(google.protobuf.message.Message):
+    @_typing.final
+    class Option(_message.Message):
         """Информация об опционе"""
 
-        DESCRIPTOR: google.protobuf.descriptor.Descriptor
+        DESCRIPTOR: _descriptor.Descriptor
 
-        OPEN_INTEREST_FIELD_NUMBER: builtins.int
-        IMPLIED_VOLATILITY_FIELD_NUMBER: builtins.int
-        THEORETICAL_PRICE_FIELD_NUMBER: builtins.int
-        DELTA_FIELD_NUMBER: builtins.int
-        GAMMA_FIELD_NUMBER: builtins.int
-        THETA_FIELD_NUMBER: builtins.int
-        VEGA_FIELD_NUMBER: builtins.int
-        RHO_FIELD_NUMBER: builtins.int
-        @property
-        def open_interest(self) -> google.type.decimal_pb2.Decimal:
+        OPEN_INTEREST_FIELD_NUMBER: _builtins.int
+        IMPLIED_VOLATILITY_FIELD_NUMBER: _builtins.int
+        THEORETICAL_PRICE_FIELD_NUMBER: _builtins.int
+        DELTA_FIELD_NUMBER: _builtins.int
+        GAMMA_FIELD_NUMBER: _builtins.int
+        THETA_FIELD_NUMBER: _builtins.int
+        VEGA_FIELD_NUMBER: _builtins.int
+        RHO_FIELD_NUMBER: _builtins.int
+        @_builtins.property
+        def open_interest(self) -> _decimal_pb2.Decimal:
             """Открытый интерес"""
 
-        @property
-        def implied_volatility(self) -> google.type.decimal_pb2.Decimal:
+        @_builtins.property
+        def implied_volatility(self) -> _decimal_pb2.Decimal:
             """Подразумеваемая волатильность"""
 
-        @property
-        def theoretical_price(self) -> google.type.decimal_pb2.Decimal:
+        @_builtins.property
+        def theoretical_price(self) -> _decimal_pb2.Decimal:
             """Теоретическая цена"""
 
-        @property
-        def delta(self) -> google.type.decimal_pb2.Decimal:
+        @_builtins.property
+        def delta(self) -> _decimal_pb2.Decimal:
             """Delta"""
 
-        @property
-        def gamma(self) -> google.type.decimal_pb2.Decimal:
+        @_builtins.property
+        def gamma(self) -> _decimal_pb2.Decimal:
             """Gamma"""
 
-        @property
-        def theta(self) -> google.type.decimal_pb2.Decimal:
+        @_builtins.property
+        def theta(self) -> _decimal_pb2.Decimal:
             """Theta"""
 
-        @property
-        def vega(self) -> google.type.decimal_pb2.Decimal:
+        @_builtins.property
+        def vega(self) -> _decimal_pb2.Decimal:
             """Vega"""
 
-        @property
-        def rho(self) -> google.type.decimal_pb2.Decimal:
+        @_builtins.property
+        def rho(self) -> _decimal_pb2.Decimal:
             """Rho"""
 
         def __init__(
             self,
             *,
-            open_interest: google.type.decimal_pb2.Decimal | None = ...,
-            implied_volatility: google.type.decimal_pb2.Decimal | None = ...,
-            theoretical_price: google.type.decimal_pb2.Decimal | None = ...,
-            delta: google.type.decimal_pb2.Decimal | None = ...,
-            gamma: google.type.decimal_pb2.Decimal | None = ...,
-            theta: google.type.decimal_pb2.Decimal | None = ...,
-            vega: google.type.decimal_pb2.Decimal | None = ...,
-            rho: google.type.decimal_pb2.Decimal | None = ...,
+            open_interest: _decimal_pb2.Decimal | None = ...,
+            implied_volatility: _decimal_pb2.Decimal | None = ...,
+            theoretical_price: _decimal_pb2.Decimal | None = ...,
+            delta: _decimal_pb2.Decimal | None = ...,
+            gamma: _decimal_pb2.Decimal | None = ...,
+            theta: _decimal_pb2.Decimal | None = ...,
+            vega: _decimal_pb2.Decimal | None = ...,
+            rho: _decimal_pb2.Decimal | None = ...,
         ) -> None: ...
-        def HasField(self, field_name: typing.Literal["delta", b"delta", "gamma", b"gamma", "implied_volatility", b"implied_volatility", "open_interest", b"open_interest", "rho", b"rho", "theoretical_price", b"theoretical_price", "theta", b"theta", "vega", b"vega"]) -> builtins.bool: ...
-        def ClearField(self, field_name: typing.Literal["delta", b"delta", "gamma", b"gamma", "implied_volatility", b"implied_volatility", "open_interest", b"open_interest", "rho", b"rho", "theoretical_price", b"theoretical_price", "theta", b"theta", "vega", b"vega"]) -> None: ...
+        _HasFieldArgType: _TypeAlias = _typing.Literal["delta", b"delta", "gamma", b"gamma", "implied_volatility", b"implied_volatility", "open_interest", b"open_interest", "rho", b"rho", "theoretical_price", b"theoretical_price", "theta", b"theta", "vega", b"vega"]  # noqa: Y015
+        def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+        _ClearFieldArgType: _TypeAlias = _typing.Literal["delta", b"delta", "gamma", b"gamma", "implied_volatility", b"implied_volatility", "open_interest", b"open_interest", "rho", b"rho", "theoretical_price", b"theoretical_price", "theta", b"theta", "vega", b"vega"]  # noqa: Y015
+        def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    TIMESTAMP_FIELD_NUMBER: builtins.int
-    ASK_FIELD_NUMBER: builtins.int
-    ASK_SIZE_FIELD_NUMBER: builtins.int
-    BID_FIELD_NUMBER: builtins.int
-    BID_SIZE_FIELD_NUMBER: builtins.int
-    LAST_FIELD_NUMBER: builtins.int
-    LAST_SIZE_FIELD_NUMBER: builtins.int
-    VOLUME_FIELD_NUMBER: builtins.int
-    TURNOVER_FIELD_NUMBER: builtins.int
-    OPEN_FIELD_NUMBER: builtins.int
-    HIGH_FIELD_NUMBER: builtins.int
-    LOW_FIELD_NUMBER: builtins.int
-    CLOSE_FIELD_NUMBER: builtins.int
-    CHANGE_FIELD_NUMBER: builtins.int
-    OPTION_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    TIMESTAMP_FIELD_NUMBER: _builtins.int
+    ASK_FIELD_NUMBER: _builtins.int
+    ASK_SIZE_FIELD_NUMBER: _builtins.int
+    BID_FIELD_NUMBER: _builtins.int
+    BID_SIZE_FIELD_NUMBER: _builtins.int
+    LAST_FIELD_NUMBER: _builtins.int
+    LAST_SIZE_FIELD_NUMBER: _builtins.int
+    VOLUME_FIELD_NUMBER: _builtins.int
+    TURNOVER_FIELD_NUMBER: _builtins.int
+    OPEN_FIELD_NUMBER: _builtins.int
+    HIGH_FIELD_NUMBER: _builtins.int
+    LOW_FIELD_NUMBER: _builtins.int
+    CLOSE_FIELD_NUMBER: _builtins.int
+    CHANGE_FIELD_NUMBER: _builtins.int
+    OPTION_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ инструмента"""
-    @property
-    def timestamp(self) -> google.protobuf.timestamp_pb2.Timestamp:
+    @_builtins.property
+    def timestamp(self) -> _timestamp_pb2.Timestamp:
         """Метка времени"""
 
-    @property
-    def ask(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def ask(self) -> _decimal_pb2.Decimal:
         """Аск. 0 при отсутствии активного аска"""
 
-    @property
-    def ask_size(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def ask_size(self) -> _decimal_pb2.Decimal:
         """Размер аска"""
 
-    @property
-    def bid(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def bid(self) -> _decimal_pb2.Decimal:
         """Бид. 0 при отсутствии активного бида"""
 
-    @property
-    def bid_size(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def bid_size(self) -> _decimal_pb2.Decimal:
         """Размер бида"""
 
-    @property
-    def last(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def last(self) -> _decimal_pb2.Decimal:
         """Цена последней сделки"""
 
-    @property
-    def last_size(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def last_size(self) -> _decimal_pb2.Decimal:
         """Размер последней сделки"""
 
-    @property
-    def volume(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def volume(self) -> _decimal_pb2.Decimal:
         """Дневной объем сделок"""
 
-    @property
-    def turnover(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def turnover(self) -> _decimal_pb2.Decimal:
         """Дневной оборот сделок"""
 
-    @property
-    def open(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def open(self) -> _decimal_pb2.Decimal:
         """Цена открытия. Дневная"""
 
-    @property
-    def high(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def high(self) -> _decimal_pb2.Decimal:
         """Максимальная цена. Дневная"""
 
-    @property
-    def low(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def low(self) -> _decimal_pb2.Decimal:
         """Минимальная цена. Дневная"""
 
-    @property
-    def close(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def close(self) -> _decimal_pb2.Decimal:
         """Цена закрытия. Дневная"""
 
-    @property
-    def change(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def change(self) -> _decimal_pb2.Decimal:
         """Изменение цены (last минус close)"""
 
-    @property
-    def option(self) -> global___Quote.Option:
+    @_builtins.property
+    def option(self) -> Global___Quote.Option:
         """Информация об опционе"""
 
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
-        timestamp: google.protobuf.timestamp_pb2.Timestamp | None = ...,
-        ask: google.type.decimal_pb2.Decimal | None = ...,
-        ask_size: google.type.decimal_pb2.Decimal | None = ...,
-        bid: google.type.decimal_pb2.Decimal | None = ...,
-        bid_size: google.type.decimal_pb2.Decimal | None = ...,
-        last: google.type.decimal_pb2.Decimal | None = ...,
-        last_size: google.type.decimal_pb2.Decimal | None = ...,
-        volume: google.type.decimal_pb2.Decimal | None = ...,
-        turnover: google.type.decimal_pb2.Decimal | None = ...,
-        open: google.type.decimal_pb2.Decimal | None = ...,
-        high: google.type.decimal_pb2.Decimal | None = ...,
-        low: google.type.decimal_pb2.Decimal | None = ...,
-        close: google.type.decimal_pb2.Decimal | None = ...,
-        change: google.type.decimal_pb2.Decimal | None = ...,
-        option: global___Quote.Option | None = ...,
+        symbol: _builtins.str = ...,
+        timestamp: _timestamp_pb2.Timestamp | None = ...,
+        ask: _decimal_pb2.Decimal | None = ...,
+        ask_size: _decimal_pb2.Decimal | None = ...,
+        bid: _decimal_pb2.Decimal | None = ...,
+        bid_size: _decimal_pb2.Decimal | None = ...,
+        last: _decimal_pb2.Decimal | None = ...,
+        last_size: _decimal_pb2.Decimal | None = ...,
+        volume: _decimal_pb2.Decimal | None = ...,
+        turnover: _decimal_pb2.Decimal | None = ...,
+        open: _decimal_pb2.Decimal | None = ...,
+        high: _decimal_pb2.Decimal | None = ...,
+        low: _decimal_pb2.Decimal | None = ...,
+        close: _decimal_pb2.Decimal | None = ...,
+        change: _decimal_pb2.Decimal | None = ...,
+        option: Global___Quote.Option | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["additions", b"additions", "ask", b"ask", "ask_size", b"ask_size", "bid", b"bid", "bid_size", b"bid_size", "change", b"change", "close", b"close", "high", b"high", "last", b"last", "last_size", b"last_size", "low", b"low", "open", b"open", "option", b"option", "timestamp", b"timestamp", "turnover", b"turnover", "volume", b"volume"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["additions", b"additions", "ask", b"ask", "ask_size", b"ask_size", "bid", b"bid", "bid_size", b"bid_size", "change", b"change", "close", b"close", "high", b"high", "last", b"last", "last_size", b"last_size", "low", b"low", "open", b"open", "option", b"option", "symbol", b"symbol", "timestamp", b"timestamp", "turnover", b"turnover", "volume", b"volume"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing.Literal["additions", b"additions"]) -> typing.Literal["option"] | None: ...
+    _HasFieldArgType: _TypeAlias = _typing.Literal["additions", b"additions", "ask", b"ask", "ask_size", b"ask_size", "bid", b"bid", "bid_size", b"bid_size", "change", b"change", "close", b"close", "high", b"high", "last", b"last", "last_size", b"last_size", "low", b"low", "open", b"open", "option", b"option", "timestamp", b"timestamp", "turnover", b"turnover", "volume", b"volume"]  # noqa: Y015
+    def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["additions", b"additions", "ask", b"ask", "ask_size", b"ask_size", "bid", b"bid", "bid_size", b"bid_size", "change", b"change", "close", b"close", "high", b"high", "last", b"last", "last_size", b"last_size", "low", b"low", "open", b"open", "option", b"option", "symbol", b"symbol", "timestamp", b"timestamp", "turnover", b"turnover", "volume", b"volume"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
+    _WhichOneofReturnType_additions: _TypeAlias = _typing.Literal["option"]  # noqa: Y015
+    _WhichOneofArgType_additions: _TypeAlias = _typing.Literal["additions", b"additions"]  # noqa: Y015
+    def WhichOneof(self, oneof_group: _WhichOneofArgType_additions) -> _WhichOneofReturnType_additions | None: ...
 
-global___Quote = Quote
+Global___Quote: _TypeAlias = Quote  # noqa: Y015
 
-@typing.final
-class OrderBook(google.protobuf.message.Message):
+@_typing.final
+class OrderBook(_message.Message):
     """Информация о стакане"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    @typing.final
-    class Row(google.protobuf.message.Message):
+    @_typing.final
+    class Row(_message.Message):
         """Информация об уровне в стакане (строке)"""
 
-        DESCRIPTOR: google.protobuf.descriptor.Descriptor
+        DESCRIPTOR: _descriptor.Descriptor
 
         class _Action:
-            ValueType = typing.NewType("ValueType", builtins.int)
-            V: typing_extensions.TypeAlias = ValueType
+            ValueType = _typing.NewType("ValueType", _builtins.int)
+            V: _TypeAlias = ValueType  # noqa: Y015
 
-        class _ActionEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[OrderBook.Row._Action.ValueType], builtins.type):
-            DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+        class _ActionEnumTypeWrapper(_enum_type_wrapper._EnumTypeWrapper[OrderBook.Row._Action.ValueType], _builtins.type):
+            DESCRIPTOR: _descriptor.EnumDescriptor
             ACTION_UNSPECIFIED: OrderBook.Row._Action.ValueType  # 0
             """Действие не указано"""
             ACTION_REMOVE: OrderBook.Row._Action.ValueType  # 1
@@ -660,145 +686,153 @@ class OrderBook(google.protobuf.message.Message):
         ACTION_UPDATE: OrderBook.Row.Action.ValueType  # 3
         """Обновить"""
 
-        PRICE_FIELD_NUMBER: builtins.int
-        SELL_SIZE_FIELD_NUMBER: builtins.int
-        BUY_SIZE_FIELD_NUMBER: builtins.int
-        ACTION_FIELD_NUMBER: builtins.int
-        MPID_FIELD_NUMBER: builtins.int
-        TIMESTAMP_FIELD_NUMBER: builtins.int
-        action: global___OrderBook.Row.Action.ValueType
+        PRICE_FIELD_NUMBER: _builtins.int
+        SELL_SIZE_FIELD_NUMBER: _builtins.int
+        BUY_SIZE_FIELD_NUMBER: _builtins.int
+        ACTION_FIELD_NUMBER: _builtins.int
+        MPID_FIELD_NUMBER: _builtins.int
+        TIMESTAMP_FIELD_NUMBER: _builtins.int
+        action: Global___OrderBook.Row.Action.ValueType
         """Команда"""
-        mpid: builtins.str
+        mpid: _builtins.str
         """Идентификатор участника рынка"""
-        @property
-        def price(self) -> google.type.decimal_pb2.Decimal:
+        @_builtins.property
+        def price(self) -> _decimal_pb2.Decimal:
             """Цена"""
 
-        @property
-        def sell_size(self) -> google.type.decimal_pb2.Decimal:
+        @_builtins.property
+        def sell_size(self) -> _decimal_pb2.Decimal:
             """Размер на продажу"""
 
-        @property
-        def buy_size(self) -> google.type.decimal_pb2.Decimal:
+        @_builtins.property
+        def buy_size(self) -> _decimal_pb2.Decimal:
             """Размер на покупку"""
 
-        @property
-        def timestamp(self) -> google.protobuf.timestamp_pb2.Timestamp:
+        @_builtins.property
+        def timestamp(self) -> _timestamp_pb2.Timestamp:
             """Метка времени"""
 
         def __init__(
             self,
             *,
-            price: google.type.decimal_pb2.Decimal | None = ...,
-            sell_size: google.type.decimal_pb2.Decimal | None = ...,
-            buy_size: google.type.decimal_pb2.Decimal | None = ...,
-            action: global___OrderBook.Row.Action.ValueType = ...,
-            mpid: builtins.str = ...,
-            timestamp: google.protobuf.timestamp_pb2.Timestamp | None = ...,
+            price: _decimal_pb2.Decimal | None = ...,
+            sell_size: _decimal_pb2.Decimal | None = ...,
+            buy_size: _decimal_pb2.Decimal | None = ...,
+            action: Global___OrderBook.Row.Action.ValueType = ...,
+            mpid: _builtins.str = ...,
+            timestamp: _timestamp_pb2.Timestamp | None = ...,
         ) -> None: ...
-        def HasField(self, field_name: typing.Literal["buy_size", b"buy_size", "price", b"price", "sell_size", b"sell_size", "side", b"side", "timestamp", b"timestamp"]) -> builtins.bool: ...
-        def ClearField(self, field_name: typing.Literal["action", b"action", "buy_size", b"buy_size", "mpid", b"mpid", "price", b"price", "sell_size", b"sell_size", "side", b"side", "timestamp", b"timestamp"]) -> None: ...
-        def WhichOneof(self, oneof_group: typing.Literal["side", b"side"]) -> typing.Literal["sell_size", "buy_size"] | None: ...
+        _HasFieldArgType: _TypeAlias = _typing.Literal["buy_size", b"buy_size", "price", b"price", "sell_size", b"sell_size", "side", b"side", "timestamp", b"timestamp"]  # noqa: Y015
+        def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+        _ClearFieldArgType: _TypeAlias = _typing.Literal["action", b"action", "buy_size", b"buy_size", "mpid", b"mpid", "price", b"price", "sell_size", b"sell_size", "side", b"side", "timestamp", b"timestamp"]  # noqa: Y015
+        def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
+        _WhichOneofReturnType_side: _TypeAlias = _typing.Literal["sell_size", "buy_size"]  # noqa: Y015
+        _WhichOneofArgType_side: _TypeAlias = _typing.Literal["side", b"side"]  # noqa: Y015
+        def WhichOneof(self, oneof_group: _WhichOneofArgType_side) -> _WhichOneofReturnType_side | None: ...
 
-    ROWS_FIELD_NUMBER: builtins.int
-    @property
-    def rows(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___OrderBook.Row]:
+    ROWS_FIELD_NUMBER: _builtins.int
+    @_builtins.property
+    def rows(self) -> _containers.RepeatedCompositeFieldContainer[Global___OrderBook.Row]:
         """Уровни стакана"""
 
     def __init__(
         self,
         *,
-        rows: collections.abc.Iterable[global___OrderBook.Row] | None = ...,
+        rows: _abc.Iterable[Global___OrderBook.Row] | None = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["rows", b"rows"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["rows", b"rows"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___OrderBook = OrderBook
+Global___OrderBook: _TypeAlias = OrderBook  # noqa: Y015
 
-@typing.final
-class Trade(google.protobuf.message.Message):
+@_typing.final
+class Trade(_message.Message):
     """Информация о сделке"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    TRADE_ID_FIELD_NUMBER: builtins.int
-    MPID_FIELD_NUMBER: builtins.int
-    TIMESTAMP_FIELD_NUMBER: builtins.int
-    PRICE_FIELD_NUMBER: builtins.int
-    SIZE_FIELD_NUMBER: builtins.int
-    SIDE_FIELD_NUMBER: builtins.int
-    trade_id: builtins.str
+    TRADE_ID_FIELD_NUMBER: _builtins.int
+    MPID_FIELD_NUMBER: _builtins.int
+    TIMESTAMP_FIELD_NUMBER: _builtins.int
+    PRICE_FIELD_NUMBER: _builtins.int
+    SIZE_FIELD_NUMBER: _builtins.int
+    SIDE_FIELD_NUMBER: _builtins.int
+    trade_id: _builtins.str
     """Идентификатор сделки, отправленный биржей"""
-    mpid: builtins.str
+    mpid: _builtins.str
     """Идентификатор участника рынка"""
-    side: FinamPy.FinamPy.grpc.side_pb2.Side.ValueType
+    side: _side_pb2.Side.ValueType
     """ Сторона сделки (buy или sell)"""
-    @property
-    def timestamp(self) -> google.protobuf.timestamp_pb2.Timestamp:
+    @_builtins.property
+    def timestamp(self) -> _timestamp_pb2.Timestamp:
         """Метка времени"""
 
-    @property
-    def price(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def price(self) -> _decimal_pb2.Decimal:
         """Цена сделки"""
 
-    @property
-    def size(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def size(self) -> _decimal_pb2.Decimal:
         """Размер сделки"""
 
     def __init__(
         self,
         *,
-        trade_id: builtins.str = ...,
-        mpid: builtins.str = ...,
-        timestamp: google.protobuf.timestamp_pb2.Timestamp | None = ...,
-        price: google.type.decimal_pb2.Decimal | None = ...,
-        size: google.type.decimal_pb2.Decimal | None = ...,
-        side: FinamPy.FinamPy.grpc.side_pb2.Side.ValueType = ...,
+        trade_id: _builtins.str = ...,
+        mpid: _builtins.str = ...,
+        timestamp: _timestamp_pb2.Timestamp | None = ...,
+        price: _decimal_pb2.Decimal | None = ...,
+        size: _decimal_pb2.Decimal | None = ...,
+        side: _side_pb2.Side.ValueType = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["price", b"price", "size", b"size", "timestamp", b"timestamp"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["mpid", b"mpid", "price", b"price", "side", b"side", "size", b"size", "timestamp", b"timestamp", "trade_id", b"trade_id"]) -> None: ...
+    _HasFieldArgType: _TypeAlias = _typing.Literal["price", b"price", "size", b"size", "timestamp", b"timestamp"]  # noqa: Y015
+    def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["mpid", b"mpid", "price", b"price", "side", b"side", "size", b"size", "timestamp", b"timestamp", "trade_id", b"trade_id"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___Trade = Trade
+Global___Trade: _TypeAlias = Trade  # noqa: Y015
 
-@typing.final
-class StreamError(google.protobuf.message.Message):
+@_typing.final
+class StreamError(_message.Message):
     """Ошибка стрим сервиса"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    CODE_FIELD_NUMBER: builtins.int
-    DESCRIPTION_FIELD_NUMBER: builtins.int
-    code: builtins.int
+    CODE_FIELD_NUMBER: _builtins.int
+    DESCRIPTION_FIELD_NUMBER: _builtins.int
+    code: _builtins.int
     """Код ошибки"""
-    description: builtins.str
+    description: _builtins.str
     """Описание ошибки"""
     def __init__(
         self,
         *,
-        code: builtins.int = ...,
-        description: builtins.str = ...,
+        code: _builtins.int = ...,
+        description: _builtins.str = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["code", b"code", "description", b"description"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["code", b"code", "description", b"description"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___StreamError = StreamError
+Global___StreamError: _TypeAlias = StreamError  # noqa: Y015
 
-@typing.final
-class StreamOrderBook(google.protobuf.message.Message):
+@_typing.final
+class StreamOrderBook(_message.Message):
     """Стакан по инструменту. Стрим"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    @typing.final
-    class Row(google.protobuf.message.Message):
+    @_typing.final
+    class Row(_message.Message):
         """Информация об уровне в стакане (строке)"""
 
-        DESCRIPTOR: google.protobuf.descriptor.Descriptor
+        DESCRIPTOR: _descriptor.Descriptor
 
         class _Action:
-            ValueType = typing.NewType("ValueType", builtins.int)
-            V: typing_extensions.TypeAlias = ValueType
+            ValueType = _typing.NewType("ValueType", _builtins.int)
+            V: _TypeAlias = ValueType  # noqa: Y015
 
-        class _ActionEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[StreamOrderBook.Row._Action.ValueType], builtins.type):
-            DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+        class _ActionEnumTypeWrapper(_enum_type_wrapper._EnumTypeWrapper[StreamOrderBook.Row._Action.ValueType], _builtins.type):
+            DESCRIPTOR: _descriptor.EnumDescriptor
             ACTION_UNSPECIFIED: StreamOrderBook.Row._Action.ValueType  # 0
             """Действие не указано"""
             ACTION_REMOVE: StreamOrderBook.Row._Action.ValueType  # 1
@@ -820,102 +854,109 @@ class StreamOrderBook(google.protobuf.message.Message):
         ACTION_UPDATE: StreamOrderBook.Row.Action.ValueType  # 3
         """Обновить"""
 
-        PRICE_FIELD_NUMBER: builtins.int
-        SELL_SIZE_FIELD_NUMBER: builtins.int
-        BUY_SIZE_FIELD_NUMBER: builtins.int
-        ACTION_FIELD_NUMBER: builtins.int
-        MPID_FIELD_NUMBER: builtins.int
-        TIMESTAMP_FIELD_NUMBER: builtins.int
-        action: global___StreamOrderBook.Row.Action.ValueType
+        PRICE_FIELD_NUMBER: _builtins.int
+        SELL_SIZE_FIELD_NUMBER: _builtins.int
+        BUY_SIZE_FIELD_NUMBER: _builtins.int
+        ACTION_FIELD_NUMBER: _builtins.int
+        MPID_FIELD_NUMBER: _builtins.int
+        TIMESTAMP_FIELD_NUMBER: _builtins.int
+        action: Global___StreamOrderBook.Row.Action.ValueType
         """Команда"""
-        mpid: builtins.str
+        mpid: _builtins.str
         """Идентификатор участника рынка"""
-        @property
-        def price(self) -> google.type.decimal_pb2.Decimal:
+        @_builtins.property
+        def price(self) -> _decimal_pb2.Decimal:
             """Цена"""
 
-        @property
-        def sell_size(self) -> google.type.decimal_pb2.Decimal:
+        @_builtins.property
+        def sell_size(self) -> _decimal_pb2.Decimal:
             """Размер на продажу"""
 
-        @property
-        def buy_size(self) -> google.type.decimal_pb2.Decimal:
+        @_builtins.property
+        def buy_size(self) -> _decimal_pb2.Decimal:
             """Размер на покупку"""
 
-        @property
-        def timestamp(self) -> google.protobuf.timestamp_pb2.Timestamp:
+        @_builtins.property
+        def timestamp(self) -> _timestamp_pb2.Timestamp:
             """Метка времени"""
 
         def __init__(
             self,
             *,
-            price: google.type.decimal_pb2.Decimal | None = ...,
-            sell_size: google.type.decimal_pb2.Decimal | None = ...,
-            buy_size: google.type.decimal_pb2.Decimal | None = ...,
-            action: global___StreamOrderBook.Row.Action.ValueType = ...,
-            mpid: builtins.str = ...,
-            timestamp: google.protobuf.timestamp_pb2.Timestamp | None = ...,
+            price: _decimal_pb2.Decimal | None = ...,
+            sell_size: _decimal_pb2.Decimal | None = ...,
+            buy_size: _decimal_pb2.Decimal | None = ...,
+            action: Global___StreamOrderBook.Row.Action.ValueType = ...,
+            mpid: _builtins.str = ...,
+            timestamp: _timestamp_pb2.Timestamp | None = ...,
         ) -> None: ...
-        def HasField(self, field_name: typing.Literal["buy_size", b"buy_size", "price", b"price", "sell_size", b"sell_size", "side", b"side", "timestamp", b"timestamp"]) -> builtins.bool: ...
-        def ClearField(self, field_name: typing.Literal["action", b"action", "buy_size", b"buy_size", "mpid", b"mpid", "price", b"price", "sell_size", b"sell_size", "side", b"side", "timestamp", b"timestamp"]) -> None: ...
-        def WhichOneof(self, oneof_group: typing.Literal["side", b"side"]) -> typing.Literal["sell_size", "buy_size"] | None: ...
+        _HasFieldArgType: _TypeAlias = _typing.Literal["buy_size", b"buy_size", "price", b"price", "sell_size", b"sell_size", "side", b"side", "timestamp", b"timestamp"]  # noqa: Y015
+        def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+        _ClearFieldArgType: _TypeAlias = _typing.Literal["action", b"action", "buy_size", b"buy_size", "mpid", b"mpid", "price", b"price", "sell_size", b"sell_size", "side", b"side", "timestamp", b"timestamp"]  # noqa: Y015
+        def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
+        _WhichOneofReturnType_side: _TypeAlias = _typing.Literal["sell_size", "buy_size"]  # noqa: Y015
+        _WhichOneofArgType_side: _TypeAlias = _typing.Literal["side", b"side"]  # noqa: Y015
+        def WhichOneof(self, oneof_group: _WhichOneofArgType_side) -> _WhichOneofReturnType_side | None: ...
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    ROWS_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    ROWS_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ инструмента"""
-    @property
-    def rows(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___StreamOrderBook.Row]:
+    @_builtins.property
+    def rows(self) -> _containers.RepeatedCompositeFieldContainer[Global___StreamOrderBook.Row]:
         """Уровни стакана"""
 
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
-        rows: collections.abc.Iterable[global___StreamOrderBook.Row] | None = ...,
+        symbol: _builtins.str = ...,
+        rows: _abc.Iterable[Global___StreamOrderBook.Row] | None = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["rows", b"rows", "symbol", b"symbol"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["rows", b"rows", "symbol", b"symbol"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___StreamOrderBook = StreamOrderBook
+Global___StreamOrderBook: _TypeAlias = StreamOrderBook  # noqa: Y015
 
-@typing.final
-class SubscribeLatestTradesRequest(google.protobuf.message.Message):
+@_typing.final
+class SubscribeLatestTradesRequest(_message.Message):
     """Запрос списка последних сделок по инструменту. Стрим"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ инструмента"""
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
+        symbol: _builtins.str = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["symbol", b"symbol"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["symbol", b"symbol"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___SubscribeLatestTradesRequest = SubscribeLatestTradesRequest
+Global___SubscribeLatestTradesRequest: _TypeAlias = SubscribeLatestTradesRequest  # noqa: Y015
 
-@typing.final
-class SubscribeLatestTradesResponse(google.protobuf.message.Message):
+@_typing.final
+class SubscribeLatestTradesResponse(_message.Message):
     """Список последних сделок по инструменту. Стрим"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    TRADES_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    TRADES_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ инструмента"""
-    @property
-    def trades(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___Trade]:
+    @_builtins.property
+    def trades(self) -> _containers.RepeatedCompositeFieldContainer[Global___Trade]:
         """Список сделок"""
 
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
-        trades: collections.abc.Iterable[global___Trade] | None = ...,
+        symbol: _builtins.str = ...,
+        trades: _abc.Iterable[Global___Trade] | None = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["symbol", b"symbol", "trades", b"trades"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["symbol", b"symbol", "trades", b"trades"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___SubscribeLatestTradesResponse = SubscribeLatestTradesResponse
+Global___SubscribeLatestTradesResponse: _TypeAlias = SubscribeLatestTradesResponse  # noqa: Y015

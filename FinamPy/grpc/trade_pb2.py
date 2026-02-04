@@ -24,17 +24,17 @@ _sym_db = _symbol_database.Default()
 
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 from google.type import decimal_pb2 as google_dot_type_dot_decimal__pb2
-from . import side_pb2 as FinamPy_dot_FinamPy_dot_grpc_dot_side__pb2
+from FinamPy.grpc import side_pb2 as FinamPy_dot_FinamPy_dot_grpc_dot_side__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n FinamPy/FinamPy/grpc/trade.proto\x12\x10grpc.tradeapi.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/type/decimal.proto\x1a\x1f\x46inamPy/FinamPy/grpc/side.proto\"\xf4\x01\n\x0c\x41\x63\x63ountTrade\x12\x10\n\x08trade_id\x18\x01 \x01(\t\x12\x0e\n\x06symbol\x18\x02 \x01(\t\x12#\n\x05price\x18\x03 \x01(\x0b\x32\x14.google.type.Decimal\x12\"\n\x04size\x18\x04 \x01(\x0b\x32\x14.google.type.Decimal\x12$\n\x04side\x18\x05 \x01(\x0e\x32\x16.grpc.tradeapi.v1.Side\x12-\n\ttimestamp\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x10\n\x08order_id\x18\x07 \x01(\t\x12\x12\n\naccount_id\x18\x08 \x01(\tB\x16P\x01Z\x12trade_api/v1/tradeb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n FinamPy/FinamPy/grpc/trade.proto\x12\x10grpc.tradeapi.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/type/decimal.proto\x1a\x1f\x46inamPy/FinamPy/grpc/side.proto\"\x85\x02\n\x0c\x41\x63\x63ountTrade\x12\x10\n\x08trade_id\x18\x01 \x01(\t\x12\x0e\n\x06symbol\x18\x02 \x01(\t\x12#\n\x05price\x18\x03 \x01(\x0b\x32\x14.google.type.Decimal\x12\"\n\x04size\x18\x04 \x01(\x0b\x32\x14.google.type.Decimal\x12$\n\x04side\x18\x05 \x01(\x0e\x32\x16.grpc.tradeapi.v1.Side\x12-\n\ttimestamp\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x10\n\x08order_id\x18\x07 \x01(\t\x12\x12\n\naccount_id\x18\x08 \x01(\t\x12\x0f\n\x07\x63omment\x18\t \x01(\tB?P\x01Z;github.com/FinamWeb/finam-trade-api/go/FinamPy/FinamPy/grpcb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'FinamPy.FinamPy.grpc.trade_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
-  _globals['DESCRIPTOR']._serialized_options = b'P\001Z\022trade_api/v1/trade'
+  _globals['DESCRIPTOR']._serialized_options = b'P\001Z;github.com/FinamWeb/finam-trade-api/go/FinamPy/FinamPy/grpc'
   _globals['_ACCOUNTTRADE']._serialized_start=148
-  _globals['_ACCOUNTTRADE']._serialized_end=392
+  _globals['_ACCOUNTTRADE']._serialized_end=409
 # @@protoc_insertion_point(module_scope)

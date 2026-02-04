@@ -3,489 +3,589 @@
 isort:skip_file
 """
 
-import builtins
-import collections.abc
-import google.protobuf.descriptor
-import google.protobuf.internal.containers
-import google.protobuf.internal.enum_type_wrapper
-import google.protobuf.message
-import google.protobuf.timestamp_pb2
-import google.type.date_pb2
-import google.type.decimal_pb2
-import google.type.interval_pb2
-import google.type.money_pb2
+from collections import abc as _abc
+from google.protobuf import descriptor as _descriptor
+from google.protobuf import message as _message
+from google.protobuf import timestamp_pb2 as _timestamp_pb2
+from google.protobuf import wrappers_pb2 as _wrappers_pb2
+from google.protobuf.internal import containers as _containers
+from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
+from google.type import date_pb2 as _date_pb2
+from google.type import decimal_pb2 as _decimal_pb2
+from google.type import interval_pb2 as _interval_pb2
+from google.type import money_pb2 as _money_pb2
+import builtins as _builtins
 import sys
-import typing
+import typing as _typing
 
 if sys.version_info >= (3, 10):
-    import typing as typing_extensions
+    from typing import TypeAlias as _TypeAlias
 else:
-    import typing_extensions
+    from typing_extensions import TypeAlias as _TypeAlias
 
-DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
+if sys.version_info >= (3, 13):
+    from warnings import deprecated as _deprecated
+else:
+    from typing_extensions import deprecated as _deprecated
 
-@typing.final
-class ExchangesRequest(google.protobuf.message.Message):
+DESCRIPTOR: _descriptor.FileDescriptor
+
+class _PriceType:
+    ValueType = _typing.NewType("ValueType", _builtins.int)
+    V: _TypeAlias = ValueType  # noqa: Y015
+
+class _PriceTypeEnumTypeWrapper(_enum_type_wrapper._EnumTypeWrapper[_PriceType.ValueType], _builtins.type):
+    DESCRIPTOR: _descriptor.EnumDescriptor
+    UNKNOWN: _PriceType.ValueType  # 0
+    """Неизвестно"""
+    POSITIVE: _PriceType.ValueType  # 1
+    """Положительная. Больше нуля"""
+    NON_NEGATIVE: _PriceType.ValueType  # 2
+    """Неотрицательная. Больше или равна нулю"""
+    ANY: _PriceType.ValueType  # 3
+    """Любая"""
+
+class PriceType(_PriceType, metaclass=_PriceTypeEnumTypeWrapper):
+    """Допустимая цена"""
+
+UNKNOWN: PriceType.ValueType  # 0
+"""Неизвестно"""
+POSITIVE: PriceType.ValueType  # 1
+"""Положительная. Больше нуля"""
+NON_NEGATIVE: PriceType.ValueType  # 2
+"""Неотрицательная. Больше или равна нулю"""
+ANY: PriceType.ValueType  # 3
+"""Любая"""
+Global___PriceType: _TypeAlias = PriceType  # noqa: Y015
+
+@_typing.final
+class ExchangesRequest(_message.Message):
     """Запрос получения списка доступных бирж"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
     def __init__(
         self,
     ) -> None: ...
 
-global___ExchangesRequest = ExchangesRequest
+Global___ExchangesRequest: _TypeAlias = ExchangesRequest  # noqa: Y015
 
-@typing.final
-class ExchangesResponse(google.protobuf.message.Message):
+@_typing.final
+class ExchangesResponse(_message.Message):
     """Список доступных бирж"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    EXCHANGES_FIELD_NUMBER: builtins.int
-    @property
-    def exchanges(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___Exchange]:
+    EXCHANGES_FIELD_NUMBER: _builtins.int
+    @_builtins.property
+    def exchanges(self) -> _containers.RepeatedCompositeFieldContainer[Global___Exchange]:
         """Информация о бирже"""
 
     def __init__(
         self,
         *,
-        exchanges: collections.abc.Iterable[global___Exchange] | None = ...,
+        exchanges: _abc.Iterable[Global___Exchange] | None = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["exchanges", b"exchanges"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["exchanges", b"exchanges"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___ExchangesResponse = ExchangesResponse
+Global___ExchangesResponse: _TypeAlias = ExchangesResponse  # noqa: Y015
 
-@typing.final
-class AssetsRequest(google.protobuf.message.Message):
+@_typing.final
+class AssetsRequest(_message.Message):
     """Запрос получения списка доступных инструментов"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
     def __init__(
         self,
     ) -> None: ...
 
-global___AssetsRequest = AssetsRequest
+Global___AssetsRequest: _TypeAlias = AssetsRequest  # noqa: Y015
 
-@typing.final
-class AssetsResponse(google.protobuf.message.Message):
+@_typing.final
+class AssetsResponse(_message.Message):
     """Список доступных инструментов"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    ASSETS_FIELD_NUMBER: builtins.int
-    @property
-    def assets(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___Asset]:
+    ASSETS_FIELD_NUMBER: _builtins.int
+    @_builtins.property
+    def assets(self) -> _containers.RepeatedCompositeFieldContainer[Global___Asset]:
         """Информация об инструменте"""
 
     def __init__(
         self,
         *,
-        assets: collections.abc.Iterable[global___Asset] | None = ...,
+        assets: _abc.Iterable[Global___Asset] | None = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["assets", b"assets"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["assets", b"assets"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___AssetsResponse = AssetsResponse
+Global___AssetsResponse: _TypeAlias = AssetsResponse  # noqa: Y015
 
-@typing.final
-class GetAssetRequest(google.protobuf.message.Message):
+@_typing.final
+class GetAssetRequest(_message.Message):
     """Запрос получения информации по конкретному инструменту"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    ACCOUNT_ID_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    ACCOUNT_ID_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ инструмента"""
-    account_id: builtins.str
+    account_id: _builtins.str
     """ID аккаунта для которого будет подбираться информация по инструменту"""
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
-        account_id: builtins.str = ...,
+        symbol: _builtins.str = ...,
+        account_id: _builtins.str = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["account_id", b"account_id", "symbol", b"symbol"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["account_id", b"account_id", "symbol", b"symbol"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___GetAssetRequest = GetAssetRequest
+Global___GetAssetRequest: _TypeAlias = GetAssetRequest  # noqa: Y015
 
-@typing.final
-class GetAssetResponse(google.protobuf.message.Message):
+@_typing.final
+class GetAssetResponse(_message.Message):
     """Список информации по конкретному инструменту"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    BOARD_FIELD_NUMBER: builtins.int
-    ID_FIELD_NUMBER: builtins.int
-    TICKER_FIELD_NUMBER: builtins.int
-    MIC_FIELD_NUMBER: builtins.int
-    ISIN_FIELD_NUMBER: builtins.int
-    TYPE_FIELD_NUMBER: builtins.int
-    NAME_FIELD_NUMBER: builtins.int
-    DECIMALS_FIELD_NUMBER: builtins.int
-    MIN_STEP_FIELD_NUMBER: builtins.int
-    LOT_SIZE_FIELD_NUMBER: builtins.int
-    EXPIRATION_DATE_FIELD_NUMBER: builtins.int
-    board: builtins.str
+    BOARD_FIELD_NUMBER: _builtins.int
+    ID_FIELD_NUMBER: _builtins.int
+    TICKER_FIELD_NUMBER: _builtins.int
+    MIC_FIELD_NUMBER: _builtins.int
+    ISIN_FIELD_NUMBER: _builtins.int
+    TYPE_FIELD_NUMBER: _builtins.int
+    NAME_FIELD_NUMBER: _builtins.int
+    DECIMALS_FIELD_NUMBER: _builtins.int
+    MIN_STEP_FIELD_NUMBER: _builtins.int
+    LOT_SIZE_FIELD_NUMBER: _builtins.int
+    EXPIRATION_DATE_FIELD_NUMBER: _builtins.int
+    QUOTE_CURRENCY_FIELD_NUMBER: _builtins.int
+    board: _builtins.str
     """Код режима торгов"""
-    id: builtins.str
+    id: _builtins.str
     """Идентификатор инструмента"""
-    ticker: builtins.str
+    ticker: _builtins.str
     """Тикер инструмента"""
-    mic: builtins.str
+    mic: _builtins.str
     """mic идентификатор биржи"""
-    isin: builtins.str
+    isin: _builtins.str
     """Isin идентификатор инструмента"""
-    type: builtins.str
+    type: _builtins.str
     """Тип инструмента"""
-    name: builtins.str
+    name: _builtins.str
     """Наименование инструмента"""
-    decimals: builtins.int
+    decimals: _builtins.int
     """Кол-во десятичных знаков в цене"""
-    min_step: builtins.int
+    min_step: _builtins.int
     """Минимальный шаг цены. Для расчета финального ценового шага: min_step/(10ˆdecimals)"""
-    @property
-    def lot_size(self) -> google.type.decimal_pb2.Decimal:
+    quote_currency: _builtins.str
+    """Валюта котировки, может не совпадать с валютой режима торгов инструмента"""
+    @_builtins.property
+    def lot_size(self) -> _decimal_pb2.Decimal:
         """Кол-во штук в лоте"""
 
-    @property
-    def expiration_date(self) -> google.type.date_pb2.Date:
+    @_builtins.property
+    def expiration_date(self) -> _date_pb2.Date:
         """Дата экспирации фьючерса"""
 
     def __init__(
         self,
         *,
-        board: builtins.str = ...,
-        id: builtins.str = ...,
-        ticker: builtins.str = ...,
-        mic: builtins.str = ...,
-        isin: builtins.str = ...,
-        type: builtins.str = ...,
-        name: builtins.str = ...,
-        decimals: builtins.int = ...,
-        min_step: builtins.int = ...,
-        lot_size: google.type.decimal_pb2.Decimal | None = ...,
-        expiration_date: google.type.date_pb2.Date | None = ...,
+        board: _builtins.str = ...,
+        id: _builtins.str = ...,
+        ticker: _builtins.str = ...,
+        mic: _builtins.str = ...,
+        isin: _builtins.str = ...,
+        type: _builtins.str = ...,
+        name: _builtins.str = ...,
+        decimals: _builtins.int = ...,
+        min_step: _builtins.int = ...,
+        lot_size: _decimal_pb2.Decimal | None = ...,
+        expiration_date: _date_pb2.Date | None = ...,
+        quote_currency: _builtins.str = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["expiration_date", b"expiration_date", "lot_size", b"lot_size"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["board", b"board", "decimals", b"decimals", "expiration_date", b"expiration_date", "id", b"id", "isin", b"isin", "lot_size", b"lot_size", "mic", b"mic", "min_step", b"min_step", "name", b"name", "ticker", b"ticker", "type", b"type"]) -> None: ...
+    _HasFieldArgType: _TypeAlias = _typing.Literal["expiration_date", b"expiration_date", "lot_size", b"lot_size"]  # noqa: Y015
+    def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["board", b"board", "decimals", b"decimals", "expiration_date", b"expiration_date", "id", b"id", "isin", b"isin", "lot_size", b"lot_size", "mic", b"mic", "min_step", b"min_step", "name", b"name", "quote_currency", b"quote_currency", "ticker", b"ticker", "type", b"type"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___GetAssetResponse = GetAssetResponse
+Global___GetAssetResponse: _TypeAlias = GetAssetResponse  # noqa: Y015
 
-@typing.final
-class GetAssetParamsRequest(google.protobuf.message.Message):
+@_typing.final
+class GetAssetParamsRequest(_message.Message):
     """Запрос торговых параметров инструмента"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    ACCOUNT_ID_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    ACCOUNT_ID_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ инструмента"""
-    account_id: builtins.str
+    account_id: _builtins.str
     """ID аккаунта для которого будут подбираться торговые параметры"""
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
-        account_id: builtins.str = ...,
+        symbol: _builtins.str = ...,
+        account_id: _builtins.str = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["account_id", b"account_id", "symbol", b"symbol"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["account_id", b"account_id", "symbol", b"symbol"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___GetAssetParamsRequest = GetAssetParamsRequest
+Global___GetAssetParamsRequest: _TypeAlias = GetAssetParamsRequest  # noqa: Y015
 
-@typing.final
-class GetAssetParamsResponse(google.protobuf.message.Message):
+@_typing.final
+class GetAssetParamsResponse(_message.Message):
     """Торговые параметры инструмента"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    ACCOUNT_ID_FIELD_NUMBER: builtins.int
-    TRADEABLE_FIELD_NUMBER: builtins.int
-    LONGABLE_FIELD_NUMBER: builtins.int
-    SHORTABLE_FIELD_NUMBER: builtins.int
-    LONG_RISK_RATE_FIELD_NUMBER: builtins.int
-    LONG_COLLATERAL_FIELD_NUMBER: builtins.int
-    SHORT_RISK_RATE_FIELD_NUMBER: builtins.int
-    SHORT_COLLATERAL_FIELD_NUMBER: builtins.int
-    LONG_INITIAL_MARGIN_FIELD_NUMBER: builtins.int
-    SHORT_INITIAL_MARGIN_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    ACCOUNT_ID_FIELD_NUMBER: _builtins.int
+    TRADEABLE_FIELD_NUMBER: _builtins.int
+    LONGABLE_FIELD_NUMBER: _builtins.int
+    SHORTABLE_FIELD_NUMBER: _builtins.int
+    LONG_RISK_RATE_FIELD_NUMBER: _builtins.int
+    LONG_COLLATERAL_FIELD_NUMBER: _builtins.int
+    SHORT_RISK_RATE_FIELD_NUMBER: _builtins.int
+    SHORT_COLLATERAL_FIELD_NUMBER: _builtins.int
+    LONG_INITIAL_MARGIN_FIELD_NUMBER: _builtins.int
+    SHORT_INITIAL_MARGIN_FIELD_NUMBER: _builtins.int
+    IS_TRADABLE_FIELD_NUMBER: _builtins.int
+    PRICE_TYPE_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ инструмента"""
-    account_id: builtins.str
+    account_id: _builtins.str
     """ID аккаунта для которого подбираются торговые параметры"""
-    tradeable: builtins.bool
-    """Доступны ли торговые операции"""
-    @property
-    def longable(self) -> global___Longable:
+    @_builtins.property
+    @_deprecated("""This field has been marked as deprecated using proto field options.""")
+    def tradeable(self) -> _builtins.bool:
+        """Доступны ли торговые операции
+        Старое поле, помечено как устаревшее.
+        Клиентам следует перейти на is_tradeable.
+        """
+
+    @tradeable.setter
+    @_deprecated("""This field has been marked as deprecated using proto field options.""")
+    def tradeable(self, value: _builtins.bool) -> None:
+        """Доступны ли торговые операции
+        Старое поле, помечено как устаревшее.
+        Клиентам следует перейти на is_tradeable.
+        """
+
+    price_type: Global___PriceType.ValueType
+    """Допустимая цена. Помогает определить можно ли выставлять ордера с отрицательной ценой для финансового инструмента"""
+    @_builtins.property
+    def longable(self) -> Global___Longable:
         """Доступны ли операции в Лонг"""
 
-    @property
-    def shortable(self) -> global___Shortable:
+    @_builtins.property
+    def shortable(self) -> Global___Shortable:
         """Доступны ли операции в Шорт"""
 
-    @property
-    def long_risk_rate(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def long_risk_rate(self) -> _decimal_pb2.Decimal:
         """Ставка риска для операции в Лонг"""
 
-    @property
-    def long_collateral(self) -> google.type.money_pb2.Money:
+    @_builtins.property
+    @_deprecated("""This field has been marked as deprecated using proto field options.""")
+    def long_collateral(self) -> _money_pb2.Money:
         """Сумма обеспечения для поддержания позиции Лонг"""
 
-    @property
-    def short_risk_rate(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def short_risk_rate(self) -> _decimal_pb2.Decimal:
         """Ставка риска для операции в Шорт"""
 
-    @property
-    def short_collateral(self) -> google.type.money_pb2.Money:
+    @_builtins.property
+    @_deprecated("""This field has been marked as deprecated using proto field options.""")
+    def short_collateral(self) -> _money_pb2.Money:
         """Сумма обеспечения для поддержания позиции Шорт"""
 
-    @property
-    def long_initial_margin(self) -> google.type.money_pb2.Money:
+    @_builtins.property
+    def long_initial_margin(self) -> _money_pb2.Money:
         """Начальные требования, сколько на счету должно быть свободных денежных средств, чтобы открыть лонг позицию, для FORTS счетов равен биржевому ГО"""
 
-    @property
-    def short_initial_margin(self) -> google.type.money_pb2.Money:
+    @_builtins.property
+    def short_initial_margin(self) -> _money_pb2.Money:
         """Начальные требования, сколько на счету должно быть свободных денежных средств, чтобы открыть шорт позицию, для FORTS счетов равен биржевому ГО"""
 
+    @_builtins.property
+    def is_tradable(self) -> _wrappers_pb2.BoolValue:
+        """Доступны ли торговые операции
+        Новое поле. Позволяет различать false и "не установлено".
+        """
+
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
-        account_id: builtins.str = ...,
-        tradeable: builtins.bool = ...,
-        longable: global___Longable | None = ...,
-        shortable: global___Shortable | None = ...,
-        long_risk_rate: google.type.decimal_pb2.Decimal | None = ...,
-        long_collateral: google.type.money_pb2.Money | None = ...,
-        short_risk_rate: google.type.decimal_pb2.Decimal | None = ...,
-        short_collateral: google.type.money_pb2.Money | None = ...,
-        long_initial_margin: google.type.money_pb2.Money | None = ...,
-        short_initial_margin: google.type.money_pb2.Money | None = ...,
+        symbol: _builtins.str = ...,
+        account_id: _builtins.str = ...,
+        tradeable: _builtins.bool = ...,
+        longable: Global___Longable | None = ...,
+        shortable: Global___Shortable | None = ...,
+        long_risk_rate: _decimal_pb2.Decimal | None = ...,
+        long_collateral: _money_pb2.Money | None = ...,
+        short_risk_rate: _decimal_pb2.Decimal | None = ...,
+        short_collateral: _money_pb2.Money | None = ...,
+        long_initial_margin: _money_pb2.Money | None = ...,
+        short_initial_margin: _money_pb2.Money | None = ...,
+        is_tradable: _wrappers_pb2.BoolValue | None = ...,
+        price_type: Global___PriceType.ValueType = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["long_collateral", b"long_collateral", "long_initial_margin", b"long_initial_margin", "long_risk_rate", b"long_risk_rate", "longable", b"longable", "short_collateral", b"short_collateral", "short_initial_margin", b"short_initial_margin", "short_risk_rate", b"short_risk_rate", "shortable", b"shortable"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["account_id", b"account_id", "long_collateral", b"long_collateral", "long_initial_margin", b"long_initial_margin", "long_risk_rate", b"long_risk_rate", "longable", b"longable", "short_collateral", b"short_collateral", "short_initial_margin", b"short_initial_margin", "short_risk_rate", b"short_risk_rate", "shortable", b"shortable", "symbol", b"symbol", "tradeable", b"tradeable"]) -> None: ...
+    _HasFieldArgType: _TypeAlias = _typing.Literal["is_tradable", b"is_tradable", "long_collateral", b"long_collateral", "long_initial_margin", b"long_initial_margin", "long_risk_rate", b"long_risk_rate", "longable", b"longable", "short_collateral", b"short_collateral", "short_initial_margin", b"short_initial_margin", "short_risk_rate", b"short_risk_rate", "shortable", b"shortable"]  # noqa: Y015
+    def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["account_id", b"account_id", "is_tradable", b"is_tradable", "long_collateral", b"long_collateral", "long_initial_margin", b"long_initial_margin", "long_risk_rate", b"long_risk_rate", "longable", b"longable", "price_type", b"price_type", "short_collateral", b"short_collateral", "short_initial_margin", b"short_initial_margin", "short_risk_rate", b"short_risk_rate", "shortable", b"shortable", "symbol", b"symbol", "tradeable", b"tradeable"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___GetAssetParamsResponse = GetAssetParamsResponse
+Global___GetAssetParamsResponse: _TypeAlias = GetAssetParamsResponse  # noqa: Y015
 
-@typing.final
-class OptionsChainRequest(google.protobuf.message.Message):
+@_typing.final
+class OptionsChainRequest(_message.Message):
     """Запрос получения цепочки опционов"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    UNDERLYING_SYMBOL_FIELD_NUMBER: builtins.int
-    underlying_symbol: builtins.str
+    UNDERLYING_SYMBOL_FIELD_NUMBER: _builtins.int
+    ROOT_FIELD_NUMBER: _builtins.int
+    EXPIRATION_DATE_FIELD_NUMBER: _builtins.int
+    underlying_symbol: _builtins.str
     """Символ базового актива опциона"""
+    root: _builtins.str
+    """Опциональный параметр. Актуален для опционов на фьючерсы, по типу (недельные, месячные).
+    Если параметр не указан, будут возвращены опционы с ближайшей датой экспирации.
+    """
+    @_builtins.property
+    def expiration_date(self) -> _date_pb2.Date:
+        """Опциональный фильтр по дате экспирации опционов.
+        Если параметр не указан, будут возвращены опционы с ближайшей датой экспирации.
+        """
+
     def __init__(
         self,
         *,
-        underlying_symbol: builtins.str = ...,
+        underlying_symbol: _builtins.str = ...,
+        root: _builtins.str = ...,
+        expiration_date: _date_pb2.Date | None = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["underlying_symbol", b"underlying_symbol"]) -> None: ...
+    _HasFieldArgType: _TypeAlias = _typing.Literal["expiration_date", b"expiration_date"]  # noqa: Y015
+    def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["expiration_date", b"expiration_date", "root", b"root", "underlying_symbol", b"underlying_symbol"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___OptionsChainRequest = OptionsChainRequest
+Global___OptionsChainRequest: _TypeAlias = OptionsChainRequest  # noqa: Y015
 
-@typing.final
-class OptionsChainResponse(google.protobuf.message.Message):
+@_typing.final
+class OptionsChainResponse(_message.Message):
     """Информация о цепочке опционов"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    OPTIONS_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    OPTIONS_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ базового актива опциона"""
-    @property
-    def options(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___Option]:
+    @_builtins.property
+    def options(self) -> _containers.RepeatedCompositeFieldContainer[Global___Option]:
         """Информация об опционе"""
 
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
-        options: collections.abc.Iterable[global___Option] | None = ...,
+        symbol: _builtins.str = ...,
+        options: _abc.Iterable[Global___Option] | None = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["options", b"options", "symbol", b"symbol"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["options", b"options", "symbol", b"symbol"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___OptionsChainResponse = OptionsChainResponse
+Global___OptionsChainResponse: _TypeAlias = OptionsChainResponse  # noqa: Y015
 
-@typing.final
-class ScheduleRequest(google.protobuf.message.Message):
+@_typing.final
+class ScheduleRequest(_message.Message):
     """Запрос получения расписания инструмента"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ инструмента"""
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
+        symbol: _builtins.str = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["symbol", b"symbol"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["symbol", b"symbol"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___ScheduleRequest = ScheduleRequest
+Global___ScheduleRequest: _TypeAlias = ScheduleRequest  # noqa: Y015
 
-@typing.final
-class ScheduleResponse(google.protobuf.message.Message):
+@_typing.final
+class ScheduleResponse(_message.Message):
     """Расписание инструмента"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    @typing.final
-    class Sessions(google.protobuf.message.Message):
+    @_typing.final
+    class Sessions(_message.Message):
         """Сессии"""
 
-        DESCRIPTOR: google.protobuf.descriptor.Descriptor
+        DESCRIPTOR: _descriptor.Descriptor
 
-        TYPE_FIELD_NUMBER: builtins.int
-        INTERVAL_FIELD_NUMBER: builtins.int
-        type: builtins.str
+        TYPE_FIELD_NUMBER: _builtins.int
+        INTERVAL_FIELD_NUMBER: _builtins.int
+        type: _builtins.str
         """Тип сессии"""
-        @property
-        def interval(self) -> google.type.interval_pb2.Interval:
+        @_builtins.property
+        def interval(self) -> _interval_pb2.Interval:
             """Интервал сессии"""
 
         def __init__(
             self,
             *,
-            type: builtins.str = ...,
-            interval: google.type.interval_pb2.Interval | None = ...,
+            type: _builtins.str = ...,
+            interval: _interval_pb2.Interval | None = ...,
         ) -> None: ...
-        def HasField(self, field_name: typing.Literal["interval", b"interval"]) -> builtins.bool: ...
-        def ClearField(self, field_name: typing.Literal["interval", b"interval", "type", b"type"]) -> None: ...
+        _HasFieldArgType: _TypeAlias = _typing.Literal["interval", b"interval"]  # noqa: Y015
+        def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+        _ClearFieldArgType: _TypeAlias = _typing.Literal["interval", b"interval", "type", b"type"]  # noqa: Y015
+        def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    SESSIONS_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    SESSIONS_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ инструмента"""
-    @property
-    def sessions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___ScheduleResponse.Sessions]:
+    @_builtins.property
+    def sessions(self) -> _containers.RepeatedCompositeFieldContainer[Global___ScheduleResponse.Sessions]:
         """Сессии инструмента"""
 
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
-        sessions: collections.abc.Iterable[global___ScheduleResponse.Sessions] | None = ...,
+        symbol: _builtins.str = ...,
+        sessions: _abc.Iterable[Global___ScheduleResponse.Sessions] | None = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["sessions", b"sessions", "symbol", b"symbol"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["sessions", b"sessions", "symbol", b"symbol"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___ScheduleResponse = ScheduleResponse
+Global___ScheduleResponse: _TypeAlias = ScheduleResponse  # noqa: Y015
 
-@typing.final
-class ClockRequest(google.protobuf.message.Message):
+@_typing.final
+class ClockRequest(_message.Message):
     """Запрос получения времени на сервере"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
     def __init__(
         self,
     ) -> None: ...
 
-global___ClockRequest = ClockRequest
+Global___ClockRequest: _TypeAlias = ClockRequest  # noqa: Y015
 
-@typing.final
-class ClockResponse(google.protobuf.message.Message):
+@_typing.final
+class ClockResponse(_message.Message):
     """Время на сервере"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    TIMESTAMP_FIELD_NUMBER: builtins.int
-    @property
-    def timestamp(self) -> google.protobuf.timestamp_pb2.Timestamp:
+    TIMESTAMP_FIELD_NUMBER: _builtins.int
+    @_builtins.property
+    def timestamp(self) -> _timestamp_pb2.Timestamp:
         """Метка времени"""
 
     def __init__(
         self,
         *,
-        timestamp: google.protobuf.timestamp_pb2.Timestamp | None = ...,
+        timestamp: _timestamp_pb2.Timestamp | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["timestamp", b"timestamp"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["timestamp", b"timestamp"]) -> None: ...
+    _HasFieldArgType: _TypeAlias = _typing.Literal["timestamp", b"timestamp"]  # noqa: Y015
+    def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["timestamp", b"timestamp"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___ClockResponse = ClockResponse
+Global___ClockResponse: _TypeAlias = ClockResponse  # noqa: Y015
 
-@typing.final
-class Exchange(google.protobuf.message.Message):
+@_typing.final
+class Exchange(_message.Message):
     """Информация о бирже"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    MIC_FIELD_NUMBER: builtins.int
-    NAME_FIELD_NUMBER: builtins.int
-    mic: builtins.str
+    MIC_FIELD_NUMBER: _builtins.int
+    NAME_FIELD_NUMBER: _builtins.int
+    mic: _builtins.str
     """Идентификатор биржи mic"""
-    name: builtins.str
+    name: _builtins.str
     """Наименование биржи"""
     def __init__(
         self,
         *,
-        mic: builtins.str = ...,
-        name: builtins.str = ...,
+        mic: _builtins.str = ...,
+        name: _builtins.str = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["mic", b"mic", "name", b"name"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["mic", b"mic", "name", b"name"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___Exchange = Exchange
+Global___Exchange: _TypeAlias = Exchange  # noqa: Y015
 
-@typing.final
-class Asset(google.protobuf.message.Message):
+@_typing.final
+class Asset(_message.Message):
     """Информация об инструменте"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    ID_FIELD_NUMBER: builtins.int
-    TICKER_FIELD_NUMBER: builtins.int
-    MIC_FIELD_NUMBER: builtins.int
-    ISIN_FIELD_NUMBER: builtins.int
-    TYPE_FIELD_NUMBER: builtins.int
-    NAME_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    ID_FIELD_NUMBER: _builtins.int
+    TICKER_FIELD_NUMBER: _builtins.int
+    MIC_FIELD_NUMBER: _builtins.int
+    ISIN_FIELD_NUMBER: _builtins.int
+    TYPE_FIELD_NUMBER: _builtins.int
+    NAME_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ инструмента ticker@mic"""
-    id: builtins.str
+    id: _builtins.str
     """Идентификатор инструмента"""
-    ticker: builtins.str
+    ticker: _builtins.str
     """Тикер инструмента"""
-    mic: builtins.str
+    mic: _builtins.str
     """mic идентификатор биржи"""
-    isin: builtins.str
+    isin: _builtins.str
     """Isin идентификатор инструмента"""
-    type: builtins.str
+    type: _builtins.str
     """Тип инструмента"""
-    name: builtins.str
+    name: _builtins.str
     """Наименование инструмента"""
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
-        id: builtins.str = ...,
-        ticker: builtins.str = ...,
-        mic: builtins.str = ...,
-        isin: builtins.str = ...,
-        type: builtins.str = ...,
-        name: builtins.str = ...,
+        symbol: _builtins.str = ...,
+        id: _builtins.str = ...,
+        ticker: _builtins.str = ...,
+        mic: _builtins.str = ...,
+        isin: _builtins.str = ...,
+        type: _builtins.str = ...,
+        name: _builtins.str = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["id", b"id", "isin", b"isin", "mic", b"mic", "name", b"name", "symbol", b"symbol", "ticker", b"ticker", "type", b"type"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["id", b"id", "isin", b"isin", "mic", b"mic", "name", b"name", "symbol", b"symbol", "ticker", b"ticker", "type", b"type"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___Asset = Asset
+Global___Asset: _TypeAlias = Asset  # noqa: Y015
 
-@typing.final
-class Option(google.protobuf.message.Message):
+@_typing.final
+class Option(_message.Message):
     """Информация об опционе"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
     class _Type:
-        ValueType = typing.NewType("ValueType", builtins.int)
-        V: typing_extensions.TypeAlias = ValueType
+        ValueType = _typing.NewType("ValueType", _builtins.int)
+        V: _TypeAlias = ValueType  # noqa: Y015
 
-    class _TypeEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[Option._Type.ValueType], builtins.type):
-        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+    class _TypeEnumTypeWrapper(_enum_type_wrapper._EnumTypeWrapper[Option._Type.ValueType], _builtins.type):
+        DESCRIPTOR: _descriptor.EnumDescriptor
         TYPE_UNSPECIFIED: Option._Type.ValueType  # 0
         """Неопределенное значение"""
         TYPE_CALL: Option._Type.ValueType  # 1
@@ -503,77 +603,79 @@ class Option(google.protobuf.message.Message):
     TYPE_PUT: Option.Type.ValueType  # 2
     """Пут"""
 
-    SYMBOL_FIELD_NUMBER: builtins.int
-    TYPE_FIELD_NUMBER: builtins.int
-    CONTRACT_SIZE_FIELD_NUMBER: builtins.int
-    TRADE_FIRST_DAY_FIELD_NUMBER: builtins.int
-    TRADE_LAST_DAY_FIELD_NUMBER: builtins.int
-    STRIKE_FIELD_NUMBER: builtins.int
-    MULTIPLIER_FIELD_NUMBER: builtins.int
-    EXPIRATION_FIRST_DAY_FIELD_NUMBER: builtins.int
-    EXPIRATION_LAST_DAY_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    TYPE_FIELD_NUMBER: _builtins.int
+    CONTRACT_SIZE_FIELD_NUMBER: _builtins.int
+    TRADE_FIRST_DAY_FIELD_NUMBER: _builtins.int
+    TRADE_LAST_DAY_FIELD_NUMBER: _builtins.int
+    STRIKE_FIELD_NUMBER: _builtins.int
+    MULTIPLIER_FIELD_NUMBER: _builtins.int
+    EXPIRATION_FIRST_DAY_FIELD_NUMBER: _builtins.int
+    EXPIRATION_LAST_DAY_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
     """Символ инструмента"""
-    type: global___Option.Type.ValueType
+    type: Global___Option.Type.ValueType
     """Тип инструмента"""
-    @property
-    def contract_size(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def contract_size(self) -> _decimal_pb2.Decimal:
         """Лот, количество базового актива в инструменте"""
 
-    @property
-    def trade_first_day(self) -> google.type.date_pb2.Date:
+    @_builtins.property
+    def trade_first_day(self) -> _date_pb2.Date:
         """Дата старта торговли"""
 
-    @property
-    def trade_last_day(self) -> google.type.date_pb2.Date:
+    @_builtins.property
+    def trade_last_day(self) -> _date_pb2.Date:
         """Дата окончания торговли"""
 
-    @property
-    def strike(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def strike(self) -> _decimal_pb2.Decimal:
         """Цена исполнения опциона"""
 
-    @property
-    def multiplier(self) -> google.type.decimal_pb2.Decimal:
+    @_builtins.property
+    def multiplier(self) -> _decimal_pb2.Decimal:
         """Множитель опциона"""
 
-    @property
-    def expiration_first_day(self) -> google.type.date_pb2.Date:
+    @_builtins.property
+    def expiration_first_day(self) -> _date_pb2.Date:
         """Дата начала экспирации"""
 
-    @property
-    def expiration_last_day(self) -> google.type.date_pb2.Date:
+    @_builtins.property
+    def expiration_last_day(self) -> _date_pb2.Date:
         """Дата окончания экспирации"""
 
     def __init__(
         self,
         *,
-        symbol: builtins.str = ...,
-        type: global___Option.Type.ValueType = ...,
-        contract_size: google.type.decimal_pb2.Decimal | None = ...,
-        trade_first_day: google.type.date_pb2.Date | None = ...,
-        trade_last_day: google.type.date_pb2.Date | None = ...,
-        strike: google.type.decimal_pb2.Decimal | None = ...,
-        multiplier: google.type.decimal_pb2.Decimal | None = ...,
-        expiration_first_day: google.type.date_pb2.Date | None = ...,
-        expiration_last_day: google.type.date_pb2.Date | None = ...,
+        symbol: _builtins.str = ...,
+        type: Global___Option.Type.ValueType = ...,
+        contract_size: _decimal_pb2.Decimal | None = ...,
+        trade_first_day: _date_pb2.Date | None = ...,
+        trade_last_day: _date_pb2.Date | None = ...,
+        strike: _decimal_pb2.Decimal | None = ...,
+        multiplier: _decimal_pb2.Decimal | None = ...,
+        expiration_first_day: _date_pb2.Date | None = ...,
+        expiration_last_day: _date_pb2.Date | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["contract_size", b"contract_size", "expiration_first_day", b"expiration_first_day", "expiration_last_day", b"expiration_last_day", "multiplier", b"multiplier", "strike", b"strike", "trade_first_day", b"trade_first_day", "trade_last_day", b"trade_last_day"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["contract_size", b"contract_size", "expiration_first_day", b"expiration_first_day", "expiration_last_day", b"expiration_last_day", "multiplier", b"multiplier", "strike", b"strike", "symbol", b"symbol", "trade_first_day", b"trade_first_day", "trade_last_day", b"trade_last_day", "type", b"type"]) -> None: ...
+    _HasFieldArgType: _TypeAlias = _typing.Literal["contract_size", b"contract_size", "expiration_first_day", b"expiration_first_day", "expiration_last_day", b"expiration_last_day", "multiplier", b"multiplier", "strike", b"strike", "trade_first_day", b"trade_first_day", "trade_last_day", b"trade_last_day"]  # noqa: Y015
+    def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["contract_size", b"contract_size", "expiration_first_day", b"expiration_first_day", "expiration_last_day", b"expiration_last_day", "multiplier", b"multiplier", "strike", b"strike", "symbol", b"symbol", "trade_first_day", b"trade_first_day", "trade_last_day", b"trade_last_day", "type", b"type"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___Option = Option
+Global___Option: _TypeAlias = Option  # noqa: Y015
 
-@typing.final
-class Longable(google.protobuf.message.Message):
+@_typing.final
+class Longable(_message.Message):
     """Доступны ли операции в Лонг"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
     class _Status:
-        ValueType = typing.NewType("ValueType", builtins.int)
-        V: typing_extensions.TypeAlias = ValueType
+        ValueType = _typing.NewType("ValueType", _builtins.int)
+        V: _TypeAlias = ValueType  # noqa: Y015
 
-    class _StatusEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[Longable._Status.ValueType], builtins.type):
-        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+    class _StatusEnumTypeWrapper(_enum_type_wrapper._EnumTypeWrapper[Longable._Status.ValueType], _builtins.type):
+        DESCRIPTOR: _descriptor.EnumDescriptor
         NOT_AVAILABLE: Longable._Status.ValueType  # 0
         """Не доступен"""
         AVAILABLE: Longable._Status.ValueType  # 1
@@ -591,34 +693,35 @@ class Longable(google.protobuf.message.Message):
     ACCOUNT_NOT_APPROVED: Longable.Status.ValueType  # 2
     """Запрещено на уровне счета"""
 
-    VALUE_FIELD_NUMBER: builtins.int
-    HALTED_DAYS_FIELD_NUMBER: builtins.int
-    value: global___Longable.Status.ValueType
+    VALUE_FIELD_NUMBER: _builtins.int
+    HALTED_DAYS_FIELD_NUMBER: _builtins.int
+    value: Global___Longable.Status.ValueType
     """Статус инструмента"""
-    halted_days: builtins.int
+    halted_days: _builtins.int
     """Сколько дней действует запрет на операции в Лонг (если есть)"""
     def __init__(
         self,
         *,
-        value: global___Longable.Status.ValueType = ...,
-        halted_days: builtins.int = ...,
+        value: Global___Longable.Status.ValueType = ...,
+        halted_days: _builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["halted_days", b"halted_days", "value", b"value"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["halted_days", b"halted_days", "value", b"value"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___Longable = Longable
+Global___Longable: _TypeAlias = Longable  # noqa: Y015
 
-@typing.final
-class Shortable(google.protobuf.message.Message):
+@_typing.final
+class Shortable(_message.Message):
     """Доступны ли операции в Шорт"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
     class _Status:
-        ValueType = typing.NewType("ValueType", builtins.int)
-        V: typing_extensions.TypeAlias = ValueType
+        ValueType = _typing.NewType("ValueType", _builtins.int)
+        V: _TypeAlias = ValueType  # noqa: Y015
 
-    class _StatusEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[Shortable._Status.ValueType], builtins.type):
-        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+    class _StatusEnumTypeWrapper(_enum_type_wrapper._EnumTypeWrapper[Shortable._Status.ValueType], _builtins.type):
+        DESCRIPTOR: _descriptor.EnumDescriptor
         NOT_AVAILABLE: Shortable._Status.ValueType  # 0
         """Не доступен"""
         AVAILABLE: Shortable._Status.ValueType  # 1
@@ -644,18 +747,19 @@ class Shortable(google.protobuf.message.Message):
     AVAILABLE_STRATEGY: Shortable.Status.ValueType  # 4
     """Разрешено в составе стратегии"""
 
-    VALUE_FIELD_NUMBER: builtins.int
-    HALTED_DAYS_FIELD_NUMBER: builtins.int
-    value: global___Shortable.Status.ValueType
+    VALUE_FIELD_NUMBER: _builtins.int
+    HALTED_DAYS_FIELD_NUMBER: _builtins.int
+    value: Global___Shortable.Status.ValueType
     """Статус инструмента"""
-    halted_days: builtins.int
+    halted_days: _builtins.int
     """Сколько дней действует запрет на операции в Шорт (если есть)"""
     def __init__(
         self,
         *,
-        value: global___Shortable.Status.ValueType = ...,
-        halted_days: builtins.int = ...,
+        value: Global___Shortable.Status.ValueType = ...,
+        halted_days: _builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["halted_days", b"halted_days", "value", b"value"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["halted_days", b"halted_days", "value", b"value"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___Shortable = Shortable
+Global___Shortable: _TypeAlias = Shortable  # noqa: Y015

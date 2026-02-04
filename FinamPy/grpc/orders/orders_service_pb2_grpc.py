@@ -3,9 +3,9 @@
 import grpc
 import warnings
 
-from ..orders import orders_service_pb2 as FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2
+from FinamPy.grpc.orders import orders_service_pb2 as FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2
 
-GRPC_GENERATED_VERSION = '1.75.0'
+GRPC_GENERATED_VERSION = '1.76.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in FinamPy/FinamPy/grpc/orders/orders_service_pb2_grpc.py depends on'
+        + ' but the generated code in FinamPy/FinamPy/grpc/orders/orders_service_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -59,6 +59,16 @@ class OrdersServiceStub(object):
                 '/grpc.tradeapi.v1.orders.OrdersService/SubscribeOrderTrade',
                 request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderTradeRequest.SerializeToString,
                 response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderTradeResponse.FromString,
+                _registered_method=True)
+        self.SubscribeOrders = channel.unary_stream(
+                '/grpc.tradeapi.v1.orders.OrdersService/SubscribeOrders',
+                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeOrdersRequest.SerializeToString,
+                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeOrdersResponse.FromString,
+                _registered_method=True)
+        self.SubscribeTrades = channel.unary_stream(
+                '/grpc.tradeapi.v1.orders.OrdersService/SubscribeTrades',
+                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeTradesRequest.SerializeToString,
+                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeTradesResponse.FromString,
                 _registered_method=True)
 
 
@@ -129,6 +139,20 @@ class OrdersServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def SubscribeOrders(self, request, context):
+        """Подписка на собственные заявки. Стрим метод
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def SubscribeTrades(self, request, context):
+        """Подписка на собственные сделки. Стрим метод
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_OrdersServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -156,6 +180,16 @@ def add_OrdersServiceServicer_to_server(servicer, server):
                     servicer.SubscribeOrderTrade,
                     request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderTradeRequest.FromString,
                     response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderTradeResponse.SerializeToString,
+            ),
+            'SubscribeOrders': grpc.unary_stream_rpc_method_handler(
+                    servicer.SubscribeOrders,
+                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeOrdersRequest.FromString,
+                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeOrdersResponse.SerializeToString,
+            ),
+            'SubscribeTrades': grpc.unary_stream_rpc_method_handler(
+                    servicer.SubscribeTrades,
+                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeTradesRequest.FromString,
+                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeTradesResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -294,6 +328,60 @@ class OrdersService(object):
             '/grpc.tradeapi.v1.orders.OrdersService/SubscribeOrderTrade',
             FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderTradeRequest.SerializeToString,
             FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderTradeResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SubscribeOrders(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_stream(
+            request,
+            target,
+            '/grpc.tradeapi.v1.orders.OrdersService/SubscribeOrders',
+            FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeOrdersRequest.SerializeToString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeOrdersResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SubscribeTrades(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_stream(
+            request,
+            target,
+            '/grpc.tradeapi.v1.orders.OrdersService/SubscribeTrades',
+            FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeTradesRequest.SerializeToString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeTradesResponse.FromString,
             options,
             channel_credentials,
             insecure,

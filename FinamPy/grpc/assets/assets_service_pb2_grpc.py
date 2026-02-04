@@ -3,9 +3,9 @@
 import grpc
 import warnings
 
-from ..assets import assets_service_pb2 as FinamPy_dot_FinamPy_dot_grpc_dot_assets_dot_assets__service__pb2
+from FinamPy.grpc.assets import assets_service_pb2 as FinamPy_dot_FinamPy_dot_grpc_dot_assets_dot_assets__service__pb2
 
-GRPC_GENERATED_VERSION = '1.75.0'
+GRPC_GENERATED_VERSION = '1.76.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in FinamPy/FinamPy/grpc/assets/assets_service_pb2_grpc.py depends on'
+        + ' but the generated code in FinamPy/FinamPy/grpc/assets/assets_service_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'

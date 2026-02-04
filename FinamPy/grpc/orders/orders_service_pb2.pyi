@@ -3,32 +3,37 @@
 isort:skip_file
 """
 
-import FinamPy.FinamPy.grpc.side_pb2
-import FinamPy.FinamPy.grpc.trade_pb2
-import builtins
-import collections.abc
-import google.protobuf.descriptor
-import google.protobuf.internal.containers
-import google.protobuf.internal.enum_type_wrapper
-import google.protobuf.message
-import google.protobuf.timestamp_pb2
-import google.type.decimal_pb2
+from FinamPy.grpc import side_pb2 as _side_pb2
+from FinamPy.grpc import trade_pb2 as _trade_pb2
+from collections import abc as _abc
+from google.protobuf import descriptor as _descriptor
+from google.protobuf import message as _message
+from google.protobuf import timestamp_pb2 as _timestamp_pb2
+from google.protobuf.internal import containers as _containers
+from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
+from google.type import decimal_pb2 as _decimal_pb2
+import builtins as _builtins
 import sys
-import typing
+import typing as _typing
 
 if sys.version_info >= (3, 10):
-    import typing as typing_extensions
+    from typing import TypeAlias as _TypeAlias
 else:
-    import typing_extensions
+    from typing_extensions import TypeAlias as _TypeAlias
 
-DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
+if sys.version_info >= (3, 13):
+    from warnings import deprecated as _deprecated
+else:
+    from typing_extensions import deprecated as _deprecated
+
+DESCRIPTOR: _descriptor.FileDescriptor
 
 class _OrderType:
-    ValueType = typing.NewType("ValueType", builtins.int)
-    V: typing_extensions.TypeAlias = ValueType
+    ValueType = _typing.NewType("ValueType", _builtins.int)
+    V: _TypeAlias = ValueType  # noqa: Y015
 
-class _OrderTypeEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_OrderType.ValueType], builtins.type):
-    DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+class _OrderTypeEnumTypeWrapper(_enum_type_wrapper._EnumTypeWrapper[_OrderType.ValueType], _builtins.type):
+    DESCRIPTOR: _descriptor.EnumDescriptor
     ORDER_TYPE_UNSPECIFIED: _OrderType.ValueType  # 0
     """Значение не указано"""
     ORDER_TYPE_MARKET: _OrderType.ValueType  # 1
@@ -57,14 +62,14 @@ ORDER_TYPE_STOP_LIMIT: OrderType.ValueType  # 4
 """Стоп заявка лимитная"""
 ORDER_TYPE_MULTI_LEG: OrderType.ValueType  # 5
 """Мульти лег заявка"""
-global___OrderType = OrderType
+Global___OrderType: _TypeAlias = OrderType  # noqa: Y015
 
 class _TimeInForce:
-    ValueType = typing.NewType("ValueType", builtins.int)
-    V: typing_extensions.TypeAlias = ValueType
+    ValueType = _typing.NewType("ValueType", _builtins.int)
+    V: _TypeAlias = ValueType  # noqa: Y015
 
-class _TimeInForceEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_TimeInForce.ValueType], builtins.type):
-    DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+class _TimeInForceEnumTypeWrapper(_enum_type_wrapper._EnumTypeWrapper[_TimeInForce.ValueType], _builtins.type):
+    DESCRIPTOR: _descriptor.EnumDescriptor
     TIME_IN_FORCE_UNSPECIFIED: _TimeInForce.ValueType  # 0
     """Значение не указано"""
     TIME_IN_FORCE_DAY: _TimeInForce.ValueType  # 1
@@ -105,14 +110,14 @@ TIME_IN_FORCE_IOC: TimeInForce.ValueType  # 7
 """Исполнить немедленно или отменить"""
 TIME_IN_FORCE_FOK: TimeInForce.ValueType  # 8
 """Исполнить полностью или отменить"""
-global___TimeInForce = TimeInForce
+Global___TimeInForce: _TypeAlias = TimeInForce  # noqa: Y015
 
 class _StopCondition:
-    ValueType = typing.NewType("ValueType", builtins.int)
-    V: typing_extensions.TypeAlias = ValueType
+    ValueType = _typing.NewType("ValueType", _builtins.int)
+    V: _TypeAlias = ValueType  # noqa: Y015
 
-class _StopConditionEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_StopCondition.ValueType], builtins.type):
-    DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+class _StopConditionEnumTypeWrapper(_enum_type_wrapper._EnumTypeWrapper[_StopCondition.ValueType], _builtins.type):
+    DESCRIPTOR: _descriptor.EnumDescriptor
     STOP_CONDITION_UNSPECIFIED: _StopCondition.ValueType  # 0
     """Значение не указано"""
     STOP_CONDITION_LAST_UP: _StopCondition.ValueType  # 1
@@ -129,14 +134,14 @@ STOP_CONDITION_LAST_UP: StopCondition.ValueType  # 1
 """Цена срабатывания больше текущей цены"""
 STOP_CONDITION_LAST_DOWN: StopCondition.ValueType  # 2
 """Цена срабатывания меньше текущей цены"""
-global___StopCondition = StopCondition
+Global___StopCondition: _TypeAlias = StopCondition  # noqa: Y015
 
 class _OrderStatus:
-    ValueType = typing.NewType("ValueType", builtins.int)
-    V: typing_extensions.TypeAlias = ValueType
+    ValueType = _typing.NewType("ValueType", _builtins.int)
+    V: _TypeAlias = ValueType  # noqa: Y015
 
-class _OrderStatusEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_OrderStatus.ValueType], builtins.type):
-    DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+class _OrderStatusEnumTypeWrapper(_enum_type_wrapper._EnumTypeWrapper[_OrderStatus.ValueType], _builtins.type):
+    DESCRIPTOR: _descriptor.EnumDescriptor
     ORDER_STATUS_UNSPECIFIED: _OrderStatus.ValueType  # 0
     """Неопределенное значение"""
     ORDER_STATUS_NEW: _OrderStatus.ValueType  # 1
@@ -257,14 +262,14 @@ ORDER_STATUS_TP_FORWARDING: OrderStatus.ValueType  # 33
 """Пересылка TP"""
 ORDER_STATUS_TP_CORR_GUARD_TIME: OrderStatus.ValueType  # 34
 """Коррекция TP в защитное время"""
-global___OrderStatus = OrderStatus
+Global___OrderStatus: _TypeAlias = OrderStatus  # noqa: Y015
 
 class _ValidBefore:
-    ValueType = typing.NewType("ValueType", builtins.int)
-    V: typing_extensions.TypeAlias = ValueType
+    ValueType = _typing.NewType("ValueType", _builtins.int)
+    V: _TypeAlias = ValueType  # noqa: Y015
 
-class _ValidBeforeEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_ValidBefore.ValueType], builtins.type):
-    DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+class _ValidBeforeEnumTypeWrapper(_enum_type_wrapper._EnumTypeWrapper[_ValidBefore.ValueType], _builtins.type):
+    DESCRIPTOR: _descriptor.EnumDescriptor
     VALID_BEFORE_UNSPECIFIED: _ValidBefore.ValueType  # 0
     """Значение не указано"""
     VALID_BEFORE_END_OF_DAY: _ValidBefore.ValueType  # 1
@@ -285,20 +290,21 @@ VALID_BEFORE_GOOD_TILL_CANCEL: ValidBefore.ValueType  # 2
 """До отмены"""
 VALID_BEFORE_GOOD_TILL_DATE: ValidBefore.ValueType  # 3
 """До указанной даты-времени. Данный тип на текущий момент не поддерживается при выставлении заявки"""
-global___ValidBefore = ValidBefore
+Global___ValidBefore: _TypeAlias = ValidBefore  # noqa: Y015
 
-@typing.final
-class OrderTradeRequest(google.protobuf.message.Message):
+@_deprecated("""This message has been marked as deprecated using proto message options.""")
+@_typing.final
+class OrderTradeRequest(_message.Message):
     """Запрос подписки на собственные заявки и сделки. Стрим"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
     class _Action:
-        ValueType = typing.NewType("ValueType", builtins.int)
-        V: typing_extensions.TypeAlias = ValueType
+        ValueType = _typing.NewType("ValueType", _builtins.int)
+        V: _TypeAlias = ValueType  # noqa: Y015
 
-    class _ActionEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[OrderTradeRequest._Action.ValueType], builtins.type):
-        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+    class _ActionEnumTypeWrapper(_enum_type_wrapper._EnumTypeWrapper[OrderTradeRequest._Action.ValueType], _builtins.type):
+        DESCRIPTOR: _descriptor.EnumDescriptor
         ACTION_SUBSCRIBE: OrderTradeRequest._Action.ValueType  # 0
         """Подписаться"""
         ACTION_UNSUBSCRIBE: OrderTradeRequest._Action.ValueType  # 1
@@ -313,11 +319,11 @@ class OrderTradeRequest(google.protobuf.message.Message):
     """Отписаться"""
 
     class _DataType:
-        ValueType = typing.NewType("ValueType", builtins.int)
-        V: typing_extensions.TypeAlias = ValueType
+        ValueType = _typing.NewType("ValueType", _builtins.int)
+        V: _TypeAlias = ValueType  # noqa: Y015
 
-    class _DataTypeEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[OrderTradeRequest._DataType.ValueType], builtins.type):
-        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+    class _DataTypeEnumTypeWrapper(_enum_type_wrapper._EnumTypeWrapper[OrderTradeRequest._DataType.ValueType], _builtins.type):
+        DESCRIPTOR: _descriptor.EnumDescriptor
         DATA_TYPE_ALL: OrderTradeRequest._DataType.ValueType  # 0
         """Все: заявки и сделки"""
         DATA_TYPE_ORDERS: OrderTradeRequest._DataType.ValueType  # 1
@@ -335,281 +341,396 @@ class OrderTradeRequest(google.protobuf.message.Message):
     DATA_TYPE_TRADES: OrderTradeRequest.DataType.ValueType  # 2
     """Сделки"""
 
-    ACTION_FIELD_NUMBER: builtins.int
-    DATA_TYPE_FIELD_NUMBER: builtins.int
-    ACCOUNT_ID_FIELD_NUMBER: builtins.int
-    action: global___OrderTradeRequest.Action.ValueType
+    ACTION_FIELD_NUMBER: _builtins.int
+    DATA_TYPE_FIELD_NUMBER: _builtins.int
+    ACCOUNT_ID_FIELD_NUMBER: _builtins.int
+    action: Global___OrderTradeRequest.Action.ValueType
     """Изменение статуса подписки: подписка/отписка"""
-    data_type: global___OrderTradeRequest.DataType.ValueType
+    data_type: Global___OrderTradeRequest.DataType.ValueType
     """Подписка только на заявки/ордера или на все сразу"""
-    account_id: builtins.str
+    account_id: _builtins.str
     """Идентификатор аккаунта"""
     def __init__(
         self,
         *,
-        action: global___OrderTradeRequest.Action.ValueType = ...,
-        data_type: global___OrderTradeRequest.DataType.ValueType = ...,
-        account_id: builtins.str = ...,
+        action: Global___OrderTradeRequest.Action.ValueType = ...,
+        data_type: Global___OrderTradeRequest.DataType.ValueType = ...,
+        account_id: _builtins.str = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["account_id", b"account_id", "action", b"action", "data_type", b"data_type"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["account_id", b"account_id", "action", b"action", "data_type", b"data_type"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___OrderTradeRequest = OrderTradeRequest
+Global___OrderTradeRequest: _TypeAlias = OrderTradeRequest  # noqa: Y015
 
-@typing.final
-class OrderTradeResponse(google.protobuf.message.Message):
+@_deprecated("""This message has been marked as deprecated using proto message options.""")
+@_typing.final
+class OrderTradeResponse(_message.Message):
     """Список собственных заявок и сделок"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    ORDERS_FIELD_NUMBER: builtins.int
-    TRADES_FIELD_NUMBER: builtins.int
-    @property
-    def orders(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___OrderState]:
+    ORDERS_FIELD_NUMBER: _builtins.int
+    TRADES_FIELD_NUMBER: _builtins.int
+    @_builtins.property
+    def orders(self) -> _containers.RepeatedCompositeFieldContainer[Global___OrderState]:
         """Заявки"""
 
-    @property
-    def trades(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[FinamPy.FinamPy.grpc.trade_pb2.AccountTrade]:
+    @_builtins.property
+    def trades(self) -> _containers.RepeatedCompositeFieldContainer[_trade_pb2.AccountTrade]:
         """Сделки"""
 
     def __init__(
         self,
         *,
-        orders: collections.abc.Iterable[global___OrderState] | None = ...,
-        trades: collections.abc.Iterable[FinamPy.FinamPy.grpc.trade_pb2.AccountTrade] | None = ...,
+        orders: _abc.Iterable[Global___OrderState] | None = ...,
+        trades: _abc.Iterable[_trade_pb2.AccountTrade] | None = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["orders", b"orders", "trades", b"trades"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["orders", b"orders", "trades", b"trades"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___OrderTradeResponse = OrderTradeResponse
+Global___OrderTradeResponse: _TypeAlias = OrderTradeResponse  # noqa: Y015
 
-@typing.final
-class GetOrderRequest(google.protobuf.message.Message):
-    """Запрос на получение конкретного ордера"""
+@_typing.final
+class SubscribeOrdersRequest(_message.Message):
+    """Запрос подписки на собственные заявки. Стрим"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    ACCOUNT_ID_FIELD_NUMBER: builtins.int
-    ORDER_ID_FIELD_NUMBER: builtins.int
-    account_id: builtins.str
-    """Идентификатор аккаунта"""
-    order_id: builtins.str
-    """Идентификатор заявки"""
-    def __init__(
-        self,
-        *,
-        account_id: builtins.str = ...,
-        order_id: builtins.str = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["account_id", b"account_id", "order_id", b"order_id"]) -> None: ...
-
-global___GetOrderRequest = GetOrderRequest
-
-@typing.final
-class Order(google.protobuf.message.Message):
-    """Информация о заявке"""
-
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    ACCOUNT_ID_FIELD_NUMBER: builtins.int
-    SYMBOL_FIELD_NUMBER: builtins.int
-    QUANTITY_FIELD_NUMBER: builtins.int
-    SIDE_FIELD_NUMBER: builtins.int
-    TYPE_FIELD_NUMBER: builtins.int
-    TIME_IN_FORCE_FIELD_NUMBER: builtins.int
-    LIMIT_PRICE_FIELD_NUMBER: builtins.int
-    STOP_PRICE_FIELD_NUMBER: builtins.int
-    STOP_CONDITION_FIELD_NUMBER: builtins.int
-    LEGS_FIELD_NUMBER: builtins.int
-    CLIENT_ORDER_ID_FIELD_NUMBER: builtins.int
-    VALID_BEFORE_FIELD_NUMBER: builtins.int
-    account_id: builtins.str
-    """Идентификатор аккаунта"""
-    symbol: builtins.str
-    """Символ инструмента"""
-    side: FinamPy.FinamPy.grpc.side_pb2.Side.ValueType
-    """ Сторона (long или short)"""
-    type: global___OrderType.ValueType
-    """Тип заявки"""
-    time_in_force: global___TimeInForce.ValueType
-    """Срок действия заявки"""
-    stop_condition: global___StopCondition.ValueType
-    """Необходимо для стоп рыночной и стоп лимитной заявки"""
-    client_order_id: builtins.str
-    """Уникальный идентификатор заявки. Автоматически генерируется, если не отправлен. (максимум 20 символов)"""
-    valid_before: global___ValidBefore.ValueType
-    """Срок действия условной заявки. Заполняется для заявок с типом ORDER_TYPE_STOP, ORDER_TYPE_STOP_LIMIT"""
-    @property
-    def quantity(self) -> google.type.decimal_pb2.Decimal:
-        """Количество в шт."""
-
-    @property
-    def limit_price(self) -> google.type.decimal_pb2.Decimal:
-        """Необходимо для лимитной и стоп лимитной заявки"""
-
-    @property
-    def stop_price(self) -> google.type.decimal_pb2.Decimal:
-        """Необходимо для стоп рыночной и стоп лимитной заявки"""
-
-    @property
-    def legs(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___Leg]:
-        """Необходимо для мульти лег заявки"""
-
-    def __init__(
-        self,
-        *,
-        account_id: builtins.str = ...,
-        symbol: builtins.str = ...,
-        quantity: google.type.decimal_pb2.Decimal | None = ...,
-        side: FinamPy.FinamPy.grpc.side_pb2.Side.ValueType = ...,
-        type: global___OrderType.ValueType = ...,
-        time_in_force: global___TimeInForce.ValueType = ...,
-        limit_price: google.type.decimal_pb2.Decimal | None = ...,
-        stop_price: google.type.decimal_pb2.Decimal | None = ...,
-        stop_condition: global___StopCondition.ValueType = ...,
-        legs: collections.abc.Iterable[global___Leg] | None = ...,
-        client_order_id: builtins.str = ...,
-        valid_before: global___ValidBefore.ValueType = ...,
-    ) -> None: ...
-    def HasField(self, field_name: typing.Literal["limit_price", b"limit_price", "quantity", b"quantity", "stop_price", b"stop_price"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["account_id", b"account_id", "client_order_id", b"client_order_id", "legs", b"legs", "limit_price", b"limit_price", "quantity", b"quantity", "side", b"side", "stop_condition", b"stop_condition", "stop_price", b"stop_price", "symbol", b"symbol", "time_in_force", b"time_in_force", "type", b"type", "valid_before", b"valid_before"]) -> None: ...
-
-global___Order = Order
-
-@typing.final
-class Leg(google.protobuf.message.Message):
-    """Лег"""
-
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    SYMBOL_FIELD_NUMBER: builtins.int
-    QUANTITY_FIELD_NUMBER: builtins.int
-    SIDE_FIELD_NUMBER: builtins.int
-    symbol: builtins.str
-    """Символ инструмента"""
-    side: FinamPy.FinamPy.grpc.side_pb2.Side.ValueType
-    """Сторона"""
-    @property
-    def quantity(self) -> google.type.decimal_pb2.Decimal:
-        """Количество"""
-
-    def __init__(
-        self,
-        *,
-        symbol: builtins.str = ...,
-        quantity: google.type.decimal_pb2.Decimal | None = ...,
-        side: FinamPy.FinamPy.grpc.side_pb2.Side.ValueType = ...,
-    ) -> None: ...
-    def HasField(self, field_name: typing.Literal["quantity", b"quantity"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["quantity", b"quantity", "side", b"side", "symbol", b"symbol"]) -> None: ...
-
-global___Leg = Leg
-
-@typing.final
-class OrderState(google.protobuf.message.Message):
-    """Состояние заявки"""
-
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    ORDER_ID_FIELD_NUMBER: builtins.int
-    EXEC_ID_FIELD_NUMBER: builtins.int
-    STATUS_FIELD_NUMBER: builtins.int
-    ORDER_FIELD_NUMBER: builtins.int
-    TRANSACT_AT_FIELD_NUMBER: builtins.int
-    ACCEPT_AT_FIELD_NUMBER: builtins.int
-    WITHDRAW_AT_FIELD_NUMBER: builtins.int
-    order_id: builtins.str
-    """Идентификатор заявки"""
-    exec_id: builtins.str
-    """Идентификатор исполнения"""
-    status: global___OrderStatus.ValueType
-    """Статус заявки"""
-    @property
-    def order(self) -> global___Order:
-        """Заявка"""
-
-    @property
-    def transact_at(self) -> google.protobuf.timestamp_pb2.Timestamp:
-        """Дата и время выставления заявки"""
-
-    @property
-    def accept_at(self) -> google.protobuf.timestamp_pb2.Timestamp:
-        """Дата и время принятия заявки"""
-
-    @property
-    def withdraw_at(self) -> google.protobuf.timestamp_pb2.Timestamp:
-        """Дата и время  отмены заявки"""
-
-    def __init__(
-        self,
-        *,
-        order_id: builtins.str = ...,
-        exec_id: builtins.str = ...,
-        status: global___OrderStatus.ValueType = ...,
-        order: global___Order | None = ...,
-        transact_at: google.protobuf.timestamp_pb2.Timestamp | None = ...,
-        accept_at: google.protobuf.timestamp_pb2.Timestamp | None = ...,
-        withdraw_at: google.protobuf.timestamp_pb2.Timestamp | None = ...,
-    ) -> None: ...
-    def HasField(self, field_name: typing.Literal["accept_at", b"accept_at", "order", b"order", "transact_at", b"transact_at", "withdraw_at", b"withdraw_at"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["accept_at", b"accept_at", "exec_id", b"exec_id", "order", b"order", "order_id", b"order_id", "status", b"status", "transact_at", b"transact_at", "withdraw_at", b"withdraw_at"]) -> None: ...
-
-global___OrderState = OrderState
-
-@typing.final
-class OrdersRequest(google.protobuf.message.Message):
-    """Запрос получения списка торговых заявок"""
-
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    ACCOUNT_ID_FIELD_NUMBER: builtins.int
-    account_id: builtins.str
+    ACCOUNT_ID_FIELD_NUMBER: _builtins.int
+    account_id: _builtins.str
     """Идентификатор аккаунта"""
     def __init__(
         self,
         *,
-        account_id: builtins.str = ...,
+        account_id: _builtins.str = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["account_id", b"account_id"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["account_id", b"account_id"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___OrdersRequest = OrdersRequest
+Global___SubscribeOrdersRequest: _TypeAlias = SubscribeOrdersRequest  # noqa: Y015
 
-@typing.final
-class OrdersResponse(google.protobuf.message.Message):
-    """Список торговых заявок"""
+@_typing.final
+class SubscribeOrdersResponse(_message.Message):
+    """Список собственных заявок"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    ORDERS_FIELD_NUMBER: builtins.int
-    @property
-    def orders(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___OrderState]:
+    ORDERS_FIELD_NUMBER: _builtins.int
+    @_builtins.property
+    def orders(self) -> _containers.RepeatedCompositeFieldContainer[Global___OrderState]:
         """Заявки"""
 
     def __init__(
         self,
         *,
-        orders: collections.abc.Iterable[global___OrderState] | None = ...,
+        orders: _abc.Iterable[Global___OrderState] | None = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["orders", b"orders"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["orders", b"orders"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___OrdersResponse = OrdersResponse
+Global___SubscribeOrdersResponse: _TypeAlias = SubscribeOrdersResponse  # noqa: Y015
 
-@typing.final
-class CancelOrderRequest(google.protobuf.message.Message):
-    """Запрос отмены торговой заявки"""
+@_typing.final
+class SubscribeTradesRequest(_message.Message):
+    """Запрос подписки на собственные сделки. Стрим"""
 
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+    DESCRIPTOR: _descriptor.Descriptor
 
-    ACCOUNT_ID_FIELD_NUMBER: builtins.int
-    ORDER_ID_FIELD_NUMBER: builtins.int
-    account_id: builtins.str
+    ACCOUNT_ID_FIELD_NUMBER: _builtins.int
+    account_id: _builtins.str
     """Идентификатор аккаунта"""
-    order_id: builtins.str
+    def __init__(
+        self,
+        *,
+        account_id: _builtins.str = ...,
+    ) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["account_id", b"account_id"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
+
+Global___SubscribeTradesRequest: _TypeAlias = SubscribeTradesRequest  # noqa: Y015
+
+@_typing.final
+class SubscribeTradesResponse(_message.Message):
+    """Список собственных сделок"""
+
+    DESCRIPTOR: _descriptor.Descriptor
+
+    TRADES_FIELD_NUMBER: _builtins.int
+    @_builtins.property
+    def trades(self) -> _containers.RepeatedCompositeFieldContainer[_trade_pb2.AccountTrade]:
+        """Сделки"""
+
+    def __init__(
+        self,
+        *,
+        trades: _abc.Iterable[_trade_pb2.AccountTrade] | None = ...,
+    ) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["trades", b"trades"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
+
+Global___SubscribeTradesResponse: _TypeAlias = SubscribeTradesResponse  # noqa: Y015
+
+@_typing.final
+class GetOrderRequest(_message.Message):
+    """Запрос на получение конкретного ордера"""
+
+    DESCRIPTOR: _descriptor.Descriptor
+
+    ACCOUNT_ID_FIELD_NUMBER: _builtins.int
+    ORDER_ID_FIELD_NUMBER: _builtins.int
+    account_id: _builtins.str
+    """Идентификатор аккаунта"""
+    order_id: _builtins.str
     """Идентификатор заявки"""
     def __init__(
         self,
         *,
-        account_id: builtins.str = ...,
-        order_id: builtins.str = ...,
+        account_id: _builtins.str = ...,
+        order_id: _builtins.str = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["account_id", b"account_id", "order_id", b"order_id"]) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["account_id", b"account_id", "order_id", b"order_id"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
-global___CancelOrderRequest = CancelOrderRequest
+Global___GetOrderRequest: _TypeAlias = GetOrderRequest  # noqa: Y015
+
+@_typing.final
+class Order(_message.Message):
+    """Информация о заявке"""
+
+    DESCRIPTOR: _descriptor.Descriptor
+
+    ACCOUNT_ID_FIELD_NUMBER: _builtins.int
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    QUANTITY_FIELD_NUMBER: _builtins.int
+    SIDE_FIELD_NUMBER: _builtins.int
+    TYPE_FIELD_NUMBER: _builtins.int
+    TIME_IN_FORCE_FIELD_NUMBER: _builtins.int
+    LIMIT_PRICE_FIELD_NUMBER: _builtins.int
+    STOP_PRICE_FIELD_NUMBER: _builtins.int
+    STOP_CONDITION_FIELD_NUMBER: _builtins.int
+    LEGS_FIELD_NUMBER: _builtins.int
+    CLIENT_ORDER_ID_FIELD_NUMBER: _builtins.int
+    VALID_BEFORE_FIELD_NUMBER: _builtins.int
+    COMMENT_FIELD_NUMBER: _builtins.int
+    account_id: _builtins.str
+    """Идентификатор аккаунта"""
+    symbol: _builtins.str
+    """Символ инструмента"""
+    side: _side_pb2.Side.ValueType
+    """ Сторона (long или short)"""
+    type: Global___OrderType.ValueType
+    """Тип заявки"""
+    time_in_force: Global___TimeInForce.ValueType
+    """Срок действия заявки"""
+    stop_condition: Global___StopCondition.ValueType
+    """Необходимо для стоп рыночной и стоп лимитной заявки"""
+    client_order_id: _builtins.str
+    """Уникальный идентификатор заявки. Автоматически генерируется, если не отправлен. (максимум 20 символов)"""
+    valid_before: Global___ValidBefore.ValueType
+    """Срок действия условной заявки. Заполняется для заявок с типом ORDER_TYPE_STOP, ORDER_TYPE_STOP_LIMIT"""
+    comment: _builtins.str
+    """Метка заявки. (максимум 128 символов)"""
+    @_builtins.property
+    def quantity(self) -> _decimal_pb2.Decimal:
+        """Количество в шт."""
+
+    @_builtins.property
+    def limit_price(self) -> _decimal_pb2.Decimal:
+        """Необходимо для лимитной и стоп лимитной заявки"""
+
+    @_builtins.property
+    def stop_price(self) -> _decimal_pb2.Decimal:
+        """Необходимо для стоп рыночной и стоп лимитной заявки"""
+
+    @_builtins.property
+    def legs(self) -> _containers.RepeatedCompositeFieldContainer[Global___Leg]:
+        """Необходимо для мульти лег заявки"""
+
+    def __init__(
+        self,
+        *,
+        account_id: _builtins.str = ...,
+        symbol: _builtins.str = ...,
+        quantity: _decimal_pb2.Decimal | None = ...,
+        side: _side_pb2.Side.ValueType = ...,
+        type: Global___OrderType.ValueType = ...,
+        time_in_force: Global___TimeInForce.ValueType = ...,
+        limit_price: _decimal_pb2.Decimal | None = ...,
+        stop_price: _decimal_pb2.Decimal | None = ...,
+        stop_condition: Global___StopCondition.ValueType = ...,
+        legs: _abc.Iterable[Global___Leg] | None = ...,
+        client_order_id: _builtins.str = ...,
+        valid_before: Global___ValidBefore.ValueType = ...,
+        comment: _builtins.str = ...,
+    ) -> None: ...
+    _HasFieldArgType: _TypeAlias = _typing.Literal["limit_price", b"limit_price", "quantity", b"quantity", "stop_price", b"stop_price"]  # noqa: Y015
+    def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["account_id", b"account_id", "client_order_id", b"client_order_id", "comment", b"comment", "legs", b"legs", "limit_price", b"limit_price", "quantity", b"quantity", "side", b"side", "stop_condition", b"stop_condition", "stop_price", b"stop_price", "symbol", b"symbol", "time_in_force", b"time_in_force", "type", b"type", "valid_before", b"valid_before"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
+
+Global___Order: _TypeAlias = Order  # noqa: Y015
+
+@_typing.final
+class Leg(_message.Message):
+    """Лег"""
+
+    DESCRIPTOR: _descriptor.Descriptor
+
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    QUANTITY_FIELD_NUMBER: _builtins.int
+    SIDE_FIELD_NUMBER: _builtins.int
+    symbol: _builtins.str
+    """Символ инструмента"""
+    side: _side_pb2.Side.ValueType
+    """Сторона"""
+    @_builtins.property
+    def quantity(self) -> _decimal_pb2.Decimal:
+        """Количество"""
+
+    def __init__(
+        self,
+        *,
+        symbol: _builtins.str = ...,
+        quantity: _decimal_pb2.Decimal | None = ...,
+        side: _side_pb2.Side.ValueType = ...,
+    ) -> None: ...
+    _HasFieldArgType: _TypeAlias = _typing.Literal["quantity", b"quantity"]  # noqa: Y015
+    def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["quantity", b"quantity", "side", b"side", "symbol", b"symbol"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
+
+Global___Leg: _TypeAlias = Leg  # noqa: Y015
+
+@_typing.final
+class OrderState(_message.Message):
+    """Состояние заявки"""
+
+    DESCRIPTOR: _descriptor.Descriptor
+
+    ORDER_ID_FIELD_NUMBER: _builtins.int
+    EXEC_ID_FIELD_NUMBER: _builtins.int
+    STATUS_FIELD_NUMBER: _builtins.int
+    ORDER_FIELD_NUMBER: _builtins.int
+    TRANSACT_AT_FIELD_NUMBER: _builtins.int
+    ACCEPT_AT_FIELD_NUMBER: _builtins.int
+    WITHDRAW_AT_FIELD_NUMBER: _builtins.int
+    INITIAL_QUANTITY_FIELD_NUMBER: _builtins.int
+    EXECUTED_QUANTITY_FIELD_NUMBER: _builtins.int
+    REMAINING_QUANTITY_FIELD_NUMBER: _builtins.int
+    order_id: _builtins.str
+    """Идентификатор заявки"""
+    exec_id: _builtins.str
+    """Идентификатор исполнения"""
+    status: Global___OrderStatus.ValueType
+    """Статус заявки"""
+    @_builtins.property
+    def order(self) -> Global___Order:
+        """Заявка"""
+
+    @_builtins.property
+    def transact_at(self) -> _timestamp_pb2.Timestamp:
+        """Дата и время выставления заявки"""
+
+    @_builtins.property
+    def accept_at(self) -> _timestamp_pb2.Timestamp:
+        """Дата и время принятия заявки"""
+
+    @_builtins.property
+    def withdraw_at(self) -> _timestamp_pb2.Timestamp:
+        """Дата и время  отмены заявки"""
+
+    @_builtins.property
+    def initial_quantity(self) -> _decimal_pb2.Decimal:
+        """Начальный объем"""
+
+    @_builtins.property
+    def executed_quantity(self) -> _decimal_pb2.Decimal:
+        """Исполненный объем"""
+
+    @_builtins.property
+    def remaining_quantity(self) -> _decimal_pb2.Decimal:
+        """Оставшийся объем"""
+
+    def __init__(
+        self,
+        *,
+        order_id: _builtins.str = ...,
+        exec_id: _builtins.str = ...,
+        status: Global___OrderStatus.ValueType = ...,
+        order: Global___Order | None = ...,
+        transact_at: _timestamp_pb2.Timestamp | None = ...,
+        accept_at: _timestamp_pb2.Timestamp | None = ...,
+        withdraw_at: _timestamp_pb2.Timestamp | None = ...,
+        initial_quantity: _decimal_pb2.Decimal | None = ...,
+        executed_quantity: _decimal_pb2.Decimal | None = ...,
+        remaining_quantity: _decimal_pb2.Decimal | None = ...,
+    ) -> None: ...
+    _HasFieldArgType: _TypeAlias = _typing.Literal["accept_at", b"accept_at", "executed_quantity", b"executed_quantity", "initial_quantity", b"initial_quantity", "order", b"order", "remaining_quantity", b"remaining_quantity", "transact_at", b"transact_at", "withdraw_at", b"withdraw_at"]  # noqa: Y015
+    def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["accept_at", b"accept_at", "exec_id", b"exec_id", "executed_quantity", b"executed_quantity", "initial_quantity", b"initial_quantity", "order", b"order", "order_id", b"order_id", "remaining_quantity", b"remaining_quantity", "status", b"status", "transact_at", b"transact_at", "withdraw_at", b"withdraw_at"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
+
+Global___OrderState: _TypeAlias = OrderState  # noqa: Y015
+
+@_typing.final
+class OrdersRequest(_message.Message):
+    """Запрос получения списка торговых заявок"""
+
+    DESCRIPTOR: _descriptor.Descriptor
+
+    ACCOUNT_ID_FIELD_NUMBER: _builtins.int
+    account_id: _builtins.str
+    """Идентификатор аккаунта"""
+    def __init__(
+        self,
+        *,
+        account_id: _builtins.str = ...,
+    ) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["account_id", b"account_id"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
+
+Global___OrdersRequest: _TypeAlias = OrdersRequest  # noqa: Y015
+
+@_typing.final
+class OrdersResponse(_message.Message):
+    """Список торговых заявок"""
+
+    DESCRIPTOR: _descriptor.Descriptor
+
+    ORDERS_FIELD_NUMBER: _builtins.int
+    @_builtins.property
+    def orders(self) -> _containers.RepeatedCompositeFieldContainer[Global___OrderState]:
+        """Заявки"""
+
+    def __init__(
+        self,
+        *,
+        orders: _abc.Iterable[Global___OrderState] | None = ...,
+    ) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["orders", b"orders"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
+
+Global___OrdersResponse: _TypeAlias = OrdersResponse  # noqa: Y015
+
+@_typing.final
+class CancelOrderRequest(_message.Message):
+    """Запрос отмены торговой заявки"""
+
+    DESCRIPTOR: _descriptor.Descriptor
+
+    ACCOUNT_ID_FIELD_NUMBER: _builtins.int
+    ORDER_ID_FIELD_NUMBER: _builtins.int
+    account_id: _builtins.str
+    """Идентификатор аккаунта"""
+    order_id: _builtins.str
+    """Идентификатор заявки"""
+    def __init__(
+        self,
+        *,
+        account_id: _builtins.str = ...,
+        order_id: _builtins.str = ...,
+    ) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["account_id", b"account_id", "order_id", b"order_id"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
+
+Global___CancelOrderRequest: _TypeAlias = CancelOrderRequest  # noqa: Y015
