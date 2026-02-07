@@ -19,7 +19,17 @@ if __name__ == '__main__':  # Точка входа при запуске это
     for dataname in datanames:  # Пробегаемся по всем тикерам
         finam_board, ticker = fp_provider.dataname_to_finam_board_ticker(dataname)  # Код режима торгов Финама и тикер
         mic = fp_provider.get_mic(finam_board, ticker)  # Биржа тикера
+
+        if mic is None:  # Проверяем, если MIC не найден (возвращается None)
+            logger.error(f'MIC не найден для {dataname}')
+            continue  # Продолжаем
+
         si = fp_provider.get_symbol_info(ticker, mic)  # Спецификация тикера
+
+        if si is None:  # Проверяем, если спецификация тикера не найдена (возвращается None)
+            logger.error(f'Спецификация тикера не найдена для {dataname}')
+            continue  # Продолжаем
+
         logger.info(f'Информация о тикере {si.board}.{si.ticker} ({si.name}, {si.type}) на бирже {si.mic}')
         logger.info(f'- Лот: {int(float(si.lot_size.value))}')
         logger.info(f'- Шаг цены: {si.min_step / (10 ** si.decimals)}')
