@@ -21,6 +21,9 @@ if __name__ == '__main__':  # Точка входа при запуске это
     for account_id in fp_provider.account_ids:  # Пробегаемся по всем счетам
         logger.info(f'Номер счета {account_id}')
         account: GetAccountResponse = fp_provider.call_function(fp_provider.accounts_stub.GetAccount, GetAccountRequest(account_id=account_id))  # Получаем счет
+        if account is None:  # Если счет не поддерживается в Finam Trade API
+            logger.warning('Счет не поддерживается в Finam Trade API')
+            continue  # то переходим к следующему счету, дальше не продолжаем
 
         for position in account.positions:  # Пробегаемся по всем позициям
             si: GetAssetResponse = fp_provider.call_function(fp_provider.assets_stub.GetAsset, GetAssetRequest(symbol=position.symbol, account_id=fp_provider.account_ids[0]))
