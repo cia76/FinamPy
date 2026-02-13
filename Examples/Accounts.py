@@ -32,8 +32,9 @@ if __name__ == '__main__':  # Точка входа при запуске это
         logger.info('- Свободные средства:')
         for cash in account.cash:
             logger.info(f'  - {round(cash.units + cash.nanos * 10**-9, 2)} {cash.currency_code}')
-        logger.info(f'- Нереализованная прибыль: {round(float(account.unrealized_profit.value), 2)}')
-        logger.info(f'- Итого: {round(float(account.equity.value), 2)}')
+        if len(account.cash) >= 1:  # Если на счете есть деньги
+            logger.info(f'- Нереализованная прибыль: {round(float(account.unrealized_profit.value), 2)}')
+            logger.info(f'- Итого: {round(float(account.equity.value), 2)}')
 
         orders: OrdersResponse = fp_provider.call_function(fp_provider.orders_stub.GetOrders, OrdersRequest(account_id=account_id))  # Получаем заявки
         for order in orders.orders:  # Пробегаемся по всем заявкам
