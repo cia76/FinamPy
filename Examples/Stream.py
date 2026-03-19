@@ -4,9 +4,7 @@ from datetime import datetime  # Дата и время
 from time import sleep  # Подписка на события по времени
 
 from FinamPy import FinamPy
-from FinamPy.grpc.marketdata.marketdata_service_pb2 import SubscribeQuoteResponse  # Котировки
-from FinamPy.grpc.marketdata.marketdata_service_pb2 import SubscribeOrderBookResponse  # Стакан
-from FinamPy.grpc.marketdata.marketdata_service_pb2 import SubscribeLatestTradesResponse  # Сделки
+from FinamPy.grpc.marketdata_service_pb2 import SubscribeQuoteResponse, SubscribeOrderBookResponse, SubscribeLatestTradesResponse  # Подписки на котировки, стакан, сделки
 
 
 def _on_quote(quote: SubscribeQuoteResponse): logger.info(f'Котировка - {quote.quote[0] if len(quote.quote) > 0 else "Нет котировки"}')

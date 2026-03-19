@@ -125,6 +125,68 @@ class AssetsResponse(_message.Message):
 Global___AssetsResponse: _TypeAlias = AssetsResponse  # noqa: Y015
 
 @_typing.final
+class AllAssetsRequest(_message.Message):
+    """Запрос получения списка доступных инструментов"""
+
+    DESCRIPTOR: _descriptor.Descriptor
+
+    CURSOR_FIELD_NUMBER: _builtins.int
+    ONLY_ACTIVE_FIELD_NUMBER: _builtins.int
+    ONLY_DISABLED_FIELD_NUMBER: _builtins.int
+    cursor: _builtins.int
+    """Курсор для пагинации. Указывает sec_id инструмента, с которого должен начинаться список.
+    Для первого запроса оставьте поле пустым (значение 0).
+    Для последующих запросов используйте значение next_cursor из предыдущего ответа.
+    """
+    only_active: _builtins.bool
+    """Фильтрация по статусу инструмента: выбираются только активные(неархивные) инструменты
+    По умолчанию: false.
+    """
+    only_disabled: _builtins.bool
+    """Фильтрация по статусу инструмента: выбираются только неактивные(архивные) инструменты
+    По умолчанию: false.
+    """
+    def __init__(
+        self,
+        *,
+        cursor: _builtins.int = ...,
+        only_active: _builtins.bool = ...,
+        only_disabled: _builtins.bool = ...,
+    ) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["cursor", b"cursor", "only_active", b"only_active", "only_disabled", b"only_disabled"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
+
+Global___AllAssetsRequest: _TypeAlias = AllAssetsRequest  # noqa: Y015
+
+@_typing.final
+class AllAssetsResponse(_message.Message):
+    """Ответ, содержащий часть доступных инструментов."""
+
+    DESCRIPTOR: _descriptor.Descriptor
+
+    ASSETS_FIELD_NUMBER: _builtins.int
+    NEXT_CURSOR_FIELD_NUMBER: _builtins.int
+    next_cursor: _builtins.int
+    """Курсор для получения следующей страницы. Содержит sec_id последнего инструмента в текущем списке.
+    Передайте это значение в поле cursor следующего запроса, чтобы получить следующую часть данных.
+    Если значение 0 или отсутствует — это последняя страница.
+    """
+    @_builtins.property
+    def assets(self) -> _containers.RepeatedCompositeFieldContainer[Global___Asset]:
+        """Часть списка инструментов"""
+
+    def __init__(
+        self,
+        *,
+        assets: _abc.Iterable[Global___Asset] | None = ...,
+        next_cursor: _builtins.int = ...,
+    ) -> None: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["assets", b"assets", "next_cursor", b"next_cursor"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
+
+Global___AllAssetsResponse: _TypeAlias = AllAssetsResponse  # noqa: Y015
+
+@_typing.final
 class GetAssetRequest(_message.Message):
     """Запрос получения информации по конкретному инструменту"""
 
@@ -544,6 +606,7 @@ class Asset(_message.Message):
     ISIN_FIELD_NUMBER: _builtins.int
     TYPE_FIELD_NUMBER: _builtins.int
     NAME_FIELD_NUMBER: _builtins.int
+    IS_ARCHIVED_FIELD_NUMBER: _builtins.int
     symbol: _builtins.str
     """Символ инструмента ticker@mic"""
     id: _builtins.str
@@ -558,6 +621,8 @@ class Asset(_message.Message):
     """Тип инструмента"""
     name: _builtins.str
     """Наименование инструмента"""
+    is_archived: _builtins.bool
+    """Архивный инструмент или нет"""
     def __init__(
         self,
         *,
@@ -568,8 +633,9 @@ class Asset(_message.Message):
         isin: _builtins.str = ...,
         type: _builtins.str = ...,
         name: _builtins.str = ...,
+        is_archived: _builtins.bool = ...,
     ) -> None: ...
-    _ClearFieldArgType: _TypeAlias = _typing.Literal["id", b"id", "isin", b"isin", "mic", b"mic", "name", b"name", "symbol", b"symbol", "ticker", b"ticker", "type", b"type"]  # noqa: Y015
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["id", b"id", "is_archived", b"is_archived", "isin", b"isin", "mic", b"mic", "name", b"name", "symbol", b"symbol", "ticker", b"ticker", "type", b"type"]  # noqa: Y015
     def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
 Global___Asset: _TypeAlias = Asset  # noqa: Y015

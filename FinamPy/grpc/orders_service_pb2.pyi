@@ -277,7 +277,7 @@ class _ValidBeforeEnumTypeWrapper(_enum_type_wrapper._EnumTypeWrapper[_ValidBefo
     VALID_BEFORE_GOOD_TILL_CANCEL: _ValidBefore.ValueType  # 2
     """До отмены"""
     VALID_BEFORE_GOOD_TILL_DATE: _ValidBefore.ValueType  # 3
-    """До указанной даты-времени. Данный тип на текущий момент не поддерживается при выставлении заявки"""
+    """До указанной даты-времени. Данный тип поддерживается только при выставлении SL/TP заявок"""
 
 class ValidBefore(_ValidBefore, metaclass=_ValidBeforeEnumTypeWrapper):
     """Срок действия условной заявки"""
@@ -289,8 +289,32 @@ VALID_BEFORE_END_OF_DAY: ValidBefore.ValueType  # 1
 VALID_BEFORE_GOOD_TILL_CANCEL: ValidBefore.ValueType  # 2
 """До отмены"""
 VALID_BEFORE_GOOD_TILL_DATE: ValidBefore.ValueType  # 3
-"""До указанной даты-времени. Данный тип на текущий момент не поддерживается при выставлении заявки"""
+"""До указанной даты-времени. Данный тип поддерживается только при выставлении SL/TP заявок"""
 Global___ValidBefore: _TypeAlias = ValidBefore  # noqa: Y015
+
+class _TPSpreadMeasure:
+    ValueType = _typing.NewType("ValueType", _builtins.int)
+    V: _TypeAlias = ValueType  # noqa: Y015
+
+class _TPSpreadMeasureEnumTypeWrapper(_enum_type_wrapper._EnumTypeWrapper[_TPSpreadMeasure.ValueType], _builtins.type):
+    DESCRIPTOR: _descriptor.EnumDescriptor
+    TP_SPREAD_MEASURE_UNDEFINED: _TPSpreadMeasure.ValueType  # 0
+    """Значение не указано"""
+    TP_SPREAD_MEASURE_VALUE: _TPSpreadMeasure.ValueType  # 1
+    """в единицах цены"""
+    TP_SPREAD_MEASURE_PERCENT: _TPSpreadMeasure.ValueType  # 2
+    """в процентах, с максимальной точностью до сотых процента"""
+
+class TPSpreadMeasure(_TPSpreadMeasure, metaclass=_TPSpreadMeasureEnumTypeWrapper):
+    """Единица измерения величины защитного спреда для цены исполнения TP"""
+
+TP_SPREAD_MEASURE_UNDEFINED: TPSpreadMeasure.ValueType  # 0
+"""Значение не указано"""
+TP_SPREAD_MEASURE_VALUE: TPSpreadMeasure.ValueType  # 1
+"""в единицах цены"""
+TP_SPREAD_MEASURE_PERCENT: TPSpreadMeasure.ValueType  # 2
+"""в процентах, с максимальной точностью до сотых процента"""
+Global___TPSpreadMeasure: _TypeAlias = TPSpreadMeasure  # noqa: Y015
 
 @_deprecated("""This message has been marked as deprecated using proto message options.""")
 @_typing.final
@@ -517,7 +541,7 @@ class Order(_message.Message):
     symbol: _builtins.str
     """Символ инструмента"""
     side: _side_pb2.Side.ValueType
-    """ Сторона (long или short)"""
+    """Сторона (long или short)"""
     type: Global___OrderType.ValueType
     """Тип заявки"""
     time_in_force: Global___TimeInForce.ValueType
@@ -617,6 +641,7 @@ class OrderState(_message.Message):
     INITIAL_QUANTITY_FIELD_NUMBER: _builtins.int
     EXECUTED_QUANTITY_FIELD_NUMBER: _builtins.int
     REMAINING_QUANTITY_FIELD_NUMBER: _builtins.int
+    SLTP_ORDER_FIELD_NUMBER: _builtins.int
     order_id: _builtins.str
     """Идентификатор заявки"""
     exec_id: _builtins.str
@@ -641,15 +666,19 @@ class OrderState(_message.Message):
 
     @_builtins.property
     def initial_quantity(self) -> _decimal_pb2.Decimal:
-        """Начальный объем"""
+        """Начальный объем (заполняется только для биржевой заявки)"""
 
     @_builtins.property
     def executed_quantity(self) -> _decimal_pb2.Decimal:
-        """Исполненный объем"""
+        """Исполненный объем (заполняется только для биржевой заявки)"""
 
     @_builtins.property
     def remaining_quantity(self) -> _decimal_pb2.Decimal:
-        """Оставшийся объем"""
+        """Оставшийся объем (заполняется только для биржевой заявки)"""
+
+    @_builtins.property
+    def sltp_order(self) -> Global___SLTPOrder:
+        """Информация о SL/TP заявке"""
 
     def __init__(
         self,
@@ -664,10 +693,11 @@ class OrderState(_message.Message):
         initial_quantity: _decimal_pb2.Decimal | None = ...,
         executed_quantity: _decimal_pb2.Decimal | None = ...,
         remaining_quantity: _decimal_pb2.Decimal | None = ...,
+        sltp_order: Global___SLTPOrder | None = ...,
     ) -> None: ...
-    _HasFieldArgType: _TypeAlias = _typing.Literal["accept_at", b"accept_at", "executed_quantity", b"executed_quantity", "initial_quantity", b"initial_quantity", "order", b"order", "remaining_quantity", b"remaining_quantity", "transact_at", b"transact_at", "withdraw_at", b"withdraw_at"]  # noqa: Y015
+    _HasFieldArgType: _TypeAlias = _typing.Literal["accept_at", b"accept_at", "executed_quantity", b"executed_quantity", "initial_quantity", b"initial_quantity", "order", b"order", "remaining_quantity", b"remaining_quantity", "sltp_order", b"sltp_order", "transact_at", b"transact_at", "withdraw_at", b"withdraw_at"]  # noqa: Y015
     def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
-    _ClearFieldArgType: _TypeAlias = _typing.Literal["accept_at", b"accept_at", "exec_id", b"exec_id", "executed_quantity", b"executed_quantity", "initial_quantity", b"initial_quantity", "order", b"order", "order_id", b"order_id", "remaining_quantity", b"remaining_quantity", "status", b"status", "transact_at", b"transact_at", "withdraw_at", b"withdraw_at"]  # noqa: Y015
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["accept_at", b"accept_at", "exec_id", b"exec_id", "executed_quantity", b"executed_quantity", "initial_quantity", b"initial_quantity", "order", b"order", "order_id", b"order_id", "remaining_quantity", b"remaining_quantity", "sltp_order", b"sltp_order", "status", b"status", "transact_at", b"transact_at", "withdraw_at", b"withdraw_at"]  # noqa: Y015
     def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
 Global___OrderState: _TypeAlias = OrderState  # noqa: Y015
@@ -734,3 +764,90 @@ class CancelOrderRequest(_message.Message):
     def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
 
 Global___CancelOrderRequest: _TypeAlias = CancelOrderRequest  # noqa: Y015
+
+@_typing.final
+class SLTPOrder(_message.Message):
+    """Информация о SL/TP заявке"""
+
+    DESCRIPTOR: _descriptor.Descriptor
+
+    ACCOUNT_ID_FIELD_NUMBER: _builtins.int
+    SYMBOL_FIELD_NUMBER: _builtins.int
+    SIDE_FIELD_NUMBER: _builtins.int
+    QUANTITY_SL_FIELD_NUMBER: _builtins.int
+    SL_PRICE_FIELD_NUMBER: _builtins.int
+    LIMIT_PRICE_FIELD_NUMBER: _builtins.int
+    QUANTITY_TP_FIELD_NUMBER: _builtins.int
+    TP_PRICE_FIELD_NUMBER: _builtins.int
+    TP_GUARD_SPREAD_FIELD_NUMBER: _builtins.int
+    TP_SPREAD_MEASURE_FIELD_NUMBER: _builtins.int
+    CLIENT_ORDER_ID_FIELD_NUMBER: _builtins.int
+    VALID_BEFORE_FIELD_NUMBER: _builtins.int
+    VALID_EXPIRY_TIME_FIELD_NUMBER: _builtins.int
+    COMMENT_FIELD_NUMBER: _builtins.int
+    account_id: _builtins.str
+    """Идентификатор аккаунта"""
+    symbol: _builtins.str
+    """Символ инструмента"""
+    side: _side_pb2.Side.ValueType
+    """Сторона для обеих заявок"""
+    tp_spread_measure: Global___TPSpreadMeasure.ValueType
+    """Единица измерения величины защитного спреда"""
+    client_order_id: _builtins.str
+    """Уникальный идентификатор заявки. Автоматически генерируется, если не отправлен. (максимум 20 символов)"""
+    valid_before: Global___ValidBefore.ValueType
+    """Срок действия условной заявки. Если не заполнено, то по умолчанию выставляется VALID_BEFORE_GOOD_TILL_CANCEL"""
+    comment: _builtins.str
+    """Метка заявки. (максимум 128 символов)"""
+    @_builtins.property
+    def quantity_sl(self) -> _decimal_pb2.Decimal:
+        """Количество в шт для SL"""
+
+    @_builtins.property
+    def sl_price(self) -> _decimal_pb2.Decimal:
+        """Параметр условия цены для SL части"""
+
+    @_builtins.property
+    def limit_price(self) -> _decimal_pb2.Decimal:
+        """Если указано, после активации SL будет выставлена лимитная заявка с этой ценой"""
+
+    @_builtins.property
+    def quantity_tp(self) -> _decimal_pb2.Decimal:
+        """Количество в шт для TP"""
+
+    @_builtins.property
+    def tp_price(self) -> _decimal_pb2.Decimal:
+        """Параметр условия цены для TP части"""
+
+    @_builtins.property
+    def tp_guard_spread(self) -> _decimal_pb2.Decimal:
+        """Если указано, после активации TP будет выставлена лимитная заявка с учетом защитного спрэда"""
+
+    @_builtins.property
+    def valid_expiry_time(self) -> _timestamp_pb2.Timestamp:
+        """Временная метка прекращения действия SL/TP заявки"""
+
+    def __init__(
+        self,
+        *,
+        account_id: _builtins.str = ...,
+        symbol: _builtins.str = ...,
+        side: _side_pb2.Side.ValueType = ...,
+        quantity_sl: _decimal_pb2.Decimal | None = ...,
+        sl_price: _decimal_pb2.Decimal | None = ...,
+        limit_price: _decimal_pb2.Decimal | None = ...,
+        quantity_tp: _decimal_pb2.Decimal | None = ...,
+        tp_price: _decimal_pb2.Decimal | None = ...,
+        tp_guard_spread: _decimal_pb2.Decimal | None = ...,
+        tp_spread_measure: Global___TPSpreadMeasure.ValueType = ...,
+        client_order_id: _builtins.str = ...,
+        valid_before: Global___ValidBefore.ValueType = ...,
+        valid_expiry_time: _timestamp_pb2.Timestamp | None = ...,
+        comment: _builtins.str = ...,
+    ) -> None: ...
+    _HasFieldArgType: _TypeAlias = _typing.Literal["limit_price", b"limit_price", "quantity_sl", b"quantity_sl", "quantity_tp", b"quantity_tp", "sl_price", b"sl_price", "tp_guard_spread", b"tp_guard_spread", "tp_price", b"tp_price", "valid_expiry_time", b"valid_expiry_time"]  # noqa: Y015
+    def HasField(self, field_name: _HasFieldArgType) -> _builtins.bool: ...
+    _ClearFieldArgType: _TypeAlias = _typing.Literal["account_id", b"account_id", "client_order_id", b"client_order_id", "comment", b"comment", "limit_price", b"limit_price", "quantity_sl", b"quantity_sl", "quantity_tp", b"quantity_tp", "side", b"side", "sl_price", b"sl_price", "symbol", b"symbol", "tp_guard_spread", b"tp_guard_spread", "tp_price", b"tp_price", "tp_spread_measure", b"tp_spread_measure", "valid_before", b"valid_before", "valid_expiry_time", b"valid_expiry_time"]  # noqa: Y015
+    def ClearField(self, field_name: _ClearFieldArgType) -> None: ...
+
+Global___SLTPOrder: _TypeAlias = SLTPOrder  # noqa: Y015

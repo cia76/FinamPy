@@ -209,7 +209,7 @@ class FORTS(_message.Message):
 
     @_builtins.property
     def money_reserved(self) -> _decimal_pb2.Decimal:
-        """Минимальная маржа (необходимая сумма обеспечения под открытые позици)"""
+        """Минимальная маржа (необходимая сумма обеспечения под открытые позиции)"""
 
     def __init__(
         self,

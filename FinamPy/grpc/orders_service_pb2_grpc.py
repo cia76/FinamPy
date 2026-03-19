@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from FinamPy.grpc.orders import orders_service_pb2 as FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2
+from FinamPy.grpc import orders_service_pb2 as FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2
 
 GRPC_GENERATED_VERSION = '1.76.0'
 GRPC_VERSION = grpc.__version__
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + ' but the generated code in FinamPy/FinamPy/grpc/orders/orders_service_pb2_grpc.py depends on'
+        + ' but the generated code in FinamPy/FinamPy/grpc/orders_service_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -37,38 +37,43 @@ class OrdersServiceStub(object):
         """
         self.PlaceOrder = channel.unary_unary(
                 '/grpc.tradeapi.v1.orders.OrdersService/PlaceOrder',
-                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.Order.SerializeToString,
-                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderState.FromString,
+                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.Order.SerializeToString,
+                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrderState.FromString,
                 _registered_method=True)
         self.CancelOrder = channel.unary_unary(
                 '/grpc.tradeapi.v1.orders.OrdersService/CancelOrder',
-                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.CancelOrderRequest.SerializeToString,
-                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderState.FromString,
+                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.CancelOrderRequest.SerializeToString,
+                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrderState.FromString,
                 _registered_method=True)
         self.GetOrders = channel.unary_unary(
                 '/grpc.tradeapi.v1.orders.OrdersService/GetOrders',
-                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrdersRequest.SerializeToString,
-                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrdersResponse.FromString,
+                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrdersRequest.SerializeToString,
+                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrdersResponse.FromString,
                 _registered_method=True)
         self.GetOrder = channel.unary_unary(
                 '/grpc.tradeapi.v1.orders.OrdersService/GetOrder',
-                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.GetOrderRequest.SerializeToString,
-                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderState.FromString,
+                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.GetOrderRequest.SerializeToString,
+                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrderState.FromString,
                 _registered_method=True)
         self.SubscribeOrderTrade = channel.stream_stream(
                 '/grpc.tradeapi.v1.orders.OrdersService/SubscribeOrderTrade',
-                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderTradeRequest.SerializeToString,
-                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderTradeResponse.FromString,
+                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrderTradeRequest.SerializeToString,
+                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrderTradeResponse.FromString,
                 _registered_method=True)
         self.SubscribeOrders = channel.unary_stream(
                 '/grpc.tradeapi.v1.orders.OrdersService/SubscribeOrders',
-                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeOrdersRequest.SerializeToString,
-                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeOrdersResponse.FromString,
+                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.SubscribeOrdersRequest.SerializeToString,
+                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.SubscribeOrdersResponse.FromString,
                 _registered_method=True)
         self.SubscribeTrades = channel.unary_stream(
                 '/grpc.tradeapi.v1.orders.OrdersService/SubscribeTrades',
-                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeTradesRequest.SerializeToString,
-                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeTradesResponse.FromString,
+                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.SubscribeTradesRequest.SerializeToString,
+                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.SubscribeTradesResponse.FromString,
+                _registered_method=True)
+        self.PlaceSLTPOrder = channel.unary_unary(
+                '/grpc.tradeapi.v1.orders.OrdersService/PlaceSLTPOrder',
+                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.SLTPOrder.SerializeToString,
+                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrderState.FromString,
                 _registered_method=True)
 
 
@@ -86,14 +91,14 @@ class OrdersServiceServicer(object):
         {
         "symbol": "SBER@MISX",
         "quantity": {
-        			 "value": "10"
-        		 },
+        		 "value": "10"
+        	 },
         "side": "SIDE_BUY",
         "type": "ORDER_TYPE_LIMIT",
         "time_in_force": "TIME_IN_FORCE_DAY",
         "limit_price": {
-        			 "value": "150.50"
-        		 }
+        		 "value": "150.50"
+        	 }
         }
 
         Поле account_id берется из URL-пути, остальные поля передаются в теле запроса
@@ -153,43 +158,87 @@ class OrdersServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def PlaceSLTPOrder(self, request, context):
+        """Выставление SL/TP заявки
+        Пример HTTP запроса:
+        POST /v1/accounts/A12345/sltp-orders
+        Content-Type: application/json
+        Authorization: <token>
+
+        {
+        "symbol": "SBER@MISX",
+        "side": "SIDE_BUY",
+        "quantity_sl": {
+        "value": "10"
+        },
+        "sl_price": {
+        "value": "270.00"
+        },
+        "limit_price": {
+        "value": "269.50"
+        },
+        "quantity_tp": {
+        "value": "10"
+        },
+        "tp_price": {
+        "value": "295.50"
+        },
+        "tp_guard_spread": {
+        "value": "0.5"  },
+        "tp_spread_measure": "TP_SPREAD_MEASURE_VALUE",
+        "valid_before": "VALID_BEFORE_GOOD_TILL_DATE",
+        "valid_expiry_time": "2026-12-31T23:59:59Z",
+        "comment": "my SL/TP order"
+        }
+
+        Поле account_id берется из URL-пути, остальные поля передаются в теле запроса
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_OrdersServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'PlaceOrder': grpc.unary_unary_rpc_method_handler(
                     servicer.PlaceOrder,
-                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.Order.FromString,
-                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderState.SerializeToString,
+                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.Order.FromString,
+                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrderState.SerializeToString,
             ),
             'CancelOrder': grpc.unary_unary_rpc_method_handler(
                     servicer.CancelOrder,
-                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.CancelOrderRequest.FromString,
-                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderState.SerializeToString,
+                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.CancelOrderRequest.FromString,
+                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrderState.SerializeToString,
             ),
             'GetOrders': grpc.unary_unary_rpc_method_handler(
                     servicer.GetOrders,
-                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrdersRequest.FromString,
-                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrdersResponse.SerializeToString,
+                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrdersRequest.FromString,
+                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrdersResponse.SerializeToString,
             ),
             'GetOrder': grpc.unary_unary_rpc_method_handler(
                     servicer.GetOrder,
-                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.GetOrderRequest.FromString,
-                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderState.SerializeToString,
+                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.GetOrderRequest.FromString,
+                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrderState.SerializeToString,
             ),
             'SubscribeOrderTrade': grpc.stream_stream_rpc_method_handler(
                     servicer.SubscribeOrderTrade,
-                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderTradeRequest.FromString,
-                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderTradeResponse.SerializeToString,
+                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrderTradeRequest.FromString,
+                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrderTradeResponse.SerializeToString,
             ),
             'SubscribeOrders': grpc.unary_stream_rpc_method_handler(
                     servicer.SubscribeOrders,
-                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeOrdersRequest.FromString,
-                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeOrdersResponse.SerializeToString,
+                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.SubscribeOrdersRequest.FromString,
+                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.SubscribeOrdersResponse.SerializeToString,
             ),
             'SubscribeTrades': grpc.unary_stream_rpc_method_handler(
                     servicer.SubscribeTrades,
-                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeTradesRequest.FromString,
-                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeTradesResponse.SerializeToString,
+                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.SubscribeTradesRequest.FromString,
+                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.SubscribeTradesResponse.SerializeToString,
+            ),
+            'PlaceSLTPOrder': grpc.unary_unary_rpc_method_handler(
+                    servicer.PlaceSLTPOrder,
+                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.SLTPOrder.FromString,
+                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrderState.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -218,8 +267,8 @@ class OrdersService(object):
             request,
             target,
             '/grpc.tradeapi.v1.orders.OrdersService/PlaceOrder',
-            FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.Order.SerializeToString,
-            FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderState.FromString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.Order.SerializeToString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrderState.FromString,
             options,
             channel_credentials,
             insecure,
@@ -245,8 +294,8 @@ class OrdersService(object):
             request,
             target,
             '/grpc.tradeapi.v1.orders.OrdersService/CancelOrder',
-            FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.CancelOrderRequest.SerializeToString,
-            FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderState.FromString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.CancelOrderRequest.SerializeToString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrderState.FromString,
             options,
             channel_credentials,
             insecure,
@@ -272,8 +321,8 @@ class OrdersService(object):
             request,
             target,
             '/grpc.tradeapi.v1.orders.OrdersService/GetOrders',
-            FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrdersRequest.SerializeToString,
-            FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrdersResponse.FromString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrdersRequest.SerializeToString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrdersResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -299,8 +348,8 @@ class OrdersService(object):
             request,
             target,
             '/grpc.tradeapi.v1.orders.OrdersService/GetOrder',
-            FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.GetOrderRequest.SerializeToString,
-            FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderState.FromString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.GetOrderRequest.SerializeToString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrderState.FromString,
             options,
             channel_credentials,
             insecure,
@@ -326,8 +375,8 @@ class OrdersService(object):
             request_iterator,
             target,
             '/grpc.tradeapi.v1.orders.OrdersService/SubscribeOrderTrade',
-            FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderTradeRequest.SerializeToString,
-            FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.OrderTradeResponse.FromString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrderTradeRequest.SerializeToString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrderTradeResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -353,8 +402,8 @@ class OrdersService(object):
             request,
             target,
             '/grpc.tradeapi.v1.orders.OrdersService/SubscribeOrders',
-            FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeOrdersRequest.SerializeToString,
-            FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeOrdersResponse.FromString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.SubscribeOrdersRequest.SerializeToString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.SubscribeOrdersResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -380,8 +429,35 @@ class OrdersService(object):
             request,
             target,
             '/grpc.tradeapi.v1.orders.OrdersService/SubscribeTrades',
-            FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeTradesRequest.SerializeToString,
-            FinamPy_dot_FinamPy_dot_grpc_dot_orders_dot_orders__service__pb2.SubscribeTradesResponse.FromString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.SubscribeTradesRequest.SerializeToString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.SubscribeTradesResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def PlaceSLTPOrder(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/grpc.tradeapi.v1.orders.OrdersService/PlaceSLTPOrder',
+            FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.SLTPOrder.SerializeToString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_orders__service__pb2.OrderState.FromString,
             options,
             channel_credentials,
             insecure,

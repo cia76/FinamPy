@@ -4,10 +4,10 @@ import logging  # Выводим лог на консоль и в файл
 from threading import Thread  # Запускаем поток подписки
 
 from FinamPy import FinamPy
-from FinamPy.grpc.assets.assets_service_pb2 import GetAssetRequest, GetAssetResponse  # Информация по тикеру
-from FinamPy.grpc.orders.orders_service_pb2 import Order, OrderState, OrderType, CancelOrderRequest, StopCondition  # Заявки
+from FinamPy.grpc.assets_service_pb2 import GetAssetRequest, GetAssetResponse  # Информация по тикеру
+from FinamPy.grpc.orders_service_pb2 import Order, OrderState, OrderType, CancelOrderRequest, StopCondition  # Заявки
 import FinamPy.grpc.side_pb2 as side  # Направление заявки
-from FinamPy.grpc.marketdata.marketdata_service_pb2 import QuoteRequest, QuoteResponse  # Последняя цена сделки
+from FinamPy.grpc.marketdata_service_pb2 import QuoteRequest, QuoteResponse  # Последняя цена сделки
 
 from google.type.decimal_pb2 import Decimal
 
@@ -73,32 +73,33 @@ if __name__ == '__main__':  # Точка входа при запуске это
 
     quote_response: QuoteResponse = fp_provider.call_function(fp_provider.marketdata_stub.LastQuote, QuoteRequest(symbol=symbol))  # Получение последней котировки по инструменту
     last_price = float(quote_response.quote.last.value)  # Последняя цена сделки
-
-    # Новая лимитная заявка на покупку
-    limit_price = round(last_price * 0.99, si.decimals)  # Лимитная цена на 1% ниже последней цены сделки
-    logger.info(f'Заявка на покупку минимального лота {quantity} шт. {dataname} по лимитной цене {limit_price}')
-    order_state: OrderState = fp_provider.call_function(
-        fp_provider.orders_stub.PlaceOrder,
-        Order(account_id=account_id, symbol=symbol, quantity=quantity, side=side.SIDE_BUY, type=OrderType.ORDER_TYPE_LIMIT,
-              limit_price=Decimal(value=str(limit_price)), client_order_id=str(int(datetime.now().timestamp())))
-    )  # Выставление заявки
-    logger.debug(order_state)
-    order_id = order_state.order_id  # Номер заявки
-    logger.info(f'Номер заявки: {order_id}')
-    logger.info(f'Статус заявки: {order_state.status}')
-
-    sleep(10)  # Ждем 10 секунд
-
-    # Удаление существующей лимитной заявки
-    logger.info(f'Удаление заявки: {order_id}')
-    order_state: OrderState = fp_provider.call_function(fp_provider.orders_stub.CancelOrder, CancelOrderRequest(account_id=account_id, order_id=order_id))  # Удаление заявки
-    logger.debug(order_state)
-    logger.info(f'Статус заявки: {order_state.status}')
-
-    sleep(10)  # Ждем 10 секунд
+    #
+    # # Новая лимитная заявка на покупку
+    # limit_price = round(last_price * 0.99, si.decimals)  # Лимитная цена на 1% ниже последней цены сделки
+    # logger.info(f'Заявка на покупку минимального лота {quantity} шт. {dataname} по лимитной цене {limit_price}')
+    # order_state: OrderState = fp_provider.call_function(
+    #     fp_provider.orders_stub.PlaceOrder,
+    #     Order(account_id=account_id, symbol=symbol, quantity=quantity, side=side.SIDE_BUY, type=OrderType.ORDER_TYPE_LIMIT,
+    #           limit_price=Decimal(value=str(limit_price)), client_order_id=str(int(datetime.now().timestamp())))
+    # )  # Выставление заявки
+    # logger.debug(order_state)
+    # order_id = order_state.order_id  # Номер заявки
+    # logger.info(f'Номер заявки: {order_id}')
+    # logger.info(f'Статус заявки: {order_state.status}')
+    #
+    # sleep(10)  # Ждем 10 секунд
+    #
+    # # Удаление существующей лимитной заявки
+    # logger.info(f'Удаление заявки: {order_id}')
+    # order_state: OrderState = fp_provider.call_function(fp_provider.orders_stub.CancelOrder, CancelOrderRequest(account_id=account_id, order_id=order_id))  # Удаление заявки
+    # logger.debug(order_state)
+    # logger.info(f'Статус заявки: {order_state.status}')
+    #
+    # sleep(10)  # Ждем 10 секунд
 
     # Новая стоп заявка на покупку
-    stop_price = round(last_price * 1.01, si.decimals)  # Стоп цена на 1% выше последней цены сделки
+    # stop_price = round(last_price * 1.01, si.decimals)  # Стоп цена на 1% выше последней цены сделки
+    stop_price = last_price
     logger.info(f'Заявка на покупку минимального лота {quantity} шт. {dataname} по стоп цене {stop_price}')
     order_state: OrderState = fp_provider.call_function(
         fp_provider.orders_stub.PlaceOrder,
@@ -111,13 +112,13 @@ if __name__ == '__main__':  # Точка входа при запуске это
     logger.info(f'Статус заявки: {order_state.status}')
 
     sleep(10)  # Ждем 10 секунд
-
-    # Удаление существующей стоп заявки
-    logger.info(f'Удаление стоп заявки: {order_id}')
-    order_state: OrderState = fp_provider.call_function(fp_provider.orders_stub.CancelOrder, CancelOrderRequest(account_id=account_id, order_id=order_id))  # Удаление заявки
-    logger.debug(order_state)
-    logger.info(f'Статус заявки: {order_state.status}')
-
+    #
+    # # Удаление существующей стоп заявки
+    # logger.info(f'Удаление стоп заявки: {order_id}')
+    # order_state: OrderState = fp_provider.call_function(fp_provider.orders_stub.CancelOrder, CancelOrderRequest(account_id=account_id, order_id=order_id))  # Удаление заявки
+    # logger.debug(order_state)
+    # logger.info(f'Статус заявки: {order_state.status}')
+    #
     sleep(10)  # Ждем 10 секунд
 
     # Отмена подписок

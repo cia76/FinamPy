@@ -762,7 +762,7 @@ class Trade(_message.Message):
     mpid: _builtins.str
     """Идентификатор участника рынка"""
     side: _side_pb2.Side.ValueType
-    """ Сторона сделки (buy или sell)"""
+    """Сторона сделки (buy или sell)"""
     @_builtins.property
     def timestamp(self) -> _timestamp_pb2.Timestamp:
         """Метка времени"""

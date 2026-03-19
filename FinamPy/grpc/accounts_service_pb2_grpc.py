@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from FinamPy.grpc.accounts import accounts_service_pb2 as FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2
+from FinamPy.grpc import accounts_service_pb2 as FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2
 
 GRPC_GENERATED_VERSION = '1.76.0'
 GRPC_VERSION = grpc.__version__
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + ' but the generated code in FinamPy/FinamPy/grpc/accounts/accounts_service_pb2_grpc.py depends on'
+        + ' but the generated code in FinamPy/FinamPy/grpc/accounts_service_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -37,23 +37,23 @@ class AccountsServiceStub(object):
         """
         self.GetAccount = channel.unary_unary(
                 '/grpc.tradeapi.v1.accounts.AccountsService/GetAccount',
-                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.GetAccountRequest.SerializeToString,
-                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.GetAccountResponse.FromString,
+                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.GetAccountRequest.SerializeToString,
+                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.GetAccountResponse.FromString,
                 _registered_method=True)
         self.Trades = channel.unary_unary(
                 '/grpc.tradeapi.v1.accounts.AccountsService/Trades',
-                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.TradesRequest.SerializeToString,
-                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.TradesResponse.FromString,
+                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.TradesRequest.SerializeToString,
+                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.TradesResponse.FromString,
                 _registered_method=True)
         self.Transactions = channel.unary_unary(
                 '/grpc.tradeapi.v1.accounts.AccountsService/Transactions',
-                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.TransactionsRequest.SerializeToString,
-                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.TransactionsResponse.FromString,
+                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.TransactionsRequest.SerializeToString,
+                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.TransactionsResponse.FromString,
                 _registered_method=True)
         self.SubscribeAccount = channel.unary_stream(
                 '/grpc.tradeapi.v1.accounts.AccountsService/SubscribeAccount',
-                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.GetAccountRequest.SerializeToString,
-                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.GetAccountResponse.FromString,
+                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.GetAccountRequest.SerializeToString,
+                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.GetAccountResponse.FromString,
                 _registered_method=True)
 
 
@@ -111,23 +111,23 @@ def add_AccountsServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'GetAccount': grpc.unary_unary_rpc_method_handler(
                     servicer.GetAccount,
-                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.GetAccountRequest.FromString,
-                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.GetAccountResponse.SerializeToString,
+                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.GetAccountRequest.FromString,
+                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.GetAccountResponse.SerializeToString,
             ),
             'Trades': grpc.unary_unary_rpc_method_handler(
                     servicer.Trades,
-                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.TradesRequest.FromString,
-                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.TradesResponse.SerializeToString,
+                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.TradesRequest.FromString,
+                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.TradesResponse.SerializeToString,
             ),
             'Transactions': grpc.unary_unary_rpc_method_handler(
                     servicer.Transactions,
-                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.TransactionsRequest.FromString,
-                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.TransactionsResponse.SerializeToString,
+                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.TransactionsRequest.FromString,
+                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.TransactionsResponse.SerializeToString,
             ),
             'SubscribeAccount': grpc.unary_stream_rpc_method_handler(
                     servicer.SubscribeAccount,
-                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.GetAccountRequest.FromString,
-                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.GetAccountResponse.SerializeToString,
+                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.GetAccountRequest.FromString,
+                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.GetAccountResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -156,8 +156,8 @@ class AccountsService(object):
             request,
             target,
             '/grpc.tradeapi.v1.accounts.AccountsService/GetAccount',
-            FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.GetAccountRequest.SerializeToString,
-            FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.GetAccountResponse.FromString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.GetAccountRequest.SerializeToString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.GetAccountResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -183,8 +183,8 @@ class AccountsService(object):
             request,
             target,
             '/grpc.tradeapi.v1.accounts.AccountsService/Trades',
-            FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.TradesRequest.SerializeToString,
-            FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.TradesResponse.FromString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.TradesRequest.SerializeToString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.TradesResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -210,8 +210,8 @@ class AccountsService(object):
             request,
             target,
             '/grpc.tradeapi.v1.accounts.AccountsService/Transactions',
-            FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.TransactionsRequest.SerializeToString,
-            FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.TransactionsResponse.FromString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.TransactionsRequest.SerializeToString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.TransactionsResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -237,8 +237,8 @@ class AccountsService(object):
             request,
             target,
             '/grpc.tradeapi.v1.accounts.AccountsService/SubscribeAccount',
-            FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.GetAccountRequest.SerializeToString,
-            FinamPy_dot_FinamPy_dot_grpc_dot_accounts_dot_accounts__service__pb2.GetAccountResponse.FromString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.GetAccountRequest.SerializeToString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_accounts__service__pb2.GetAccountResponse.FromString,
             options,
             channel_credentials,
             insecure,

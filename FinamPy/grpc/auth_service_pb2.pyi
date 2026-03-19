@@ -141,7 +141,7 @@ class MDPermission(_message.Message):
         QUOTE_LEVEL_BEST_BID_OFFER: MDPermission._QuoteLevel.ValueType  # 2
         """Бид аск"""
         QUOTE_LEVEL_DEPTH_OF_MARKET: MDPermission._QuoteLevel.ValueType  # 3
-        """ Агрегированный стакан"""
+        """Агрегированный стакан"""
         QUOTE_LEVEL_DEPTH_OF_BOOK: MDPermission._QuoteLevel.ValueType  # 4
         """Полный стакан"""
         QUOTE_LEVEL_ACCESS_FORBIDDEN: MDPermission._QuoteLevel.ValueType  # 5
@@ -157,7 +157,7 @@ class MDPermission(_message.Message):
     QUOTE_LEVEL_BEST_BID_OFFER: MDPermission.QuoteLevel.ValueType  # 2
     """Бид аск"""
     QUOTE_LEVEL_DEPTH_OF_MARKET: MDPermission.QuoteLevel.ValueType  # 3
-    """ Агрегированный стакан"""
+    """Агрегированный стакан"""
     QUOTE_LEVEL_DEPTH_OF_BOOK: MDPermission.QuoteLevel.ValueType  # 4
     """Полный стакан"""
     QUOTE_LEVEL_ACCESS_FORBIDDEN: MDPermission.QuoteLevel.ValueType  # 5

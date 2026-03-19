@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from FinamPy.grpc.metrics import usage_metrics_service_pb2 as FinamPy_dot_FinamPy_dot_grpc_dot_metrics_dot_usage__metrics__service__pb2
+from FinamPy.grpc import usage_metrics_service_pb2 as FinamPy_dot_FinamPy_dot_grpc_dot_usage__metrics__service__pb2
 
 GRPC_GENERATED_VERSION = '1.76.0'
 GRPC_VERSION = grpc.__version__
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + ' but the generated code in FinamPy/FinamPy/grpc/metrics/usage_metrics_service_pb2_grpc.py depends on'
+        + ' but the generated code in FinamPy/FinamPy/grpc/usage_metrics_service_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -39,8 +39,8 @@ class UsageMetricsServiceStub(object):
         """
         self.GetUsageMetrics = channel.unary_unary(
                 '/grpc.tradeapi.v1.metrics.UsageMetricsService/GetUsageMetrics',
-                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_metrics_dot_usage__metrics__service__pb2.GetUsageMetricsRequest.SerializeToString,
-                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_metrics_dot_usage__metrics__service__pb2.GetUsageMetricsResponse.FromString,
+                request_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_usage__metrics__service__pb2.GetUsageMetricsRequest.SerializeToString,
+                response_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_usage__metrics__service__pb2.GetUsageMetricsResponse.FromString,
                 _registered_method=True)
 
 
@@ -65,8 +65,8 @@ def add_UsageMetricsServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'GetUsageMetrics': grpc.unary_unary_rpc_method_handler(
                     servicer.GetUsageMetrics,
-                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_metrics_dot_usage__metrics__service__pb2.GetUsageMetricsRequest.FromString,
-                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_metrics_dot_usage__metrics__service__pb2.GetUsageMetricsResponse.SerializeToString,
+                    request_deserializer=FinamPy_dot_FinamPy_dot_grpc_dot_usage__metrics__service__pb2.GetUsageMetricsRequest.FromString,
+                    response_serializer=FinamPy_dot_FinamPy_dot_grpc_dot_usage__metrics__service__pb2.GetUsageMetricsResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -97,8 +97,8 @@ class UsageMetricsService(object):
             request,
             target,
             '/grpc.tradeapi.v1.metrics.UsageMetricsService/GetUsageMetrics',
-            FinamPy_dot_FinamPy_dot_grpc_dot_metrics_dot_usage__metrics__service__pb2.GetUsageMetricsRequest.SerializeToString,
-            FinamPy_dot_FinamPy_dot_grpc_dot_metrics_dot_usage__metrics__service__pb2.GetUsageMetricsResponse.FromString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_usage__metrics__service__pb2.GetUsageMetricsRequest.SerializeToString,
+            FinamPy_dot_FinamPy_dot_grpc_dot_usage__metrics__service__pb2.GetUsageMetricsResponse.FromString,
             options,
             channel_credentials,
             insecure,
