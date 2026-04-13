@@ -2,7 +2,7 @@ import logging  # Будем вести лог
 from datetime import datetime, timedelta, timezone
 from time import sleep
 from zoneinfo import ZoneInfo  # ВременнАя зона
-from typing import Any  # Любой тип
+from typing import Optional, Any  # Любой тип
 from queue import SimpleQueue  # Очередь подписок/отписок
 
 import keyring  # Безопасное хранение торгового токена
@@ -66,8 +66,8 @@ class FinamPy:
         self.auth()  # Получаем токен JWT
         self.account_ids = list(self.token_details().account_ids)  # Из инфрмации о токене получаем список счетов
 
-        self.exchanges = None  # Список всех бирж
-        self.assets = None  # Справочник всех доступных инструментов
+        self.exchanges: Optional[assets_service.ExchangesResponse] = None  # Список всех бирж
+        self.assets: Optional[assets_service.AssetsResponse] = None  # Справочник всех доступных инструментов
         self.symbols = {}  # Справочник тикеров
         self.subscriptions = {}  # Список подписок на свои заявки и сделки
 
@@ -76,6 +76,9 @@ class FinamPy:
     def auth(self) -> None:
         """Получение JWT токена из API токена"""
         now = int(datetime.timestamp(datetime.now()))  # Текущая дата и время в виде UNIX времени в секундах
+        if self.access_token is None:  # Если торговый токен не найден
+            self.logger.error('Токен JWT не может быть выдан, т.к. торговый токен не найден')
+            return  # то токен JWT не выдаем. Выходим, дальше не продолжаем
         if not self.jwt_token or now - self.jwt_token_issued > self.jwt_token_ttl:  # Если токен JWT не был выдан или был просрочен
             response: auth_service.AuthResponse
             response, _ = self.auth_stub.Auth.with_call(request=auth_service.AuthRequest(secret=self.access_token))
@@ -318,7 +321,7 @@ class FinamPy:
         }
         return finam_board_map.get(board, board)
 
-    def dataname_to_finam_board_ticker(self, dataname) -> tuple[str | None, str]:
+    def dataname_to_finam_board_ticker(self, dataname) -> tuple[Optional[str], str]:
         """Код режима торгов Финама и тикер из названия тикера
 
         :param str dataname: Название тикера
@@ -334,8 +337,9 @@ class FinamPy:
                 self.assets: assets_service.AssetsResponse = self.call_function(self.assets_stub.Assets, assets_service.AssetsRequest())  # то получаем его из Финама
             mic = next((asset.mic for asset in self.assets.assets if asset.ticker == ticker), None)  # Биржа тикера из справочника
             if mic is None:  # Если биржа не найдена
+                self.logger.warning(f'Режим торгов тикера {dataname} не найден')
                 return None, ticker  # то возвращаем без кода режима торгов
-            si: assets_service.GetAssetResponse = self.call_function(self.assets_stub.GetAsset, assets_service.GetAssetRequest(symbol=f'{ticker}@{mic}', account_id=self.account_ids[0]))
+            si: assets_service.GetAssetResponse = self.call_function(self.assets_stub.GetAsset, assets_service.GetAssetRequest(symbol=f'{ticker}@{mic}', account_id=self.account_ids[0]))  # Поиск тикера ведем по первому счету
             finam_board = si.board  # Код режима торгов
         return finam_board, ticker
 
@@ -348,7 +352,7 @@ class FinamPy:
         """
         return f'{self.finam_board_to_board(finam_board)}.{ticker}'
 
-    def get_mic(self, finam_board, ticker):
+    def get_mic(self, finam_board, ticker) -> Optional[str]:
         """Биржа тикера по ISO 10383 Market Identifier Codes из кода режима торгов Финама и тикера
 
         :param str finam_board: Код режима торгов
@@ -361,9 +365,10 @@ class FinamPy:
             si = self.get_symbol_info(ticker, exchange.mic)
             if si and si.board == finam_board:  # Если информация о тикере найдена, и режим торгов есть на бирже
                 return exchange.mic  # то биржа найдена
+        self.logger.error(f'Биржа для тикера {self.finam_board_ticker_to_dataname(finam_board, ticker)} не найдена')
         return None  # Если биржа не была найдена, то возвращаем пустое значение
 
-    def get_symbol_info(self, ticker, mic, reload=False) -> assets_service.GetAssetResponse | None:
+    def get_symbol_info(self, ticker, mic, reload=False) -> Optional[assets_service.GetAssetResponse]:
         """Спецификация тикера
 
         :param str ticker: Тикер
@@ -437,6 +442,8 @@ class FinamPy:
         :return: Цена в Финам
         """
         si = self.get_symbol_info(ticker, mic)  # Спецификация тикера
+        if si is None:  # Если тикер не найден (проверка на всякий случай)
+            return 0  # то цены у него нет. Выходим, дальше не продолжаем
         board = si.board  # Режим торгов
         if board in ('TQOB', 'TQCB', 'TQRD', 'TQIR'):  # Для облигаций (Т+ Гособлигации, Т+ Облигации, Т+ Облигации Д, Т+ Облигации ПИР)
             finam_price = price / 10  # Цена -> % от номинала облигации (* 100 / 1000 = / 10)
@@ -462,6 +469,8 @@ class FinamPy:
         :return: Цена в рублях за штуку
         """
         si = self.get_symbol_info(ticker, mic)  # Спецификация тикера
+        if si is None:  # Если тикер не найден (проверка на всякий случай)
+            return 0  # то цены у него нет. Выходим, дальше не продолжаем
         decimals = si.decimals  # Кол-во десятичных знаков
         min_price_step = si.min_step / (10 ** si.decimals)  # Шаг цены
         finam_price = round(finam_price // min_price_step * min_price_step, decimals)  # Проверяем цену в Алор на корректность. Округляем по кол-ву десятичных знаков тикера
@@ -522,7 +531,7 @@ class FinamPy:
         dt_msk = dt_utc.astimezone(self.tz_msk)  # Переводим в зону МСК
         return dt_msk if tzinfo else dt_msk.replace(tzinfo=None)
 
-    def get_long_token_from_keyring(self, service: str, username: str) -> str | None:
+    def get_long_token_from_keyring(self, service: str, username: str) -> Optional[str]:
         """Получение токена из системного хранилища keyring по частям"""
         try:
             index = 0  # Номер части токена
