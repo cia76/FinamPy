@@ -457,7 +457,7 @@ class FinamPy:
             finam_price = price
         decimals = si.decimals  # Кол-во десятичных знаков
         min_price_step = si.min_step / (10 ** si.decimals)  # Шаг цены
-        finam_price = round(finam_price // min_price_step * min_price_step, decimals)  # Проверяем цену в Алор на корректность. Округляем по кол-ву десятичных знаков тикера
+        finam_price = round(finam_price // min_price_step * min_price_step, decimals)  # Проверяем цену в Финам на корректность. Округляем по кол-ву десятичных знаков тикера
         return int(finam_price) if finam_price.is_integer() else finam_price
 
     def finam_price_to_price(self, ticker, mic, finam_price) -> float:
@@ -473,7 +473,7 @@ class FinamPy:
             return 0  # то цены у него нет. Выходим, дальше не продолжаем
         decimals = si.decimals  # Кол-во десятичных знаков
         min_price_step = si.min_step / (10 ** si.decimals)  # Шаг цены
-        finam_price = round(finam_price // min_price_step * min_price_step, decimals)  # Проверяем цену в Алор на корректность. Округляем по кол-ву десятичных знаков тикера
+        finam_price = round(finam_price // min_price_step * min_price_step, decimals)  # Проверяем цену в Финам на корректность. Округляем по кол-ву десятичных знаков тикера
         board = si.board  # Режим торгов
         if board in ('TQOB', 'TQCB', 'TQRD', 'TQIR'):  # Для облигаций (Т+ Гособлигации, Т+ Облигации, Т+ Облигации Д, Т+ Облигации ПИР)
             price = finam_price * 10  # % от номинала облигации -> Цена (/ 100 * 1000 = * 10)
