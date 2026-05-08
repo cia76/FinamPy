@@ -29,6 +29,7 @@ class FinamPy:
     min_history_date = datetime(2015, 6, 29)  # Первая дата, с которой можно получать историю
     server = 'api.finam.ru:443'  # Сервер для исполнения вызовов
     jwt_token_ttl = 15 * 60  # Время жизни токена JWT 15 минут в секундах
+    timeout = 10  # Таймаут запросов в секундах
     logger = logging.getLogger('FinamPy')  # Будем вести лог
     metadata: tuple[str, str]  # Токен JWT в запросах
 
@@ -103,19 +104,33 @@ class FinamPy:
         self.logger.debug(f'Запрос : {func_name}({request})')
         while True:  # Пока не получим ответ или ошибку
             try:  # Пытаемся
-                response, call = func.with_call(request=request, metadata=(self.metadata,))  # вызвать функцию
+                response, call = func.with_call(request=request, timeout=self.timeout, metadata=(self.metadata,))  # вызвать функцию
                 self.logger.debug(f'Ответ  : {response}')
                 return response  # и вернуть ответ
             except RpcError as ex:  # Если получили ошибку канала
+                if 'GetAsset' in func_name:  # При переводе канонического названия тикера в вид Финама приходится подбирать биржу. Поэтому, ошибки ф-ии GetAsset игнорируем
+                    return None  # Возвращаем пустое значение
+                status_code = ex.code()  # Статус ошибки
+                if status_code == StatusCode.DEADLINE_EXCEEDED:
+                    self.logger.error(f'Таймаут при вызове функции {func_name}({request})')
+                    return None  # Возвращаем пустое значение
                 details = ex.args[0].details  # Сообщение об ошибке
-                if 'GetAsset' not in func_name:  # При переводе канонического названия тикера в вид Финама приходится подбирать биржу. Поэтому, ошибки ф-ии GetAsset игнорируем
-                    self.logger.error(f'Ошибка {details} при вызове функции {func_name}({request})')
+                self.logger.error(f'Ошибка {details} при вызове функции {func_name}({request})')
                 return None  # Возвращаем пустое значение
 
     # Подписки
 
+    # TODO: Для каждой подписки:
+    #       - Каждый день в 07:00 МСК перезапускаем все подписки.
+    #       - Хранить все подписки и последние данные подписок на бары
+    #       - Сделать функцию отмены подписки. Выход из потока
+
     def subscribe_quote_thread(self, symbols):
         """Подписка на котировки по инструменту"""
+        # TODO: Если задан период проверки,
+        #       то через этот период нужно взять тикер подписки,
+        #       и сделать запрос с даты/времени последнего полученного бара.
+        #       Если будут получены 3 и более бара, то считаем, что ВСЕ подписки нерабочие. Перезапускаем их
         while True:  # Пока мы не закрыли канал
             try:
                 stream = self.marketdata_stub.SubscribeQuote(request=marketdata_service.SubscribeQuoteRequest(symbols=symbols), metadata=(self.metadata,))  # Поток подписки
